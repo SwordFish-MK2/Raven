@@ -36,7 +36,7 @@ namespace Raven {
 			for (int i = 0; i < 3; i++)
 			{
 				//double c = GammaCorrect(color[i]);
-				double c = color[i];
+				double c = sqrt(color[i]);//gamma correct
 				int intC = static_cast<int>(255 * Clamp(c, 0.0, 0.999));
 				in(intC);
 			}
