@@ -67,7 +67,7 @@ namespace Raven {
 		//Texture<Spectrum>* kd2 = new ConstTexture<Spectrum>(Spectrum::fromRGB(rgb2));
 		Texture<double>* sigma1 = new ConstTexture<double>(0.2);
 		Texture<double>* sigma2 = new ConstTexture<double>(0.0);
-		Texture<Vector3f>* kd1 = new ConstTexture<Vector3f>(Vector3f(0.1, 9.7, 0.4));
+		Texture<Vector3f>* kd1 = new ConstTexture<Vector3f>(Vector3f(0.1, 0.97, 0.4));
 		Texture<Vector3f>* kd2 = new ConstTexture<Vector3f>(Vector3f(0.5, 0.5, 0.5));
 		//	Texture<double>* sphereTexture = new ConstTexture<double>(1.);
 
@@ -85,8 +85,8 @@ namespace Raven {
 		Sphere* s = new Sphere(sphereLocToPrim, spherePrimToLoc, 80.0, 80.0, -80.0, 2 * M_PI);
 		Sphere* ground = new Sphere(groundPrimToWorld, groundWorldToPrim, 16000., 16000., -16000., 2 * M_PI);
 
-		std::shared_ptr<Primitive> s1 = std::make_shared<Primitive>(s, mate1);//small sphere
-		std::shared_ptr<Primitive> s2 = std::make_shared<Primitive>(ground, mate1);//ground
+		std::shared_ptr<Primitive> s1 = std::make_shared<Primitive>(s, mate2);//small sphere
+		std::shared_ptr<Primitive> s2 = std::make_shared<Primitive>(ground, mate2);//ground
 		std::shared_ptr<Primitive> sLeft =
 			std::make_shared<TransformedPrimitive>(leftPrimToWorld, leftWorldToPrim, s1);
 		std::shared_ptr<Primitive> sRight =
