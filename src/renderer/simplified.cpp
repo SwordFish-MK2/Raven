@@ -33,14 +33,19 @@ namespace Raven {
 			return Vector3f(0.0);
 		SurfaceInteraction sinter;
 		if (scene.intersect(r_in, sinter, epsilon, std::numeric_limits<double>::max())) {
+			//get shading data
 			Vector3f wo = Normalize(r_in.dir);
 			Vector3f wi;
-			double pdf;
-			Vector3f f = sinter.bsdf->sample_f(wo, wi, Point2f(GetRand(), GetRand()), &pdf);
-			Ray r_out(sinter.p, wi);
-			return 0.5 * integrate(scene, r_out, depth + 1);
-		}
+			Normal3f n = sinter.n;
 
+			double pdf;
+			Vector3f f = sinter.bsdf->sample_f(wo, wi, Point2f(GetRand(), GetRand()), &pdf);//sample out direction
+			double cosTheta = Clamp(Dot(wi, n), 0.0, 1.0);
+
+			Ray r_out(sinter.p, wi);
+			return f * integrate(scene, r_out, depth + 1) * cosTheta / pdf;
+		}
+		//default environment light
 		Vector3f unit_direction = Normalize(r_in.dir);
 		auto t = 0.5 * (unit_direction[1] + 1.0);
 		return (1.0 - t) * Vector3f(1.0, 1.0, 1.0) + t * Vector3f(0.5, 0.7, 1.0);

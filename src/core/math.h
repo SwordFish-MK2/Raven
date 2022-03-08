@@ -533,6 +533,7 @@ namespace Raven {
 	}
 
 	//Vector related functions
+
 	template<class T>
 	Vector3<T> operator*(T t, const Vector3<T>& v) {
 		return Vector3<T>(v[0] * t, v[1] * t, v[2] * t);
@@ -542,6 +543,17 @@ namespace Raven {
 		//check v.length=0
 		double k = 1.0f / v.length();
 		return Vector3<T>(v.x * k, v.y * k, v.z * k);
+	}
+	template<class T>
+	inline void genTBN(const Vector3<T>& v1, Vector3<T>* v2, Vector3<T>* v3) {
+		//输入一个向量，以该向量为z轴建立一个左手系
+		if (std::abs(v1.x) > std::abs(v1.y))
+			*v2 = Vector3<T>(-v1.z, 0, v1.x) /
+			std::sqrt(v1.x * v1.x + v1.z * v1.z);
+		else
+			*v2 = Vector3<T>(0, v1.z, -v1.y) /
+			std::sqrt(v1.y * v1.y + v1.z * v1.z);
+		*v3 = Cross(v1, *v2);
 	}
 	template<class T>
 	inline int MaxDimention(const Vector3<T>& v) {
