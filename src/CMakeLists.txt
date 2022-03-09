@@ -7,5 +7,6 @@ add_executable(Raven "Raven.cpp" "core/math.h" "core/base.h" "core/math.cpp" "co
 "core/texture.h" "core/scene.cpp" "core/primitive.h" "core/shape.h" "core/material.h" "core/light.h"
 "core/primitive.cpp" "shape/sphere.h" "shape/sphere.cpp" "core/distribution.h" "material/matte.h" "material/matte.cpp"
 "shading_model/lambertain.h" "shading_model/lambertain.cpp"  "core/bxdf.h" "core/bsdf.h" "shading_model/oren_nayar.h" 
-"shading_model/oren_nayar.cpp")
+"shading_model/oren_nayar.cpp" "core/accelerate.h" "accelerate/kdTree.h" "accelerate/kdTree.cpp" "shape/mesh.h" "shape/mesh.cpp")
+
 INCLUDE_DIRECTORIES(../resource/stb_image)

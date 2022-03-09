@@ -102,7 +102,7 @@ namespace Raven {
 			//
 			*tMin = -std::numeric_limits<double>::infinity();
 			*tMax = std::numeric_limits<double>::infinity();
-			Vectorf3 invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
+			Vector3f invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
 			for (int i = 0; i < 3; i++) {
 				double tHitNear = (pMin[i] - r_in.origin[i]) * invDir[i];
 				double tHitFar = (pMax[i] - r_in.origin[i]) * invDir[i];

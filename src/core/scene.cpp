@@ -1,6 +1,7 @@
 #include"scene.h"
 #include"../material/matte.h"
 #include"../shape/sphere.h"
+#include"../shape/mesh.h"
 
 namespace Raven {
 	void Scene::init() {
@@ -94,47 +95,47 @@ namespace Raven {
 		std::shared_ptr<Primitive> sMiddle =
 			std::make_shared<TransformedPrimitive>(middlePrimToWorld, middleWorldToPrim, s1);
 
-		/*		std::vector<pointf3> v;
-				std::vector<int> i;
-				std::vector<normalf3> n;
-				std::vector<vectorf3> tan;
-				std::vector<pointf2> uv;
+		std::vector<Point3f> v;
+		std::vector<int> i;
+		std::vector<Normal3f> n;
+		std::vector<Vector3f> tan;
+		std::vector<Point2f> uv;
 
-				v.push_back(pointf3(-80.0, 80.0, 150.0));
-				v.push_back(pointf3(80.0, 80.0, 150.0));
-				v.push_back(pointf3(80.0, -80.0, 150.0));
-				v.push_back(pointf3(-80.0, -80.0, 150.0));
+		v.push_back(Point3f(-80.0, 100.0, 50.0));
+		v.push_back(Point3f(80.0, 100.0, 50.0));
+		v.push_back(Point3f(80.0, -60.0, 50.0));
+		v.push_back(Point3f(-80.0, -60.0, 50.0));
 
-				i.push_back(0);
-				i.push_back(1);
-				i.push_back(3);
-				i.push_back(1);
-				i.push_back(2);
-				i.push_back(3);
+		i.push_back(0);
+		i.push_back(1);
+		i.push_back(3);
+		i.push_back(1);
+		i.push_back(2);
+		i.push_back(3);
 
-				n.push_back(normalf3(0.0, 0.0, -1.0));
-				n.push_back(normalf3(0.0, 0.0, -1.0));
-				n.push_back(normalf3(0.0, 0.0, -1.0));
-				n.push_back(normalf3(0.0, 0.0, -1.0));
-				n.push_back(normalf3(0.0, 0.0, -1.0));
-				n.push_back(normalf3(0.0, 0.0, -1.0));
+		n.push_back(Normal3f(0.0, 0.0, -1.0));
+		n.push_back(Normal3f(0.0, 0.0, -1.0));
+		n.push_back(Normal3f(0.0, 0.0, -1.0));
+		n.push_back(Normal3f(0.0, 0.0, -1.0));
+		n.push_back(Normal3f(0.0, 0.0, -1.0));
+		n.push_back(Normal3f(0.0, 0.0, -1.0));
 
-			*/	//Eigen::Matrix4f I = Eigen::Matrix4f::Identity();
-			//Transform* identity = new Transform(I);
-			//Transform* invI = new Transform(I);
-			//TriangleMesh* square=new TriangleMesh(identity, invI, 2, v, i, n, tan, uv);
+		Eigen::Matrix4f I = Eigen::Matrix4f::Identity();
+		Transform* identity = new Transform(I);
+		Transform* invI = new Transform(I);
+		TriangleMesh* square = new TriangleMesh(identity, invI, 2, v, i, n, tan, uv);
 
-			//usedTransform.push_back(identity);
-			//std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
-			//prims.push_back(s2);
-			//prims.push_back(sMiddle);
-			//prims.push_back(sLeft);
-			//prims.push_back(sRight);
-		//	kdTree = std::make_shared<KdTreeAccel>(prims, -1, 80, 1, 0, 5);
+		usedTransform.push_back(identity);
+		std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
+		//prims.push_back(s2);
+		//prims.push_back(sMiddle);
+		//prims.push_back(sLeft);
+		//prims.push_back(sRight);
+	//	kdTree = std::make_shared<KdTreeAccel>(prims, -1, 80, 1, 0, 5);
 
 		objs.addPrimitive(s2);
 		objs.addPrimitive(sMiddle);
-		//objects.addPrimitive(sq);
+		// objs.addPrimitive(sq);
 		//	objects.addPrimitive(sLeft);
 		//	objects.addPrimitive(sRight);
 
