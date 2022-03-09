@@ -1,0 +1,6 @@
+#dirctorys
+.vs/
+build/
+resource/
+
+*CMakeSettings.json

@@ -135,7 +135,7 @@ namespace Raven {
 
 		objs.addPrimitive(s2);
 		objs.addPrimitive(sMiddle);
-		objs.addPrimitive(sq);
+		// objs.addPrimitive(sq);
 		//	objects.addPrimitive(sLeft);
 		//	objects.addPrimitive(sRight);
 
