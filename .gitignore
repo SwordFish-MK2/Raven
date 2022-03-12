@@ -4,4 +4,4 @@ build/
 resource/
 
 #files
-*CMakeSettings.json
+CMakeSettings.json
