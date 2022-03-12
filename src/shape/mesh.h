@@ -10,16 +10,6 @@
 #include"../accelerate/kdTree.h"
 
 namespace Raven {
-	//class Model :public Shape {
-	//public:
-	//	std::vector<TriangleMesh> meshes;
-	//	bool hit(const Ray& r_in, double tmin, double tMax)const;
-	//	bool intersect(const Ray& r_in, surfaceIntersection& its, double tmin, double tmax)const;
-	//	boxf3 localBound()const;
-	//	boxf3 worldBound()const;
-	//	double area()const;
-	//	double pdf()const { return 1 / area(); }
-	//};
 
 	/// <summary>
 	/// Triangle mesh classes stores all infomation about triangles inside and hold the instances of cordinate triangle array
@@ -88,6 +78,7 @@ namespace Raven {
 		void getUVs(Point2f uv[3])const;
 		SurfaceInteraction sample(const Point2f& uv)const;
 	};
+
 }
 
 #endif

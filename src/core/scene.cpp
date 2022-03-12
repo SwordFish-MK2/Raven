@@ -117,9 +117,13 @@ namespace Raven {
 		n.push_back(Normal3f(0.0, 0.0, -1.0));
 		n.push_back(Normal3f(0.0, 0.0, -1.0));
 		n.push_back(Normal3f(0.0, 0.0, -1.0));
-		n.push_back(Normal3f(0.0, 0.0, -1.0));
-		n.push_back(Normal3f(0.0, 0.0, -1.0));
 
+
+		uv.push_back(Point2f(0, 1));
+		uv.push_back(Point2f(1, 1));
+		uv.push_back(Point2f(1, 0));
+		uv.push_back(Point2f(0, 0));
+		 
 		Eigen::Matrix4f I = Eigen::Matrix4f::Identity();
 		Transform* identity = new Transform(I);
 		Transform* invI = new Transform(I);
@@ -135,7 +139,7 @@ namespace Raven {
 
 		objs.addPrimitive(s2);
 		objs.addPrimitive(sMiddle);
-		// objs.addPrimitive(sq);
+		objs.addPrimitive(sq);
 		//	objects.addPrimitive(sLeft);
 		//	objects.addPrimitive(sRight);
 
