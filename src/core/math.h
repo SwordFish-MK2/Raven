@@ -674,8 +674,12 @@ namespace Raven {
 	}
 
 	//Normal related functions
-	template<class T>inline
-		Normal3<T> Normalize(const Normal3<T>& n) {
+	template<class T>
+	inline Normal3<T> operator*(T t, Normal3<T> n) {
+		return Normal3<T>(n.x * t, n.y * t, n.z * t);
+	}
+	template<class T>
+	inline Normal3<T> Normalize(const Normal3<T>& n) {
 		int k = 1.0f / n.length();
 		return Normal3<T>(n.x * k, n.y * k, n.z * k);
 	}

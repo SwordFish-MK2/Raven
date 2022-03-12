@@ -1,6 +1,7 @@
-#dirctorys
+#dirctories
 .vs/
 build/
 resource/
 
+#files
 *CMakeSettings.json
