@@ -1,11 +1,11 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
 #
-cmake_minimum_required (VERSION 3.8)
-set(CMAKE_CXX_STANDARD 17)
-project ("Raven")
+CMAKE_MINIMUM_REQUIRED (VERSION 3.8)
+SET(CMAKE_CXX_STANDARD 17)
+PROJECT ("Raven")
 
-include_directories("C:/Program Files (x86)/Eigen3/include/eigen3")
+INCLUDE_DIRECTORIES("C:/Program Files (x86)/Eigen3/include/eigen3" "resources/stb_image")
 
 # 包含子项目。
-add_subdirectory(src bin)
+ADD_SUBDIRECTORY(src bin)

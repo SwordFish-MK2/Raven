@@ -1,12 +1,19 @@
-include_directories("C:/Program Files (x86)/Eigen3/include/eigen3")
+SET(RAVEN_HEADER_ALL)
+FILE(GLOB_RECURSE RAVEN_HEADER_ALL	"./core/*.h"
+										"./accelerate/*.h" 
+										"./camera/*.h" 
+										"./material/*.h" 
+										"./renderer/*.h" 
+										"./shading_model/*.h"
+										"./shape/*.h")
+SET(RAVEN_SOURCE_ALL)
+FILE(GLOB_RECURSE RAVEN_SOURCE_ALL	"./core/*.cpp"
+										"./accelerate/*.cpp" 
+										"./camera/*.cpp" 
+										"./material/*.cpp" 
+										"./renderer/*.cpp" 
+										"./shading_model/*.cpp"
+										"./shape/*.cpp")
 
-add_executable(Raven "Raven.cpp" "core/math.h" "core/base.h" "core/math.cpp" "core/transform.h" 
-"core/transform.cpp" "core/ray.h" "core/aabb.h" "core/interaction.h" 
-"core/interaction.cpp" "core/camera.h" "camera/projectiveCamera.h" "camera/projectiveCamera.cpp" "core/film.h" "core/film.cpp" 
-"core/renderer.h" "core/renderer.cpp" "renderer/simplified.h" "renderer/simplified.cpp" "core/scene.h"
-"core/texture.h" "core/scene.cpp" "core/primitive.h" "core/shape.h" "core/material.h" "core/light.h"
-"core/primitive.cpp" "shape/sphere.h" "shape/sphere.cpp" "core/distribution.h" "material/matte.h" "material/matte.cpp"
-"shading_model/lambertain.h" "shading_model/lambertain.cpp"  "core/bxdf.h" "core/bsdf.h" "shading_model/oren_nayar.h" 
-"shading_model/oren_nayar.cpp" "core/accelerate.h" "accelerate/kdTree.h" "accelerate/kdTree.cpp" "shape/mesh.h" "shape/mesh.cpp")
+ADD_EXECUTABLE(Raven "Raven.h" "Raven.cpp" ${RAVEN_SOURCE_ALL} ${RAVEN_HEADER_ALL})
 
-INCLUDE_DIRECTORIES(../resources/stb_image)
