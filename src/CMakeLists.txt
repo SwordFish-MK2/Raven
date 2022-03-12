@@ -9,4 +9,4 @@ add_executable(Raven "Raven.cpp" "core/math.h" "core/base.h" "core/math.cpp" "co
 "shading_model/lambertain.h" "shading_model/lambertain.cpp"  "core/bxdf.h" "core/bsdf.h" "shading_model/oren_nayar.h" 
 "shading_model/oren_nayar.cpp" "core/accelerate.h" "accelerate/kdTree.h" "accelerate/kdTree.cpp" "shape/mesh.h" "shape/mesh.cpp")
 
-INCLUDE_DIRECTORIES(../resource/stb_image)
+INCLUDE_DIRECTORIES(../resources/stb_image)

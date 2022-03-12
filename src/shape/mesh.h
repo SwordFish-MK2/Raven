@@ -49,8 +49,9 @@ namespace Raven {
 				delete triangles;
 		}
 
-		bool hit(const Ray& r_in, double tmin, double tMax)const;
-		bool intersect(const Ray& r_in, SurfaceInteraction& its, double tmin, double tmax)const;
+		bool hit(const Ray& r_in, double tMin = 0.0001, double tMax = std::numeric_limits<double>::max())const;
+		bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.0001, 
+			double tMax = std::numeric_limits<double>::max())const;
 		Bound3f localBound()const;
 		Bound3f worldBound()const;
 		double area()const;
@@ -60,22 +61,31 @@ namespace Raven {
 		KdTreeAccel* triangles;
 		double surfaceArea;
 		void buildTriangles();
+
+		//UNTESTED
+		//将属于该网格的三角形数据保存在网格类中，随着网格的析构释放三角形的内存
+		std::vector<std::shared_ptr<Triangle>> triMemory;
 	};
 
 	class Triangle :public Shape {
 	private:
 		const TriangleMesh* mesh;
-		int index;//triangle number
+		int i;//此处记录的为三角形第一个index在indices中的位置，构造函数中输入的为三角形在三角形数组中的位置
 	public:
 		Triangle(const Transform* LTW, const Transform* WTL, const TriangleMesh* m, int index) :
-			Shape(LTW, WTL), mesh(m), index(index) {}
-		bool hit(const Ray& r_in, double tmin, double tMax)const;
-		bool intersect(const Ray& r_in, SurfaceInteraction& its, double tmin, double tmax)const;
+			Shape(LTW, WTL), mesh(m), i(3 * index) {}
+		bool hit(const Ray& r_in, double tMin = 0.0001, double tMax = std::numeric_limits<double>::max())const;
+		bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.0001,
+			double tMax = std::numeric_limits<double>::max())const;
 		Bound3f localBound()const;
 		Bound3f worldBound()const;
 		double area()const;
 		double pdf()const { return 1 / area(); }
 		void getUVs(Point2f uv[3])const;
+		inline int index(int num)const {
+			//TODO::检查num的值
+			return mesh->indices[i + num];
+		}
 		SurfaceInteraction sample(const Point2f& uv)const;
 	};
 
