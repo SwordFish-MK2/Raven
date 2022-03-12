@@ -1,3 +1,3 @@
-[submodule "resource/stb_image"]
-	path = resource/stb_image
+[submodule "resources/stb_image"]
+	path = resources/stb_image
 	url = git@github.com:nothings/stb.git
