@@ -2,16 +2,11 @@
 #include"../core/distribution.h"
 namespace Raven {
 	void TriangleMesh::buildTriangles() {
-		std::vector<Primitive> prims;
+		std::vector<std::shared_ptr<Primitive>> prims;
 		//surfaceArea = 0;
 		for (int i = 0; i < nTriangles; i++) {
-			//TODO:Store triangle ptr
 			std::shared_ptr<Triangle> triangle = std::make_shared<Triangle>(localToWorld, worldToLocal, this, i);
-			triMemory.push_back(triangle);
-			//surfaceArea += triangle->area();
-			Primitive p(triangle.get(), nullptr);
-			//triangles.push_back(triangle);
-			//PtrCollecter::getShape(triangle);
+			std::shared_ptr<Primitive> p=std::make_shared<Primitive>(triangle, nullptr,nullptr);
 			prims.push_back(p);
 		}
 		triangles = new KdTreeAccel(prims, -1, 80, 1, 0.5, prims.size());
@@ -44,9 +39,9 @@ namespace Raven {
 		double allArea = 0;
 		double p = GetRand() * surfaceArea;
 		for (int i = 0; i < nTriangles; i++) {
-			allArea += triangles->prims[i].getShape()->area();
+			allArea += triangles->prims[i]->getShape()->area();
 			if (allArea >= p) {
-				return triangles->prims[i].getShape()->sample(uv);
+				return triangles->prims[i]->getShape()->sample(uv);
 			}
 		}
 	}

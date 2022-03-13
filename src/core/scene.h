@@ -13,10 +13,7 @@ namespace Raven {
 	class Scene {
 	private:
 		std::vector<Transform*> usedTransform;
-		std::vector<Texture<double>*> floatTexture;
-		std::vector<Texture<Vector3f>*>vectorTexture;
-		std::vector<Material*> usedMaterial;
-		std::vector<std::shared_ptr<Primitive>> prims;
+		//std::vector<std::shared_ptr<Primitive>> prims;
 		PrimitiveList objs;
 
 	public:

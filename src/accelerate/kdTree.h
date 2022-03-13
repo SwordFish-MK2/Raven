@@ -86,7 +86,7 @@ namespace Raven {
 
 	class KdTreeAccel :public Accelerate {
 	public:
-		KdTreeAccel(const std::vector<Primitive>& p, int maxD, int it, int tt, double eb, int num);
+		KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int num);
 		KdTreeAccel(const KdTreeAccel& tree) :Accelerate(tree.prims), maxDepth(tree.maxDepth), primsThreshold(tree.primsThreshold),
 			isectCost(tree.isectCost), traversalCost(tree.traversalCost), emptyBonus(tree.emptyBonus), nAccelNode(tree.nAccelNode),
 			nextFreeNode(tree.nextFreeNode), primIndices(tree.primIndices) {

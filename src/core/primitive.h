@@ -9,19 +9,20 @@
 namespace Raven {
 	class Primitive {
 	public:
-		Primitive(const Shape* shape_ptr,const Material* mate_ptr,const Light* light = nullptr)
+		Primitive(const std::shared_ptr<Shape>& shape_ptr,const std::shared_ptr<Material>& mate_ptr,
+			const std::shared_ptr<Light>& light = nullptr)
 			:shape_ptr(shape_ptr), mate_ptr(mate_ptr), light_ptr(light) {}
 		~Primitive() {}
 		virtual bool hit(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
 		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.001, double tMax = FLT_MAX)const;
 		virtual Bound3f worldBounds()const;
-		virtual const Material* getMaterial()const { return mate_ptr; }
-		virtual const Light* getAreaLight()const { return light_ptr; }
-		virtual const Shape* getShape()const { return shape_ptr; }
+		virtual const Material* getMaterial()const { return mate_ptr.get(); }
+		virtual const Light* getAreaLight()const { return light_ptr.get(); }
+		virtual const Shape* getShape()const { return shape_ptr.get(); }
 	private:
-		const Shape* shape_ptr;
-		const Material* mate_ptr;
-		const Light* light_ptr;
+		std::shared_ptr<Shape> shape_ptr;
+		std::shared_ptr<Material> mate_ptr;
+		std::shared_ptr<Light> light_ptr;
 	};
 
 	class TransformedPrimitive :public Primitive {

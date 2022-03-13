@@ -22,11 +22,12 @@ namespace Raven {
 
 	class MatteMaterial :public Material {
 	private:
-		Texture<double>* sigma;//surface roughness value 
-		Texture<Vector3f>* kd;//diffuse reflection value
-		Texture<double>* bump;//bump function
+		std::shared_ptr<Texture<double>> sigma;//surface roughness value 
+		std::shared_ptr<Texture<Vector3f>> kd;//diffuse reflection value
+		std::shared_ptr<Texture<double>> bump;//bump function
 	public:
-		MatteMaterial(Texture<double>* sigma, Texture<Vector3f>* Kd, Texture<double>* bump = NULL)
+		MatteMaterial(const std::shared_ptr<Texture<double>>& sigma, const std::shared_ptr<Texture<Vector3f>>& Kd,
+			const std::shared_ptr<Texture<double>>& bump = NULL)
 			:sigma(sigma), kd(Kd), bump(bump) {}
 		//MatteMaterial(double Kd) :Kd(Kd) {}
 		void computeScarttingFunctions(SurfaceInteraction& its) const;
