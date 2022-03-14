@@ -265,8 +265,8 @@ namespace Raven {
 		}
 
 		Point3<T> operator+(const Point3<T>& p)const {
-			return Point3<T>((x + p.x) / 2, (y + p.y) / 2, (z + p.z) / 2);
-		}//the addition of two point is the middle pointof the two point computed in homogeneous coordinats
+			return Point3<T>(x + p.x, y + p.y, z + p.z);
+		}
 		template<class U>
 		Point3<T> operator*(U t)const {
 			return Point3<T>(x * t, y * t, z * t);
@@ -544,9 +544,12 @@ namespace Raven {
 		double k = 1.0f / v.length();
 		return Vector3<T>(v.x * k, v.y * k, v.z * k);
 	}
+
+	//输入一个向量，以该向量为z轴建立一个左手系
 	template<class T>
 	inline void genTBN(const Vector3<T>& v1, Vector3<T>* v2, Vector3<T>* v3) {
-		//输入一个向量，以该向量为z轴建立一个左手系
+		//首先通过将输入向量的一个分量置为零，交换剩下的两个分量并将其中一个分量取负值来求得一个与输入向量垂直的向量v2
+		//再通过向量积取得垂直于v1与v2的向量v3
 		if (std::abs(v1.x) > std::abs(v1.y))
 			*v2 = Vector3<T>(-v1.z, 0, v1.x) /
 			std::sqrt(v1.x * v1.x + v1.z * v1.z);

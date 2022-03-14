@@ -4,22 +4,28 @@
 #include"base.h"
 #include"primitive.h"
 
+enum AccelType {
+	List, KdTree
+};
+
 namespace Raven {
+
 	class Accelerate {
 	public:
-		Accelerate(const std::vector<Primitive>& prims) :prims(prims) {
+		Accelerate(const std::vector<std::shared_ptr<Primitive>>& prims) :prims(prims) {
 			for (int i = 0; i < prims.size(); i++)
-				worldBound = Union(prims[i].worldBounds(), worldBound);
+				worldBound = Union(prims[i]->worldBounds(), worldBound);
 		}
 		virtual bool hit(const Ray& r_in, double tMin = 0.001F, double tMax = FLT_MAX)const = 0;
 		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.001F, double tMax = FLT_MAX)const = 0;
 		virtual Bound3f worldBounds()const {
 			return worldBound;
 		}
+
+		std::vector<std::shared_ptr<Primitive>> prims;
 	protected:
 		Bound3f worldBound;
-	public:
-		std::vector<Primitive> prims;
+
 	};
 }
 

@@ -14,11 +14,6 @@ using namespace std;
 
 int main()
 {
-
-	//Raven::Vector3f v(0.0, 0.0, 0.0);
-	//Eigen::Matrix4f i=Eigen::Matrix4f::Identity();
-	//Raven::Transform t(i);
-	//cout << "Hello CMake." <<endl<<"Vector: "<<v<< endl;
 	Raven::Scene s;
 	s.init();
 
@@ -31,6 +26,6 @@ int main()
 	Raven::SimplifiedRenderer renderer(cam, f,64,50,0.1);
 	renderer.render(s);
 	s.clear();
-
+	delete cam;
 	return 0;
 }

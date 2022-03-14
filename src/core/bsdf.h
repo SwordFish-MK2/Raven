@@ -12,25 +12,25 @@ namespace Raven {
 	class BSDF {
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			BSDF(const SurfaceInteraction& sits, double eta, int maxN = 1) 
-				:eta(eta), maxNumber(maxN), n(sits.n), ns(sits.n) {
+			BSDF(const SurfaceInteraction& sits, double eta, int maxN = 1)
+			:eta(eta), maxNumber(maxN), n(sits.n), ns(sits.n) {
 			//generate coordinate space
 			double maxLength = 0;
 			int maxIndex = 0;
+			bxdfNumber = 0;
 			for (int i = 0; i < 3; i++)
 				if (maxLength < n[i]) {
 					maxLength = n[i];
 					maxIndex = i;
 				}
-			Vector3f tempV;
-			tempV[maxIndex] = 1.0f;
-			sx = Cross(tempV, Vector3f(n)).normalized();
-			sy = Cross(Vector3f(n), sx).normalized();
-			ns = Cross(sx, sy).normalized();
+			n.normalize();
+			genTBN(Vector3f(n), &sx, &sy);
+			ns = n;
 		}
 
 		void addBxDF(std::shared_ptr<BxDF> bxdf) {
 			bxdfs.push_back(bxdf);
+			bxdfNumber++;
 		}
 
 		//Spectrum f(const vectorf3& wo, const vectorf3& wi) {
@@ -39,7 +39,7 @@ namespace Raven {
 		//	for (int i = 0; i < bxdfs.size(); i++) {
 		//		result += bxdfs[i]->f(wo, wi);
 		//	}
-
+		//
 		//	return result /= (double)bxdfs.size();
 		//}
 
@@ -56,7 +56,7 @@ namespace Raven {
 		//Spectrum sample_f(const vectorf3& wo, vectorf3& wi, const pointf2& sample, double* pdf, BxDFType type = All)const {
 		//	//choose a bxdf to sample
 		//	int bxdfIndex = Min((unsigned int)(bxdfs.size() - 1), (unsigned int)std::floor(bxdfs.size() * sample[0]));
-
+		//
 		//	//sample choosen BxDF
 		//	vectorf3 woLocal = worldToLocal(-wo);
 		//	vectorf3 wiLocal;
@@ -67,7 +67,7 @@ namespace Raven {
 		//	//if (*pdf == 0)
 		//	//	return 0;
 		//	wi = Normalize(localToWorld(wiLocal));
-
+		//
 		//	//compute overall pdf of sampled wi
 		//	int bxdfNum = 1;
 		//	for (int i = 0; i < bxdfs.size(); ++i) {
@@ -77,7 +77,7 @@ namespace Raven {
 		//		}
 		//	}
 		//	*pdf /= (double)bxdfNum;
-
+		//
 		//	//compute value of sampled direction
 		//	for (int i = 0; i < bxdfs.size(); ++i) {
 		//		if (i != bxdfIndex) {

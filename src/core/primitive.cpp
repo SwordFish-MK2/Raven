@@ -44,38 +44,5 @@ namespace Raven {
 			return (*primToWorld)(prim->worldBounds());
 		else
 			return Bound3f();
-	}
-
-	//iterate over all primitives, find the closest intersection
-	bool PrimitiveList::intersect(const Ray& r_in, SurfaceInteraction& its, double tMin, double tMax)const {
-		bool flag = false;
-		SurfaceInteraction temp;
-		double closest = tMax;
-		for (int i = 0; i < pris.size(); i++) {
-			if (pris[i]->intersect(r_in, temp, tMin, closest)) {
-				closest = temp.t;
-				flag = true;
-			}
-		}
-		if (flag)
-			its = temp;
-		return flag;
-	}
-
-	bool PrimitiveList::hit(const Ray& r_in, double tMin, double tMax)const {
-		for (int i = 0; i < pris.size(); i++)
-			if (pris[i]->hit(r_in, tMin, tMax))
-				return true;
-	}
-
-	Bound3f PrimitiveList::worldBounds()const {
-		bool flag = false;
-		Bound3f box;
-		for (int i = 0; i < pris.size(); i++) {
-			Bound3f b = pris[i]->worldBounds();
-			box = Union(box, pris[i]->worldBounds());
-		}
-		return box;
-	}
-	
+	}	
 }

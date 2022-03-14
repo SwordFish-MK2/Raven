@@ -1,54 +1,25 @@
 #include"mesh.h"
 #include"../core/distribution.h"
+#include"../core/primitive.h"
 namespace Raven {
-	void TriangleMesh::buildTriangles() {
-		std::vector<Primitive> prims;
-		//surfaceArea = 0;
-		for (int i = 0; i < nTriangles; i++) {
-			//TODO:Store triangle ptr
-			std::shared_ptr<Triangle> triangle = std::make_shared<Triangle>(localToWorld, worldToLocal, this, i);
-			triMemory.push_back(triangle);
-			//surfaceArea += triangle->area();
-			Primitive p(triangle.get(), nullptr);
-			//triangles.push_back(triangle);
-			//PtrCollecter::getShape(triangle);
-			prims.push_back(p);
+	std::vector<std::shared_ptr<Triangle>> TriangleMesh::getTriangles() {
+		std::vector<std::shared_ptr<Triangle>> triangles;
+		for (size_t i = 0; i < nTriangles; i++) {
+			std::shared_ptr<Triangle> t = std::make_shared<Triangle>(OTW, WTO, this, i);
+			triangles.push_back(t);
 		}
-		triangles = new KdTreeAccel(prims, -1, 80, 1, 0.5, prims.size());
+		return triangles;
 	}
 
-	bool TriangleMesh::hit(const Ray& r_in, double tMin, double tMax)const {
-		return triangles->hit(r_in, tMin, tMax);
-	}
-
-	bool TriangleMesh::intersect(const Ray& r_in, SurfaceInteraction& its, double tMin, double tMax)const {
-		return triangles->intersect(r_in, its, tMin, tMax);
-	}
-
-	Bound3f TriangleMesh::localBound()const {
-		return (*worldToLocal)(worldBound());
-	}
-
-	Bound3f TriangleMesh::worldBound()const {
-		Bound3f box;
-		for (size_t i = 0; i < vertices.size(); i++)
-			box = Union(box, vertices[i]);
-		return box;
-	}
-
-	double TriangleMesh::area()const {
-		return surfaceArea;
-	}
-
-	SurfaceInteraction TriangleMesh::sample(const Point2f& uv)const {
-		double allArea = 0;
-		double p = GetRand() * surfaceArea;
-		for (int i = 0; i < nTriangles; i++) {
-			allArea += triangles->prims[i].getShape()->area();
-			if (allArea >= p) {
-				return triangles->prims[i].getShape()->sample(uv);
-			}
+	std::vector<std::shared_ptr<Primitive>> TriangleMesh::generatePrimitive(const std::shared_ptr<Material>& mate,
+		const std::shared_ptr<Light>& light) {
+		std::vector<std::shared_ptr<Primitive>> primitives;
+		for (size_t i = 0; i < nTriangles; i++) {
+			std::shared_ptr<Triangle> t = std::make_shared<Triangle>(OTW, WTO, this, i);
+			std::shared_ptr<Primitive> p = std::make_shared<Primitive>(t, mate, light);
+			primitives.push_back(p);
 		}
+		return primitives;
 	}
 
 	void Triangle::getUVs(Point2f uv[3])const {
@@ -112,7 +83,6 @@ namespace Raven {
 		//TODO::检查相交时间
 		if (t >= tmax)
 			return false;
-
 		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
 		//Point2f uv[3];
 		//getUVs(uv);
@@ -120,13 +90,18 @@ namespace Raven {
 		const Point2f& uv1 = mesh->uvs[index(1)];
 		const Point2f& uv2 = mesh->uvs[index(2)];
 
-
 		const Normal3f& n0 = mesh->normals[index(0)];
 		const Normal3f& n1 = mesh->normals[index(1)];
 		const Normal3f& n2 = mesh->normals[index(2)];
 		Point3f pHit = b0 * p0 + b1 * p1 + b2 * p2;
+		Point3f pb1 = b0 * p0;
+		Point3f pb2 = b1 * p1;
+		Point3f pb3 = b2 * p2;
+		Point3f pHit2 = r_in.position(t);
 		Point2f uvHit = b0 * uv0 + b1 * uv1 + b2 * uv2;
 		auto nHit = b0 * n0 + b1 * n1 + b2 * n2;
+		if (Dot(nHit, r_in.dir) > 0)
+			return false;
 		////TODO:: 确认三角形朝向（顺时针？逆时针？），确保计算出的法线与原法线为同一方向
 		//Vector3f nHit = Cross(p0 - p1, p2 - p1);
 		////计算dpdu与dpdv以便在网格表面求出的切线向量为连续的值
@@ -145,12 +120,13 @@ namespace Raven {
 			dpdu = invDet * (dv12 * dp02 - dv02 * dp12);
 			dpdv = invDet * (du02 * dp12 - du12 * dp02);
 		}
-
+	
 		its.dpdu = dpdu;
 		its.dpdv = dpdv;
 		its.n = nHit;
 		its.p = pHit;
 		its.uv = uvHit;
+		its.t = t;
 		return true;
 	}
 
@@ -202,5 +178,17 @@ namespace Raven {
 		sisec.p = sample;
 		return sisec;
 	}
+
+	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
+		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal) {
+		std::vector<Point3f> vertices = { v0,v1,v2,v3 };
+		std::vector<int> indices = { 0,1,3,1,2,3 };
+		std::vector<Point2f> uvs = { Point2f(0,1),Point2f(1,1),Point2f(1,0),Point2f(0,0) };
+		std::vector<Normal3f> normals = { normal,normal,normal, normal };
+		std::vector<Vector3f> tangants;
+		TriangleMesh mesh(LTW, WTL, 2, vertices, indices, normals, tangants, uvs, AccelType::List);
+		return mesh;
+	}
+
 
 }

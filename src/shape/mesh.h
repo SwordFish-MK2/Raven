@@ -8,13 +8,13 @@
 #include"../core/math.h"
 #include"../core/accelerate.h"
 #include"../accelerate/kdTree.h"
-
+#include"../accelerate/primitiveList.h"
 namespace Raven {
 
 	/// <summary>
 	/// Triangle mesh classes stores all infomation about triangles inside and hold the instances of cordinate triangle array
 	/// </summary>
-	class TriangleMesh :public Shape {
+	class TriangleMesh {
 	public:
 		int nTriangles;
 		int nVertices;
@@ -28,43 +28,21 @@ namespace Raven {
 
 		TriangleMesh(const Transform* OTW, const Transform* WTO, int triNum, const std::vector<Point3f>& vs,
 			const std::vector<int>& ins, const std::vector<Normal3f>& ns, const std::vector<Vector3f>& ts,
-			const std::vector<Point2f> uvs) :Shape(OTW, WTO), nTriangles(triNum), nVertices(vs.size()),
-			vertices(vs), indices(ins), normals(ns), tangants(ts), uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
+			const std::vector<Point2f> uvs, AccelType buildType = AccelType::KdTree) :OTW(OTW), WTO(WTO),
+			nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
+			uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
 			//transform all vertices of triangle mesh to world space 
 			for (int i = 0; i < vertices.size(); i++) {
-				vertices[i] = (*localToWorld)(vertices[i]);
+				vertices[i] = (*OTW)(vertices[i]);
 			}
-			buildTriangles();//build triangles
 		}
 
-		//copy triangle mesh, call buildTriangles to create kdtree
-		TriangleMesh(const TriangleMesh& mesh) :Shape(mesh.localToWorld, mesh.worldToLocal),
-			nTriangles(mesh.nTriangles), nVertices(mesh.nVertices), vertices(mesh.vertices),
-			indices(mesh.indices), normals(mesh.normals), tangants(mesh.tangants), uvs(mesh.uvs),
-			hasTan(mesh.hasTan), hasUV(mesh.hasUV) {
-			buildTriangles();
-		}
-		~TriangleMesh() {
-			if (triangles)
-				delete triangles;
-		}
-
-		bool hit(const Ray& r_in, double tMin = 0.0001, double tMax = std::numeric_limits<double>::max())const;
-		bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.0001, 
-			double tMax = std::numeric_limits<double>::max())const;
-		Bound3f localBound()const;
-		Bound3f worldBound()const;
-		double area()const;
-		double pdf()const { return 1 / area(); }
-		SurfaceInteraction sample(const Point2f& uv)const;
+		std::vector<std::shared_ptr<Triangle>> getTriangles();
+		std::vector<std::shared_ptr<Primitive>> generatePrimitive(const std::shared_ptr<Material>& mate,
+			const std::shared_ptr<Light>& light = nullptr);
 	private:
-		KdTreeAccel* triangles;
-		double surfaceArea;
-		void buildTriangles();
-
-		//UNTESTED
-		//将属于该网格的三角形数据保存在网格类中，随着网格的析构释放三角形的内存
-		std::vector<std::shared_ptr<Triangle>> triMemory;
+		const Transform* OTW;
+		const Transform* WTO;
 	};
 
 	class Triangle :public Shape {
@@ -88,6 +66,10 @@ namespace Raven {
 		}
 		SurfaceInteraction sample(const Point2f& uv)const;
 	};
+
+
+	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
+		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal);
 
 }
 

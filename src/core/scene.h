@@ -8,32 +8,31 @@
 #include"transform.h"
 #include"primitive.h"
 #include"texture.h"
-
+#include"accelerate.h"
+#include"../accelerate/primitiveList.h"
+#include"../shape/mesh.h"
 namespace Raven {
 	class Scene {
 	private:
 		std::vector<Transform*> usedTransform;
-		std::vector<Texture<double>*> floatTexture;
-		std::vector<Texture<Vector3f>*>vectorTexture;
-		std::vector<Material*> usedMaterial;
-		std::vector<std::shared_ptr<Primitive>> prims;
-		PrimitiveList objs;
+		std::vector<std::shared_ptr<TriangleMesh>> meshes;
 
+		std::shared_ptr<Accelerate> objs;
 	public:
 		//std::vector<std::shared_ptr<Light>> lights;
 		//test if incident ray hit any object in the scene 
 		bool hit(const Ray& r)const {
-			return objs.hit(r);
+			return objs->hit(r);
 		}
 		//test if incident ray hit any object in the scene
 		//if hit, get ray intersection infomation 
 		bool intersect(const Ray& r, SurfaceInteraction& its, double tMin, double tMax)const {
-			return objs.intersect(r, its, tMin, tMax);
+			return objs->intersect(r, its, tMin, tMax);
 			//return kdTree->intersect(r, its, tMin, tMax);
 		}
 
 		Bound3f worldBound()const {
-			return objs.worldBounds();
+			return objs->worldBounds();
 		}
 
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW

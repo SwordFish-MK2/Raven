@@ -6,7 +6,7 @@
 namespace Raven {
 	void Scene::init() {
 
-		//inite transform matrix
+		//transform
 		Eigen::Matrix4f spherePrimitive;
 		spherePrimitive <<
 			1.f, 0.f, 0.f, 0.f,
@@ -62,30 +62,47 @@ namespace Raven {
 		Transform* rightWorldToPrim = new Transform(sphereRightModel.inverse());
 		usedTransform.push_back(rightPrimToWorld);
 		usedTransform.push_back(rightWorldToPrim);
+
+		Eigen::Matrix4f I = Eigen::Matrix4f::Identity();
+		Transform* identity = new Transform(I);
+		usedTransform.push_back(identity);
+
 		double rgb1[3] = { 0.1,0.7,0.4 };
 		double rgb2[3] = { 0.5,0.5,0.5 };
+
+
 		//Texture<Spectrum>* kd1 = new ConstTexture<Spectrum>(Spectrum::fromRGB(rgb1));
 		//Texture<Spectrum>* kd2 = new ConstTexture<Spectrum>(Spectrum::fromRGB(rgb2));
-		Texture<double>* sigma1 = new ConstTexture<double>(0.2);
-		Texture<double>* sigma2 = new ConstTexture<double>(0.0);
-		Texture<Vector3f>* kd1 = new ConstTexture<Vector3f>(Vector3f(0.1, 0.97, 0.4));
-		Texture<Vector3f>* kd2 = new ConstTexture<Vector3f>(Vector3f(0.5, 0.5, 0.5));
-		//	Texture<double>* sphereTexture = new ConstTexture<double>(1.);
 
-		/*	vectorTexture.push_back(kd1);
-			vectorTexture.push_back(kd2);*/
-		floatTexture.push_back(sigma1);
-		floatTexture.push_back(sigma2);
-		//	floatTexture.push_back(sphereTexture);
+		//texture
+		std::shared_ptr<Texture<double>> sigma1 = std::make_shared<ConstTexture<double>>(0.2);
+		std::shared_ptr<Texture<double>> sigma2 = std::make_shared<ConstTexture<double>>(0.0);
+		std::shared_ptr<Texture<Vector3f>> kd1 = std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.1, 0.97, 0.4));
+		std::shared_ptr<Texture<Vector3f>> kd2 = std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.5, 0.5, 0.5));
 
-		MatteMaterial* mate1 = new MatteMaterial(sigma2, kd1, nullptr);
-		MatteMaterial* mate2 = new MatteMaterial(sigma2, kd2, nullptr);
-		//PureSpecular* specular1 = new PureSpecular(kd1);
-		//PureSpecular* specular2 = new PureSpecular(kd2);
-		//	PureSpecular* mate3 = new PureSpecular(kd1);
-		Sphere* s = new Sphere(sphereLocToPrim, spherePrimToLoc, 80.0, 80.0, -80.0, 2 * M_PI);
-		Sphere* ground = new Sphere(groundPrimToWorld, groundWorldToPrim, 16000., 16000., -16000., 2 * M_PI);
+		//material
+		std::shared_ptr<MatteMaterial> mate1 = std::make_shared<MatteMaterial>(sigma2, kd1, nullptr);
+		std::shared_ptr<MatteMaterial> mate2 = std::make_shared<MatteMaterial>(sigma2, kd2, nullptr);
 
+		//shape
+		std::shared_ptr<Sphere> s = std::make_shared<Sphere>(sphereLocToPrim, spherePrimToLoc, 80.0, 80.0, -80.0, 2 * M_PI);
+		std::shared_ptr<Sphere> ground = std::make_shared<Sphere>(groundPrimToWorld, groundWorldToPrim, 16000., 16000., -16000., 2 * M_PI);
+
+		Point3f p0(-500.0, -85.0, 500.0);
+		Point3f p1(500.0, -85.0, 500.0);
+		Point3f p2(500.0, -85.0, -500.0);
+		Point3f p3(-500.0, -85.0, -500.0);
+
+		//Point3f p0(-80.0, 100.0, 200.0);
+		//Point3f p1(80.0, 100.0, 200.0);
+		//Point3f p2(80.0, -60.0, 200.0);
+		//Point3f p3(-80.0, -60.0, 200.0);
+
+		std::shared_ptr<TriangleMesh> square = std::make_shared<TriangleMesh>(CreatePlane(identity, identity,
+			p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0)));
+		std::vector<std::shared_ptr<Primitive>> squareTri = square->generatePrimitive(mate2);
+		meshes.push_back(square);
+		//primitive
 		std::shared_ptr<Primitive> s1 = std::make_shared<Primitive>(s, mate2);//small sphere
 		std::shared_ptr<Primitive> s2 = std::make_shared<Primitive>(ground, mate2);//ground
 		std::shared_ptr<Primitive> sLeft =
@@ -94,68 +111,24 @@ namespace Raven {
 			std::make_shared<TransformedPrimitive>(rightPrimToWorld, rightWorldToPrim, s1);
 		std::shared_ptr<Primitive> sMiddle =
 			std::make_shared<TransformedPrimitive>(middlePrimToWorld, middleWorldToPrim, s1);
+		//	std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
 
-		std::vector<Point3f> v;
-		std::vector<int> i;
-		std::vector<Normal3f> n;
-		std::vector<Vector3f> tan;
-		std::vector<Point2f> uv;
+		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
+		//prim_ptrs.push_back(sMiddle);
+		//prim_ptrs.push_back(s2);
+		prim_ptrs.push_back(squareTri[0]);
+		prim_ptrs.push_back(squareTri[1]);
+		prim_ptrs.push_back(sMiddle);
 
-		v.push_back(Point3f(-80.0, 100.0, 50.0));
-		v.push_back(Point3f(80.0, 100.0, 50.0));
-		v.push_back(Point3f(80.0, -60.0, 50.0));
-		v.push_back(Point3f(-80.0, -60.0, 50.0));
-
-		i.push_back(0);
-		i.push_back(1);
-		i.push_back(3);
-		i.push_back(1);
-		i.push_back(2);
-		i.push_back(3);
-
-		n.push_back(Normal3f(0.0, 0.0, -1.0));
-		n.push_back(Normal3f(0.0, 0.0, -1.0));
-		n.push_back(Normal3f(0.0, 0.0, -1.0));
-		n.push_back(Normal3f(0.0, 0.0, -1.0));
-
-
-		uv.push_back(Point2f(0, 1));
-		uv.push_back(Point2f(1, 1));
-		uv.push_back(Point2f(1, 0));
-		uv.push_back(Point2f(0, 0));
-		 
-		Eigen::Matrix4f I = Eigen::Matrix4f::Identity();
-		Transform* identity = new Transform(I);
-		Transform* invI = new Transform(I);
-		TriangleMesh* square = new TriangleMesh(identity, invI, 2, v, i, n, tan, uv);
-
-		usedTransform.push_back(identity);
-		std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
-		//prims.push_back(s2);
-		//prims.push_back(sMiddle);
-		//prims.push_back(sLeft);
-		//prims.push_back(sRight);
-	//	kdTree = std::make_shared<KdTreeAccel>(prims, -1, 80, 1, 0, 5);
-
-		objs.addPrimitive(s2);
-		objs.addPrimitive(sMiddle);
-		objs.addPrimitive(sq);
-		//	objects.addPrimitive(sLeft);
-		//	objects.addPrimitive(sRight);
+		//prim_ptrs.push_back(sq);
+		squareTri.push_back(sMiddle);
+		objs = std::make_shared<PrimitiveList>(prim_ptrs);
 
 	}
 	void Scene::clear() {
 		for (int i = 0; i < usedTransform.size(); i++)
 			if (usedTransform[i])
 				delete usedTransform[i];
-		for (int i = 0; i < floatTexture.size(); i++)
-			if (floatTexture[i])
-				delete floatTexture[i];
-		for (int i = 0; i < vectorTexture.size(); i++)
-			if (vectorTexture[i])
-				delete vectorTexture[i];
-		for (int i = 0; i < usedMaterial.size(); i++)
-			if (usedMaterial[i])
-				delete usedMaterial[i];
+
 	}
 }

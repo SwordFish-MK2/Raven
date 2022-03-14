@@ -1,7 +1,7 @@
 #include"kdTree.h"
 
 namespace Raven {
-	KdTreeAccel::KdTreeAccel(const std::vector<Primitive>& p, int maxD, int it, int tt, double eb, int primsThreshold)
+	KdTreeAccel::KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int primsThreshold)
 		:Accelerate(p), maxDepth(maxD), isectCost(it), traversalCost(tt), emptyBonus(eb), primsThreshold(primsThreshold) {
 		//compute a reasonable maxDepth if its not defined by user
 		if (maxDepth <= 0)
@@ -99,7 +99,7 @@ namespace Raven {
 					int primNum = node.getPrimNum();
 					if (primNum == 1) {
 						//only one primitive in this node
-						if (prims[node.onePrimitive].intersect(r_in, its, tMin, tMax)) {
+						if (prims[node.onePrimitive]->intersect(r_in, its, tMin, tMax)) {
 							//incident ray hit primitive
 							tMax = its.t;//update tMin
 							flag = true;
@@ -109,7 +109,7 @@ namespace Raven {
 						//a few primitives in this node
 						for (int i = 0; i < primNum; i++) {
 							int index = primIndices[node.indexOffset + i];
-							if (prims[index].intersect(r_in, its, tMin, tMax)) {
+							if (prims[index]->intersect(r_in, its, tMin, tMax)) {
 								//incident ray hit this primitive
 								tMax = its.t;
 								flag = true;

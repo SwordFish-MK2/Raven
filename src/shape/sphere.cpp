@@ -44,11 +44,13 @@ namespace Raven {
 		//determinate>=0, at least has one hit point,test if tHit is out of time range
 		if (t0 > tmax || t1 < tmin)//since t0<t1 by default if t0>tmax || t1< tmin,both values are out of range
 			return false;
-
 		//defaultly set tHit = t0, the smaller t value. if t0 is out of time limit, set tHit = t1
 		tHit = t0;
-		if (t0 < tmin)
+		if (t0 < tmin) {
 			tHit = t1;
+			if (t1 > tmax)
+				return false;
+		}
 
 		//get pHit and corresponding phi value
 		Point3f pHit = localRay.position(tHit);//get hit point 
