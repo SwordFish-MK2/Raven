@@ -3,6 +3,7 @@
 
 #include"../core/renderer.h"
 #include"../core/base.h"
+
 namespace Raven {
 	class SimplifiedRenderer: public Renderer {
 	public:

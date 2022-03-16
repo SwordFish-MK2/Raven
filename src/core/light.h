@@ -16,20 +16,24 @@ namespace Raven {
 	/// </summary>
 	class Light {
 	public:
-		Light(const Transform& LTW, const Transform& WTL, int flag, int nSamples) :
+		Light(const Transform* LTW, const Transform* WTL, int flag, int nSamples) :
 			lightToWorld(LTW), worldToLight(WTL), flag(flag), nSamples(nSamples) {}
 		//return radiance reached the given point emitted by light source, compute light incident direction and sampling pdf
-		virtual Vector3f sample_Li(const SurfaceInteraction& inter, const Point2f& uv, Vector3f* wi, 
-			double* pdf,Point3f* lightSample)const = 0;
+		virtual Vector3f sample_Li(const SurfaceInteraction& inter, const Point2f& uv, Vector3f* wi,
+			double* pdf, SurfaceInteraction* lightSample)const = 0;
+		virtual Vector3f Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 		//return total power emitted by light source
 		virtual Vector3f power()const = 0;
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 		virtual void preprocess(const Scene& scene) {}
 		virtual bool isDeltaLight() { return flag & DeltaPosition || flag & DeltaDirection; }
+
+		int getSampleNumber()const { return nSamples; }
 	protected:
 
 		const int flag;					//whether light contines delta distribution
-		const Transform lightToWorld, worldToLight;
+		const Transform* lightToWorld;
+		const Transform* worldToLight;
 		const int nSamples;				//n shadow rays prefered by the integrater
 	};
 

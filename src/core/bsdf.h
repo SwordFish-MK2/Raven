@@ -93,7 +93,7 @@ namespace Raven {
 			int bxdfIndex = Min((unsigned int)(bxdfs.size() - 1), (unsigned int)std::floor(bxdfs.size() * sample[0]));
 
 			//sample choosen BxDF
-			Vector3f woLocal = worldToLocal(-wo);
+			Vector3f woLocal = worldToLocal(wo);
 			Vector3f wiLocal;
 			if (woLocal.z < 0)
 				return Vector3f(0.0);

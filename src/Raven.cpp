@@ -23,7 +23,7 @@ int main()
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 150.f, 
 		100.0f, 500.0f, 90.0f, f.aspect_ratio);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::SimplifiedRenderer renderer(cam, f,64,50,0.1);
+	Raven::SimplifiedRenderer renderer(cam, f,200,50,0.1);
 	renderer.render(s);
 	s.clear();
 	delete cam;

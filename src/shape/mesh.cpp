@@ -50,9 +50,16 @@ namespace Raven {
 		auto det = Dot(s1, e1); //行列式必须不为零且重心坐标的值必须大于0
 		if (det <= 0)return false;
 		double invDet = 1.0 / det;
-		double t = invDet * Dot(s2, e2); if (t<0 || t>tMax) return false;
+		double t = invDet * Dot(s2, e2); if (t < 0 || t >= tMax) return false;
 		double b1 = invDet * Dot(s1, s); if (b1 < 0 || b1>1) return false;
 		double b2 = invDet * Dot(s2, r_in.dir); if (b2 < 0 || (b2 + b1)>1)return false;
+		double b0 = 1 - b1 - b2;
+		const Normal3f& n0 = mesh->normals[index(0)];
+		const Normal3f& n1 = mesh->normals[index(1)];
+		const Normal3f& n2 = mesh->normals[index(2)];
+		Normal3f nHit = n0 * b0 + n1 * b1 + n2 * b2;
+		if (Dot(nHit, r_in.dir) > 0)
+			return false;
 		return true;
 	}
 
@@ -67,9 +74,10 @@ namespace Raven {
 		Vector3f s = r_in.origin - p0;
 		Vector3f s1 = Cross(r_in.dir, e2);
 		Vector3f s2 = Cross(s, e1);
-		auto determinate = Dot(s1, e1); //
+		auto determinate = Dot(s1, e1); 
 		if (determinate <= 0)return false;
-		double invDet = 1.0 / Dot(s1, e1);
+
+		double invDet = 1.0 / determinate;
 		double t = invDet * Dot(s2, e2);
 		double b1 = invDet * Dot(s1, s);
 		double b2 = invDet * Dot(s2, r_in.dir);
@@ -83,6 +91,7 @@ namespace Raven {
 		//TODO::检查相交时间
 		if (t >= tmax)
 			return false;
+
 		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
 		//Point2f uv[3];
 		//getUVs(uv);
@@ -97,7 +106,6 @@ namespace Raven {
 		Point3f pb1 = b0 * p0;
 		Point3f pb2 = b1 * p1;
 		Point3f pb3 = b2 * p2;
-		Point3f pHit2 = r_in.position(t);
 		Point2f uvHit = b0 * uv0 + b1 * uv1 + b2 * uv2;
 		auto nHit = b0 * n0 + b1 * n1 + b2 * n2;
 		if (Dot(nHit, r_in.dir) > 0)
@@ -120,7 +128,7 @@ namespace Raven {
 			dpdu = invDet * (dv12 * dp02 - dv02 * dp12);
 			dpdv = invDet * (du02 * dp12 - du12 * dp02);
 		}
-	
+
 		its.dpdu = dpdu;
 		its.dpdv = dpdv;
 		its.n = nHit;
@@ -145,16 +153,21 @@ namespace Raven {
 
 	Bound3f Triangle::worldBound()const {
 		Bound3f box;
-		Point3f p0 = mesh->vertices[index(0)];
-		Point3f p1 = mesh->vertices[index(1)];
-		Point3f p2 = mesh->vertices[index(2)];
+		const Point3f& p0 = mesh->vertices[index(0)];
+		const Point3f& p1 = mesh->vertices[index(1)];
+		const Point3f& p2 = mesh->vertices[index(2)];
 		box.pMin = Point3f(Min(p0.x, p1.x, p2.x), Min(p0.y, p1.y, p2.y), Min(p0.z, p1.z, p2.z));
 		box.pMax = Point3f(Max(p0.x, p1.x, p2.x), Max(p0.y, p1.y, p2.y), Max(p0.z, p1.z, p2.z));
 		return box;
 	}
 
 	double Triangle::area()const {
-		return 0.f;
+		const Point3f& p0 = mesh->vertices[index(0)];
+		const Point3f& p1 = mesh->vertices[index(1)];
+		const Point3f& p2 = mesh->vertices[index(2)];
+		auto e1 = p0 - p2;
+		auto e2 = p1 - p2;
+		return 0.5 * Cross(e1, e2).length();
 	}
 
 	SurfaceInteraction Triangle::sample(const Point2f& uv)const {

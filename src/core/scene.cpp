@@ -2,7 +2,7 @@
 #include"../material/matte.h"
 #include"../shape/sphere.h"
 #include"../shape/mesh.h"
-
+#include"../light/areaLight.h"
 namespace Raven {
 	void Scene::init() {
 
@@ -73,7 +73,6 @@ namespace Raven {
 
 		//Texture<Spectrum>* kd1 = new ConstTexture<Spectrum>(Spectrum::fromRGB(rgb1));
 		//Texture<Spectrum>* kd2 = new ConstTexture<Spectrum>(Spectrum::fromRGB(rgb2));
-
 		//texture
 		std::shared_ptr<Texture<double>> sigma1 = std::make_shared<ConstTexture<double>>(0.2);
 		std::shared_ptr<Texture<double>> sigma2 = std::make_shared<ConstTexture<double>>(0.0);
@@ -88,16 +87,40 @@ namespace Raven {
 		std::shared_ptr<Sphere> s = std::make_shared<Sphere>(sphereLocToPrim, spherePrimToLoc, 80.0, 80.0, -80.0, 2 * M_PI);
 		std::shared_ptr<Sphere> ground = std::make_shared<Sphere>(groundPrimToWorld, groundWorldToPrim, 16000., 16000., -16000., 2 * M_PI);
 
-		Point3f p0(-500.0, -85.0, 500.0);
-		Point3f p1(500.0, -85.0, 500.0);
-		Point3f p2(500.0, -85.0, -500.0);
-		Point3f p3(-500.0, -85.0, -500.0);
+
+		Point3f p0(-500.0, -80.0, 700.0);
+		Point3f p1(500.0, -80.0, 700.0);
+		Point3f p2(500.0, -80.0, -300.0);
+		Point3f p3(-500.0, -80.0, -300.0);
+
+		Point3f sp0(-50.0, 500.0, 200.0);
+		Point3f sp1(50.0, 500.0, 200.0);
+		Point3f sp2(50.0, 500.0, 100.0);
+		Point3f sp3(-50.0, 500.0, 100.0);
+
+
+		//Point3f sp0(200.0, 5.0, 155.0);
+		//Point3f sp1(200.0, 5.0, 145.0);
+		//Point3f sp2(200.0, -5.0, 145.0);
+		//Point3f sp3(200.0, -5.0, 155.0);
 
 		//Point3f p0(-80.0, 100.0, 200.0);
 		//Point3f p1(80.0, 100.0, 200.0);
 		//Point3f p2(80.0, -60.0, 200.0);
 		//Point3f p3(-80.0, -60.0, 200.0);
+		std::shared_ptr<TriangleMesh> sqr = std::make_shared<TriangleMesh>(CreatePlane(identity, identity,
+			sp0, sp1, sp2, sp3, Normal3f(0.0, -1.0, 0.0)));
+		std::vector<std::shared_ptr<Triangle>> sTri = sqr->getTriangles();
+		meshes.push_back(sqr);
 
+		std::shared_ptr<DiffuseAreaLight> aLight1 =
+			std::make_shared<DiffuseAreaLight>(identity, identity, 5, sTri[0].get(), Vector3f(2.0, 2.0, 2.0));
+		std::shared_ptr<DiffuseAreaLight> aLight2 =
+			std::make_shared<DiffuseAreaLight>(identity, identity, 5, sTri[1].get(), Vector3f(2.0, 2.0, 2.0));
+		std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(sTri[0], nullptr, aLight1);
+		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(sTri[1], nullptr, aLight2);
+		lights.push_back(aLight1);
+		lights.push_back(aLight2);
 		std::shared_ptr<TriangleMesh> square = std::make_shared<TriangleMesh>(CreatePlane(identity, identity,
 			p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0)));
 		std::vector<std::shared_ptr<Primitive>> squareTri = square->generatePrimitive(mate2);
@@ -116,6 +139,8 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
 		//prim_ptrs.push_back(sMiddle);
 		//prim_ptrs.push_back(s2);
+		prim_ptrs.push_back(lightp1);
+		prim_ptrs.push_back(lightp2);
 		prim_ptrs.push_back(squareTri[0]);
 		prim_ptrs.push_back(squareTri[1]);
 		prim_ptrs.push_back(sMiddle);
@@ -125,10 +150,25 @@ namespace Raven {
 		objs = std::make_shared<PrimitiveList>(prim_ptrs);
 
 	}
+
 	void Scene::clear() {
 		for (int i = 0; i < usedTransform.size(); i++)
 			if (usedTransform[i])
 				delete usedTransform[i];
 
+	}
+
+	const Light* Scene::chooseLight(double random)const {
+		Vector3f totalPower(0.0);
+		for (int i = 0; i < lights.size(); i++) {
+			totalPower += lights[i]->power();
+		}
+		Vector3f power(0.0);
+		for (int i = 0; i < lights.size(); i++) {
+			power += lights[i]->power();
+			double temp = power.y / totalPower.y;
+			if (temp >= random || i == lights.size() - 1)
+				return lights[i].get();
+		}
 	}
 }

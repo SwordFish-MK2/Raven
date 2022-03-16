@@ -95,6 +95,8 @@ namespace Raven {
 		inter.bsdf = its.bsdf;
 		inter.uv = its.uv;
 		inter.t = its.t;
+		inter.hitLihgt = its.hitLihgt;
+		inter.light = its.light;
 		return inter;
 	}
 

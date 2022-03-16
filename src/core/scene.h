@@ -16,24 +16,24 @@ namespace Raven {
 	private:
 		std::vector<Transform*> usedTransform;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
-
 		std::shared_ptr<Accelerate> objs;
+		std::vector<std::shared_ptr<Light>> lights;
 	public:
-		//std::vector<std::shared_ptr<Light>> lights;
 		//test if incident ray hit any object in the scene 
-		bool hit(const Ray& r)const {
-			return objs->hit(r);
+		bool hit(const Ray& r,double tMin,double tMax)const {
+			return objs->hit(r,tMin,tMax);
 		}
 		//test if incident ray hit any object in the scene
 		//if hit, get ray intersection infomation 
 		bool intersect(const Ray& r, SurfaceInteraction& its, double tMin, double tMax)const {
 			return objs->intersect(r, its, tMin, tMax);
-			//return kdTree->intersect(r, its, tMin, tMax);
 		}
 
 		Bound3f worldBound()const {
 			return objs->worldBounds();
 		}
+
+		const Light* chooseLight(double random)const;
 
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			void init();

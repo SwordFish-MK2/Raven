@@ -2,9 +2,11 @@
 
 namespace Raven {
 	bool PrimitiveList::hit(const Ray& r_in, double tMin, double tMax)const {
-		for (size_t i = 0; i < prims.size(); i++)
-			if (prims[i]->hit(r_in, tMin, tMax))
+		for (size_t i = 0; i < prims.size(); i++) {
+			SurfaceInteraction inter;
+			if (prims[i]->intersect(r_in,inter, tMin, tMax))
 				return true;
+		}
 		return false;
 	}
 

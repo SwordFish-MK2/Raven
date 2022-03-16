@@ -3,7 +3,21 @@
 namespace Raven {
 	bool Primitive::hit(const Ray& r_in, double tMin, double tMax)const {
 		//perform ray-geometry intersection test
-		return shape_ptr->hit(r_in, tMin, tMax);
+		SurfaceInteraction its;
+		if (!shape_ptr->intersect(r_in, its, tMin, tMax)) {
+			return false;
+		}
+		if (light_ptr.get()) {
+			its.hitLihgt = true;
+			its.light = this->getAreaLight();
+			return true;
+		}
+		else {
+			its.hitLihgt = false;
+		}
+		if (mate_ptr.get())
+			mate_ptr->computeScarttingFunctions(its);
+		return true;
 	}
 
 	bool Primitive::intersect(const Ray& ray, SurfaceInteraction& its, double tMin, double tMax)const {
@@ -11,7 +25,15 @@ namespace Raven {
 		if (!shape_ptr->intersect(ray, its, tMin, tMax)) {
 			return false;
 		}
-		if (mate_ptr)
+		if (light_ptr.get()) {
+			its.hitLihgt = true;
+			its.light = this->getAreaLight();
+			return true;
+		}
+		else {
+			its.hitLihgt = false;
+		}
+		if (mate_ptr.get())
 			mate_ptr->computeScarttingFunctions(its);
 		return true;
 	}
@@ -44,5 +66,5 @@ namespace Raven {
 			return (*primToWorld)(prim->worldBounds());
 		else
 			return Bound3f();
-	}	
+	}
 }
