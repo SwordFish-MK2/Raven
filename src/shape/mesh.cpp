@@ -74,7 +74,7 @@ namespace Raven {
 		Vector3f s = r_in.origin - p0;
 		Vector3f s1 = Cross(r_in.dir, e2);
 		Vector3f s2 = Cross(s, e1);
-		auto determinate = Dot(s1, e1); 
+		auto determinate = Dot(s1, e1);
 		if (determinate <= 0)return false;
 
 		double invDet = 1.0 / determinate;
@@ -93,11 +93,12 @@ namespace Raven {
 			return false;
 
 		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
-		//Point2f uv[3];
-		//getUVs(uv);
-		const Point2f& uv0 = mesh->uvs[index(0)];
-		const Point2f& uv1 = mesh->uvs[index(1)];
-		const Point2f& uv2 = mesh->uvs[index(2)];
+		Point2f uv[3];
+		getUVs(uv);
+
+		const Point2f& uv0 = uv[0];
+		const Point2f& uv1 = uv[1];
+		const Point2f& uv2 = uv[2];
 
 		const Normal3f& n0 = mesh->normals[index(0)];
 		const Normal3f& n1 = mesh->normals[index(1)];
@@ -202,6 +203,9 @@ namespace Raven {
 		TriangleMesh mesh(LTW, WTL, 2, vertices, indices, normals, tangants, uvs, AccelType::List);
 		return mesh;
 	}
-
+	TriangleMesh buildMesh(const Transform* LTW, const Transform* WTL, const TriangleInfo& info,
+		AccelType buildType) {
+		return TriangleMesh(LTW, WTL, info.numbers, info.vertices, info.indices, info.normals, info.tangants, info.uvs, buildType);
+	}
 
 }

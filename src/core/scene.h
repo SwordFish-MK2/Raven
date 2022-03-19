@@ -14,7 +14,7 @@
 namespace Raven {
 	class Scene {
 	private:
-		std::vector<Transform*> usedTransform;
+		std::vector<std::shared_ptr<Transform>> usedTransform;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
 		std::shared_ptr<Accelerate> objs;
 		std::vector<std::shared_ptr<Light>> lights;

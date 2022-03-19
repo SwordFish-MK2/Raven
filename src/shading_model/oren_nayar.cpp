@@ -33,20 +33,25 @@ namespace Raven {
 	//}
 
 	Vector3f OrenNayar::f(const Vector3f& wo, const  Vector3f& wi)const {
-		//double thetaO = Clamp(acos(wo[2]), 0.f, M_PI);
-		//double thetaI = Clamp(acos(wi[2]), 0.f, M_PI);
-		double thetaO = Dot(wo, Vector3f(0.f, 0.f, 1.f));
-		double thetaI = Dot(wi, Vector3f(0.f, 0.f, 1.f));
-		double phiO = atan(wo[1] / wo[0]);
-		if (phiO < 0.f)
-			phiO += M_PI;
-		double phiI = atan(wi[1] / wi[0]);
-		if (phiI < 0.f)
-			phiI += M_PI;
-		double deltaPhi = phiI - phiO;
-		double alpha = Max(thetaI, thetaO);
-		double beta = Min(thetaI, thetaO);
-		Vector3f fr = albedo / M_PI * (A + B * Max(0., cos(deltaPhi)) * sin(alpha) * tan(beta));
+		double sinThetaI = SinTheta(wi);
+		double sinThetaO = SinTheta(wo);
+		//¼ÆËãcos(phiI-phiO)
+		double cosDelta = 0;
+		if (sinThetaI > 1e-4 || sinThetaO > 1e-4) {
+			double sinPhiI = SinPhi(wi);
+			double sinPhiO = SinPhi(wo);
+			double cosPhiI = CosPhi(wi);
+			double cosPhiO = CosPhi(wo);
+			cosDelta = Max(0.0, cosPhiI * cosPhiO + sinPhiI * sinPhiO);
+
+		}
+		//¼ÆËãsinAlphaÓëtanBeta
+		double cosThetaI = abs(CosTheta(wi));
+		double cosThetaO = abs(CosTheta(wo));
+
+		double sinAlpha = cosThetaI > cosThetaO ? sinThetaI : sinThetaO;
+		double tanBeta = cosThetaI > cosThetaO ? sinThetaI / cosThetaI : sinThetaO / cosThetaO;
+		Vector3f fr = albedo / M_PI * ((A + B * cosDelta) * sinAlpha * tanBeta);
 		return fr;
 	}
 

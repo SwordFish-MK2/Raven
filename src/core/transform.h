@@ -36,6 +36,7 @@ namespace Raven {
 		//overload operator() to apply transform-----------------------------
 		Vector3f operator()(const Vector3f& v)const;
 		Point3f operator()(const Point3f& p)const;
+		Transform Rotate(double angle, const Vector3f& axis);
 		Normal3f operator()(const Normal3f& n)const;
 		Bound3f operator()(const Bound3f& b)const;
 		Ray operator()(const Ray& r)const;
@@ -47,21 +48,20 @@ namespace Raven {
 		}
 		//wheather the coordinate system is changed is determined by wheather the determinant of the uper3*3 matrix < 0
 		//bool SwapsHandness()const;
-
-		static Transform Identity();
-		static Transform Rotate(double angle, const Vector3f& axis);
-		static Transform RotateX(double angle);
-		static Transform RotateY(double angle);
-		static Transform RotateZ(double angle);
-		static Transform Translate(const Vector3f& t);
-		static  Transform Scale(const Vector3f& s);
-		static Transform Inverse(const Transform& T);
-		static Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up);
-		static Transform Orthographic(double top, double bottom, double left, double right, double znear, double zfar);
-		static Transform Perspective(double fov, double aspect_ratio, double znear, double zfar);
-		static Transform Raster(int h, int w);
-
 	};
+
+	Transform Identity();
+	Transform Rotate(double angle, const Vector3f& axis);
+	Transform RotateX(double angle);
+	Transform RotateY(double angle);
+	Transform RotateZ(double angle);
+	Transform Translate(const Vector3f& t);
+	Transform Scale(const Vector3f& s);
+	Transform Inverse(const Transform& T);
+	Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up);
+	Transform Orthographic(double top, double bottom, double left, double right, double znear, double zfar);
+	Transform Perspective(double fov, double aspect_ratio, double znear, double zfar);
+	Transform Raster(int h, int w);
 }
 
 #endif

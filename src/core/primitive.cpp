@@ -46,7 +46,7 @@ namespace Raven {
 		if (!primToWorld || !worldToPrim || !prim)
 			return false;
 		//transform the incident ray to primitive space then perform ray intersection test
-		Ray transformedRay = Transform::Inverse(*primToWorld)(r_in);
+		Ray transformedRay = Inverse(*primToWorld)(r_in);
 		return prim->hit(r_in, tMin, tMax);
 	}
 

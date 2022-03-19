@@ -6,6 +6,13 @@ namespace Raven {
 			std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
 			for (int j = 0; j < film.width; ++j) {
 				Vector3f pixelColor(0.0);
+				//auto cu = double(j);
+				//auto cv = double(i);
+				//CameraSample cs(cu, cv, 0.0, 0.0, 0.0);
+				//Ray gr;
+				//if (camera->GenerateRay(cs, gr)) {
+				//	film.setGBuffer(gBuffer(gr,scene),j,i);
+				//}
 				for (int s = 0; s < spp; s++) {
 					//camera sample
 					auto cu = double(j) + GetRand();
@@ -26,6 +33,7 @@ namespace Raven {
 		}
 		std::cerr << "\nDone.\n";
 		film.write();
+//		film.writeColor();
 	}
 
 	Vector3f SimplifiedRenderer::integrate(const Scene& scene, const Ray& r_in, int depth)const {
@@ -40,6 +48,7 @@ namespace Raven {
 			Vector3f wi;
 			Vector3f n = Normalize(Vector3f(sinter.n));
 			const Point3f& p = sinter.p;
+
 			//光线入射Area Light
 			if (sinter.hitLihgt) {
 				return sinter.light->Li(sinter, wo);
@@ -61,10 +70,9 @@ namespace Raven {
 				Ray shadowRay(p, wiLight);
 				Vector3f temp = (pLight - p);
 				double t = temp.length();
-				//std::cout << pdfLight << std::endl;
 				//判断Shadow Ray是否被场景遮挡
 				SurfaceInteraction test;
-				if (!scene.intersect(shadowRay,test, 0.000001, t - 0.001)) {
+				if (!scene.intersect(shadowRay, test, 0.000001, t - 0.001)) {
 					double det = Clamp(temp.length() * temp.length() * pdfLight, 0.01, 1.0);
 					L_dir += emit * sinter.bsdf->f(wo, wiLight) * Dot(wiLight, n) * Dot(-wiLight, nLight) / det;
 				}
@@ -80,7 +88,21 @@ namespace Raven {
 
 			return L_ind + L_dir;
 		}
-
 		return Vector3f(0.0);
 	}
+
+	GeometryData SimplifiedRenderer::gBuffer(const Ray& ray, const Scene& scene)const {
+		SurfaceInteraction record;
+		GeometryData data;
+
+		if (scene.intersect(ray, record, 0.001, std::numeric_limits<double>::max())) {
+			const Point3f& p = record.p;
+			const Normal3f& n = record.n;
+			data.n = record.n;
+			data.p = record.p;
+			data.hit = true;
+		}
+		return data;
+	}
+
 }

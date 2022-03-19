@@ -683,7 +683,7 @@ namespace Raven {
 	}
 	template<class T>
 	inline Normal3<T> Normalize(const Normal3<T>& n) {
-		int k = 1.0f / n.length();
+		T k = 1.0f / n.length();
 		return Normal3<T>(n.x * k, n.y * k, n.z * k);
 	}
 	template<class T> inline

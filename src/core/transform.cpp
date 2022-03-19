@@ -4,7 +4,7 @@ namespace Raven {
 
 #define Radiance M_PI/180.f
 
-	Transform Transform::Translate(const Vector3f& t) {
+	Transform Translate(const Vector3f& t) {
 		Eigen::Matrix4f m;
 		m << 1, 0, 0, t.x,
 			0, 1, 0, t.y,
@@ -13,19 +13,19 @@ namespace Raven {
 		return Transform(m);
 	}
 
-	Transform Transform::Scale(const Vector3f& s) {
+	Transform Scale(const Vector3f& s) {
 		Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
 		for (int i = 0; i < 3; i++)
 			m(i, i) = s[i];
 		return Transform(m);
 	}
 
-	Transform Transform::Inverse(const Transform& T) {
+	Transform Inverse(const Transform& T) {
 		return Transform(T.getInverseMatrix());
 
 	}
 
-	Transform Transform::Rotate(double angle, const Vector3f& axis) {
+	Transform Rotate(double angle, const Vector3f& axis) {
 		double sinTheta = sin(angle * Radiance);
 		double cosTheta = cos(angle * Radiance);
 		Eigen::Matrix4f m;
@@ -41,7 +41,7 @@ namespace Raven {
 		return Transform(m);
 	}
 
-	Transform Transform::RotateZ(double angle) {
+	Transform RotateZ(double angle) {
 		double cosTheta = cos(angle * Radiance);
 		double sinTheta = sin(angle * Radiance);
 		Eigen::Matrix4f m;
@@ -52,7 +52,7 @@ namespace Raven {
 		return Transform(m);
 	}
 
-	Transform Transform::RotateX(double angle) {
+	Transform RotateX(double angle) {
 		double cosTheta = cos(angle * Radiance);
 		double sinTheta = sin(angle * Radiance);
 		Eigen::Matrix4f m;
@@ -63,7 +63,7 @@ namespace Raven {
 		return Transform(m);
 	}
 
-	Transform Transform::RotateY(double angle) {
+	Transform RotateY(double angle) {
 		double cosTheta = cos(angle * Radiance);
 		double sinTheta = sin(angle * Radiance);
 		Eigen::Matrix4f m;
@@ -148,11 +148,11 @@ namespace Raven {
 		return ret;
 	}
 
-	Transform Transform::Identity() {
+	Transform Identity() {
 		return Transform(Eigen::Matrix4f::Identity());
 	}
 	//define the transform from the world to camera space
-	Transform Transform::LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up) {
+	Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up) {
 		Vector3f viewDir = look - pos;
 		Vector3f z = -viewDir;
 		Vector3f right = Cross(up, z);
@@ -165,7 +165,7 @@ namespace Raven {
 		return Transform(CameraToWorld.inverse(), CameraToWorld);
 	}
 
-	Transform Transform::Perspective(double fov, double aspect_ratio, double znear, double zfar) {
+	Transform Perspective(double fov, double aspect_ratio, double znear, double zfar) {
 		Eigen::Matrix4f projection;
 		projection << 1, 0, 0, 0,
 			0, 1, 0, 0,
@@ -177,7 +177,7 @@ namespace Raven {
 		return Scale(Vector3f(InvTanX, InvTanY, 1)) * Transform(projection);
 	}
 
-	Transform Transform::Orthographic(double top, double bottom, double left, double right, double near, double far) {
+	Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
 		Eigen::Matrix4f projection;
 		double halfWidth = right - left;
 		double halfHeight = top - bottom;
@@ -190,7 +190,7 @@ namespace Raven {
 		return projection;
 	}
 
-	Transform Transform::Raster(int h, int w) {
+	Transform Raster(int h, int w) {
 		//scale the points from screen space to Raster
 		Eigen::Matrix4f screenToRaster;
 		int half_height = h / 2;

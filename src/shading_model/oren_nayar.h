@@ -37,7 +37,7 @@ namespace Raven {
 	public:
 		OrenNayar(Vector3f albedo, double sigma) :BxDF(BxDFType(Reflection)), albedo(albedo), sigma(sigma) {
 			double sigmaPow = pow(sigma, 2);
-			A = (1 - sigmaPow) * 0.5f / (sigmaPow + 0.33f);
+			A = 1.0 - (sigmaPow * 0.5f / (sigmaPow + 0.33f));
 			B = 0.45f * sigmaPow / (sigmaPow + 0.09f);
 		}
 

@@ -95,6 +95,7 @@ namespace Raven {
 			//sample choosen BxDF
 			Vector3f woLocal = worldToLocal(wo);
 			Vector3f wiLocal;
+			//TODO:检查是否生成wi
 			if (woLocal.z < 0)
 				return Vector3f(0.0);
 			*pdf = 0.0;

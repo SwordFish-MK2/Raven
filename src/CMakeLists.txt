@@ -6,7 +6,9 @@ FILE(GLOB_RECURSE RAVEN_HEADER_ALL	"./core/*.h"
 										"./renderer/*.h" 
 										"./shading_model/*.h"
 										"./shape/*.h"
-										"./light/*.h")
+										"./light/*.h"
+										"./filter.*.h"
+										"./utils/*.h")
 SET(RAVEN_SOURCE_ALL)
 FILE(GLOB_RECURSE RAVEN_SOURCE_ALL	"./core/*.cpp"
 										"./accelerate/*.cpp" 
@@ -15,7 +17,9 @@ FILE(GLOB_RECURSE RAVEN_SOURCE_ALL	"./core/*.cpp"
 										"./renderer/*.cpp" 
 										"./shading_model/*.cpp"
 										"./shape/*.cpp"
-										"./light/*.cpp")
+										"./light/*.cpp"
+										"./filter/*.cpp"
+										"./utils/*.cpp")
 
 ADD_EXECUTABLE(Raven "Raven.h" "Raven.cpp" ${RAVEN_SOURCE_ALL} ${RAVEN_HEADER_ALL})
 

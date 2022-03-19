@@ -5,13 +5,16 @@
 #include"../core/base.h"
 
 namespace Raven {
-	class SimplifiedRenderer: public Renderer {
+	class SimplifiedRenderer : public Renderer {
 	public:
 		SimplifiedRenderer(const Camera* c, const Film& f, int spp = 100, int maxDepth = 64, double epslion = 0.1) :
-			Renderer(c, f, spp),maxDepth(maxDepth), epsilon(epslion) {}
+			Renderer(c, f, spp), maxDepth(maxDepth), epsilon(epslion) {}
 		virtual void render(const Scene& scene);
-		Vector3f integrate(const Scene& scene,const Ray& r_in,int depth=0)const;
+
 	private:
+		Vector3f integrate(const Scene& scene, const Ray& r_in, int depth = 0)const;
+		GeometryData gBuffer(const Ray& ray,const Scene& scene)const;
+
 		const double epsilon;
 		const int maxDepth;
 	};

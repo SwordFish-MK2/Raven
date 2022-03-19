@@ -1,6 +1,7 @@
 #include"primitiveList.h"
 
 namespace Raven {
+	
 	bool PrimitiveList::hit(const Ray& r_in, double tMin, double tMax)const {
 		for (size_t i = 0; i < prims.size(); i++) {
 			SurfaceInteraction inter;
