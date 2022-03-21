@@ -21,12 +21,12 @@ namespace Raven {
 		std::shared_ptr<Accelerate> objs;
 		std::vector<std::shared_ptr<Light>> lights;
 	public:
-		//test if incident ray hit any object in the scene 
+
+		//测试光线是否与场景相交
 		bool hit(const Ray& r, double tMin, double tMax)const {
 			return objs->hit(r, tMin, tMax);
 		}
-		//test if incident ray hit any object in the scene
-		//if hit, get ray intersection infomation 
+		//判断光线是否与场景相交，如果相交，计算交点信息
 		bool intersect(const Ray& r, SurfaceInteraction& its, double tMin, double tMax)const {
 			return objs->intersect(r, its, tMin, tMax);
 		}
@@ -38,8 +38,7 @@ namespace Raven {
 		}
 
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			void init();
-		void clear();
+			void buildCornellBox();
 	};
 }
 #endif

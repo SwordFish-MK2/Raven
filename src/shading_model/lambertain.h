@@ -37,6 +37,8 @@ namespace Raven {
 		Vector3f hdf(const Vector3f& wo, int nSamples, Point2f* samples) { return  albedo; }
 
 		Vector3f hhf(int nSamples, Point2f* outSamples, Point2f* inSamples) { return albedo; }
+
+		static std::shared_ptr<LambertainReflection> build(const Vector3f& albedo);
 	private:
 		Vector3f albedo;
 	};

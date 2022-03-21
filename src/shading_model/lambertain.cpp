@@ -42,4 +42,8 @@ namespace Raven {
 		//double cosTheta = CosTheta(wi);
 		return UniformHemispherePdf();
 	}
+
+	std::shared_ptr<LambertainReflection> LambertainReflection::build(const Vector3f& albedo) {
+		return std::make_shared<LambertainReflection>(albedo);
+	}
 }

@@ -34,4 +34,12 @@ namespace Raven {
 			its.bsdf->addBxDF(std::make_shared<OrenNayar>(kdValue, sigValue));
 		}
 	}
+
+	std::shared_ptr<MatteMaterial> MatteMaterial::buildConst(double sigma, const Vector3f& kd) {
+		std::shared_ptr<Texture<double>> sigmaT = std::make_shared<ConstTexture<double>>(sigma);
+		std::shared_ptr<Texture<Vector3f>> kdT = std::make_shared<ConstTexture<Vector3f>>(kd);
+
+		return std::make_shared<MatteMaterial>(sigmaT, kdT);
+	}
+
 }

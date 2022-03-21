@@ -31,6 +31,14 @@ namespace Raven {
 			:sigma(sigma), kd(Kd), bump(bump) {}
 		//MatteMaterial(double Kd) :Kd(Kd) {}
 		void computeScarttingFunctions(SurfaceInteraction& its) const;
+
+
+		static std::shared_ptr<MatteMaterial> buildConst(double sigma, const Vector3f& kd);
+
+		static std::shared_ptr<MatteMaterial> build(const std::shared_ptr<Texture<double>>& sigma,
+			const std::shared_ptr<Texture<Vector3f>>& kd,const std::shared_ptr<Texture<double>>& bump=nullptr) {
+			return std::make_shared<MatteMaterial>(sigma, kd, bump);
+		}
 	};
 }
 

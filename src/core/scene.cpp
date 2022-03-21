@@ -5,16 +5,9 @@
 #include"../light/areaLight.h"
 #include"../utils/loader.h"
 namespace Raven {
-	void Scene::init() {
+	void Scene::buildCornellBox() {
 
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
-
-		//std::shared_ptr<TriangleMesh> right=std::make_shared<TriangleMesh>(loader.loadObj("models/cornellbox/right.obj"));
-		//std::shared_ptr<TriangleMesh> floor=std::make_shared<TriangleMesh>(loader.loadObj("models/cornellbox/floor.obj"));
-		//std::shared_ptr<TriangleMesh> light=std::make_shared<TriangleMesh>(loader.loadObj("models/cornellbox/light.obj"));
-		//std::shared_ptr<TriangleMesh> shortBox=std::make_shared<TriangleMesh>(loader.loadObj("models/cornellbox/shortbox.obj"));
-		//std::shared_ptr<TriangleMesh> tallbox=std::make_shared<TriangleMesh>(loader.loadObj("models/cornellbox/tallbox.obj"));
-
 		//transform
 		Eigen::Matrix4f spherePrimitive;
 		spherePrimitive <<
@@ -58,26 +51,16 @@ namespace Raven {
 		usedTransform.push_back(middleWorld);
 
 		//Texture
-		std::shared_ptr<Texture<double>> sigma1 = std::make_shared<ConstTexture<double>>(0.2);
-		std::shared_ptr<Texture<double>> sigma2 = std::make_shared<ConstTexture<double>>(0.0);
-		std::shared_ptr<Texture<Vector3f>> kd1 = std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.1, 0.97, 0.4));
-		std::shared_ptr<Texture<Vector3f>> kd2 = std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.5, 0.5, 0.5));
-		std::shared_ptr<Texture<Vector3f>> kdRed =
-			std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.63f, 0.065f, 0.05f));
-		std::shared_ptr<Texture<Vector3f>> kdGreen =
-			std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.14f, 0.45f, 0.091f));
-		std::shared_ptr<Texture<Vector3f>> kdWhite =
-			std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.725f, 0.71f, 0.68f));
-		std::shared_ptr<Texture<Vector3f>> kdLight =
-			std::make_shared<ConstTexture<Vector3f>>(Vector3f(0.65f));
-		
+
+
 		//Material
-		std::shared_ptr<MatteMaterial> mate1 = std::make_shared<MatteMaterial>(sigma2, kd1, nullptr);
-		std::shared_ptr<MatteMaterial> mate2 = std::make_shared<MatteMaterial>(sigma2, kd2, nullptr);
-		std::shared_ptr<MatteMaterial> redLam = std::make_shared<MatteMaterial>(sigma2, kdRed, nullptr);
-		std::shared_ptr<MatteMaterial> greenLam = std::make_shared<MatteMaterial>(sigma2, kdGreen, nullptr);
-		std::shared_ptr<MatteMaterial> whiteLam = std::make_shared<MatteMaterial>(sigma2, kdWhite, nullptr);
-		std::shared_ptr<MatteMaterial> lightLam = std::make_shared<MatteMaterial>(sigma2, kdLight, nullptr);
+		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, Vector3f(0.1, 0.97, 0.4));
+		std::shared_ptr<MatteMaterial> mate2 = MatteMaterial::buildConst(0.0, Vector3f(0.5, 0.5, 0.5));
+		std::shared_ptr<MatteMaterial> redLam = MatteMaterial::buildConst(0.0, Vector3f(0.63f, 0.065f, 0.05f));
+		std::shared_ptr<MatteMaterial> greenLam = MatteMaterial::buildConst(0.0, Vector3f(0.14f, 0.45f, 0.091f));
+		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, Vector3f(0.725f, 0.71f, 0.68f));
+		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, Vector3f(0.65f));
+
 		//Shape
 		std::shared_ptr<Sphere> s = std::make_shared<Sphere>(sphereLocToPrim.get(), spherePrimToLoc.get(), 80.0, 80.0, -80.0, 2 * M_PI);
 		std::shared_ptr<Sphere> ground = std::make_shared<Sphere>(sphereLocToPrim.get(), spherePrimToLoc.get(), 16000., 16000., -16000., 2 * M_PI);
@@ -195,8 +178,6 @@ namespace Raven {
 		objs = std::make_shared<PrimitiveList>(prim_ptrs);
 
 	}
-
-	void Scene::clear() {}
 
 	Vector3f Scene::sampleLight(const SurfaceInteraction& record, double s, const Point2f& uv, LightSample* sample)const {
 		Vector3f totalPower(0.0);
