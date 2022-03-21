@@ -15,8 +15,7 @@ using namespace std;
 
 int main()
 {
-	Raven::Scene s;
-	s.buildCornellBox();
+	Raven::Scene box = Raven::Scene::buildCornellBox();
 
 	Raven::Film f(500, 500, 1.0);
 	Raven::Transform cameraToWorld = Raven::Translate(Raven::Vector3f(278, 273, -800));
@@ -25,7 +24,7 @@ int main()
 		10.0f, 1000.0f, 45.0f, f.aspect_ratio);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
 	Raven::PathTracingRenderer renderer(cam, f,30,10,0.1);
-	renderer.render(s);
+	renderer.render(box);
 
 	delete cam;
 	return 0;

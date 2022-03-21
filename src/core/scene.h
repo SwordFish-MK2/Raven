@@ -16,11 +16,18 @@
 namespace Raven {
 	class Scene {
 	private:
-		std::vector<std::shared_ptr<Transform>> usedTransform;
+		std::vector<std::shared_ptr<Transform>> transforms;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
 		std::shared_ptr<Accelerate> objs;
 		std::vector<std::shared_ptr<Light>> lights;
 	public:
+		Scene() {}
+
+		Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
+			const std::vector<std::shared_ptr<TriangleMesh>>& meshes, const std::vector<std::shared_ptr<Primitive>>& prims,
+			AccelType type=AccelType::List);
+
+		Scene(const Scene& s);
 
 		//测试光线是否与场景相交
 		bool hit(const Ray& r, double tMin, double tMax)const {
@@ -38,7 +45,7 @@ namespace Raven {
 		}
 
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			void buildCornellBox();
+			static Scene buildCornellBox();
 	};
 }
 #endif
