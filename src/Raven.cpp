@@ -9,7 +9,7 @@
 #include"core/scene.h"
 #include"core/film.h"
 #include"camera/projectiveCamera.h"
-#include"renderer/simplified.h"
+#include"renderer/path.h"
 
 using namespace std;
 
@@ -24,7 +24,7 @@ int main()
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 150.f, 
 		10.0f, 1000.0f, 45.0f, f.aspect_ratio);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::SimplifiedRenderer renderer(cam, f,200,64,0.1);
+	Raven::PathTracingRenderer renderer(cam, f,30,10,0.1);
 	renderer.render(s);
 	s.clear();
 	delete cam;

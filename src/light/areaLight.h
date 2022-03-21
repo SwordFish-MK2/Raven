@@ -14,8 +14,7 @@ namespace Raven {
 		//compute light emitted radiance
 		//virtual Spectrum L(const surfaceIntersection& p, const vectorf3& wi)const = 0;
 		//return radiance reached the given point emitted by light source, compute light incident direction and sampling pdf
-		virtual Vector3f sample_Li(const SurfaceInteraction& inter, const Point2f& uv, Vector3f* wi,
-			double* pdf, SurfaceInteraction* lightSample)const = 0;
+		virtual Vector3f sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
 		virtual Vector3f Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 		//return total power emitted by light source
 		virtual Vector3f power()const = 0;
@@ -42,8 +41,8 @@ namespace Raven {
 		//	const Spectrum emittedRadiance;
 
 		virtual Vector3f Li(const SurfaceInteraction& p, const Vector3f& wi)const;
-		virtual Vector3f sample_Li(const SurfaceInteraction& inter, const Point2f& uv,
-			Vector3f* wi, double* pdf, SurfaceInteraction* lightSample)const;
+		virtual Vector3f sampleLi(const SurfaceInteraction& inter, const Point2f& uv,
+			LightSample* lightSample)const;
 		virtual Vector3f power()const;
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const;
 	private:

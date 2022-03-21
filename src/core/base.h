@@ -37,6 +37,7 @@ namespace Raven {
 	class Triangle;
 	class TriangleMesh;
 	class Filter;
+	struct LightSample;
 	template<class T>
 	T Max(T t1, T t2) { if (t1 > t2)return t1; return t2; }
 	template<class T>

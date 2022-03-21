@@ -8,12 +8,13 @@ namespace Raven {
 			return false;
 		}
 		if (light_ptr.get()) {
-			its.hitLihgt = true;
+			its.hitLight = true;
 			its.light = this->getAreaLight();
+			//its.emit = light_ptr->Li(its, r_in.dir);
 			return true;
 		}
 		else {
-			its.hitLihgt = false;
+			its.hitLight = false;
 		}
 		if (mate_ptr.get())
 			mate_ptr->computeScarttingFunctions(its);
@@ -26,12 +27,11 @@ namespace Raven {
 			return false;
 		}
 		if (light_ptr.get()) {
-			its.hitLihgt = true;
+			its.hitLight = true;
 			its.light = this->getAreaLight();
-			return true;
 		}
 		else {
-			its.hitLihgt = false;
+			its.hitLight = false;
 		}
 		if (mate_ptr.get())
 			mate_ptr->computeScarttingFunctions(its);

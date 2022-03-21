@@ -11,6 +11,8 @@
 #include"accelerate.h"
 #include"../accelerate/primitiveList.h"
 #include"../shape/mesh.h"
+
+
 namespace Raven {
 	class Scene {
 	private:
@@ -20,8 +22,8 @@ namespace Raven {
 		std::vector<std::shared_ptr<Light>> lights;
 	public:
 		//test if incident ray hit any object in the scene 
-		bool hit(const Ray& r,double tMin,double tMax)const {
-			return objs->hit(r,tMin,tMax);
+		bool hit(const Ray& r, double tMin, double tMax)const {
+			return objs->hit(r, tMin, tMax);
 		}
 		//test if incident ray hit any object in the scene
 		//if hit, get ray intersection infomation 
@@ -29,11 +31,11 @@ namespace Raven {
 			return objs->intersect(r, its, tMin, tMax);
 		}
 
+		Vector3f sampleLight(const SurfaceInteraction& record, double s, const Point2f& uv, LightSample* sample)const;
+
 		Bound3f worldBound()const {
 			return objs->worldBounds();
 		}
-
-		const Light* chooseLight(double random)const;
 
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			void init();

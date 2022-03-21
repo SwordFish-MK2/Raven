@@ -11,6 +11,13 @@ namespace Raven {
 		DeltaPosition = 1, DeltaDirection = 2, AreaLight = 4, InfiniteLight = 8
 	};
 
+	struct LightSample {
+		Point3f p;
+		Vector3f wi;
+		double pdf;
+		Normal3f n;
+	};
+
 	/// <summary>
 	/// 光源类接口，所有光源必须继承该类
 	/// </summary>
@@ -19,8 +26,7 @@ namespace Raven {
 		Light(const Transform* LTW, const Transform* WTL, int flag, int nSamples) :
 			lightToWorld(LTW), worldToLight(WTL), flag(flag), nSamples(nSamples) {}
 		//return radiance reached the given point emitted by light source, compute light incident direction and sampling pdf
-		virtual Vector3f sample_Li(const SurfaceInteraction& inter, const Point2f& uv, Vector3f* wi,
-			double* pdf, SurfaceInteraction* lightSample)const = 0;
+		virtual Vector3f sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
 		virtual Vector3f Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 		//return total power emitted by light source
 		virtual Vector3f power()const = 0;
