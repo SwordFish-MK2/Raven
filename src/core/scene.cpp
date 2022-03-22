@@ -204,16 +204,17 @@ namespace Raven {
 			totalPower += lights[i]->power();
 		}
 		Vector3f power(0.0);
+		double p = 1.0;
 		for (int i = 0; i < lights.size(); i++) {
 			power += lights[i]->power();
-			double temp = power.y / totalPower.y;
-			if (temp >= s || i == lights.size() - 1) {
+			p = power.y / totalPower.y;
+			if (p >= s || i == lights.size() - 1) {
 				light = lights[i].get();
 				break;
 			}
 		}
 		if (light)
-			return light->sampleLi(record, uv, sample);
+			return light->sampleLi(record, uv, sample) / p;
 		else
 			return Vector3f(0.0);
 	}

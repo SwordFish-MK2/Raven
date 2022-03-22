@@ -7,7 +7,7 @@
 namespace Raven {
 	class PathTracingRenderer : public Renderer {
 	public:
-		PathTracingRenderer(const Camera* c, const Film& f, int spp = 100, int maxDepth = 64, double epslion = 0.1) :
+		PathTracingRenderer(const Camera* c, const Film& f, int spp = 100, int maxDepth = 64, double epslion = 1e-6) :
 			Renderer(c, f, spp), maxDepth(maxDepth), epsilon(epslion) {}
 		virtual void render(const Scene& scene);
 

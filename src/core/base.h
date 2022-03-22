@@ -1,7 +1,7 @@
 #ifndef _RAVEN_CORE_BASE_H_
 #define _RAVEN_CORE_BASE_H_
 #include<iostream>
-
+#include<random>
 namespace Raven {
 	template<class T>
 	class Vector3;
@@ -120,7 +120,10 @@ namespace Raven {
 		return pow((value + 0.055) * 1.0 / 1.055, 2.4);
 	}
 	inline double GetRand() {
-		return rand() / (RAND_MAX + 1.0);
+		static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+		static std::mt19937 generator;
+		return distribution(generator);
+
 	}
 }
 #endif

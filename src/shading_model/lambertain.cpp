@@ -31,16 +31,16 @@ namespace Raven {
 	Vector3f LambertainReflection::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const {
 		if (wo.z <= 0)
 			return Vector3f(0.0);
-		wi = Normalize(UniformSampleHemisphere(sample));//cos weighted sample wi
+		wi = Normalize(CosWeightedSampleHemisphere(sample));//cos weighted sample wi
 		double cosTheta = CosTheta(wi);
-		*pdf = UniformHemispherePdf();//compute pdf value related to wi
+		*pdf = CosWeightedHemispherePdf(cosTheta);//compute pdf value related to wi
 		return f(wo, wi);
 	}
 
 	//compute pdf value of given pair of directions
 	double LambertainReflection::pdf(const Vector3f& wo, const Vector3f& wi)const {
-		//double cosTheta = CosTheta(wi);
-		return UniformHemispherePdf();
+		double cosTheta = CosTheta(wi);
+		return CosWeightedHemispherePdf(cosTheta);
 	}
 
 	std::shared_ptr<LambertainReflection> LambertainReflection::build(const Vector3f& albedo) {

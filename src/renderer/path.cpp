@@ -41,7 +41,7 @@ namespace Raven {
 	Vector3f PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn)const {
 
 		Vector3f Li(0.0);
-		Vector3f beta(1.0, 1.0, 1.0);//光线的衰减参数
+		Vector3f beta(1.0);//光线的衰减参数
 		Ray ray = rayIn;
 		for (int depth = 0; depth < maxDepth; depth++) {
 
@@ -59,7 +59,7 @@ namespace Raven {
 				if (depth == 0 && record.hitLight) {
 					//从相机出发的光线直接击中光源
 					Li += record.light->Li(record, wo);
-					break;
+					return Li;
 				}
 
 				//采样光源,计算以该交点为终点的路径的贡献
@@ -75,7 +75,6 @@ namespace Raven {
 				bool blocked = scene.intersect(shadowRay, test, epsilon, length - epsilon);
 				if (!blocked)
 					Li += dirLi * beta;
-
 
 				//采样brdf，计算出射方向,更新beta
 				double pdf;
