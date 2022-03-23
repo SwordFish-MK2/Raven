@@ -20,6 +20,22 @@ namespace Raven {
 
 	Scene::Scene(const Scene& s) :transforms(s.transforms), lights(s.lights), meshes(s.meshes), objs(s.objs) {}
 
+	const Light* Scene::chooseLight(double rand) const{
+		Vector3f totalPower(0.0);
+		const Light* light;
+		for (int i = 0; i < lights.size(); i++) {
+			totalPower += lights[i]->power();
+		}
+		Vector3f power(0.0);
+		double p = 1.0;
+		for (int i = 0; i < lights.size(); i++) {
+			power += lights[i]->power();
+			p = power.y / totalPower.y;
+			if (p >= rand || i == lights.size() - 1) {
+				return lights[i].get();
+			}
+		}
+	}
 
 	Scene Scene::buildCornellBox() {
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
@@ -84,43 +100,36 @@ namespace Raven {
 		//std::shared_ptr<Sphere> ground = std::make_shared<Sphere>(sphereLocToPrim.get(), spherePrimToLoc.get(), 16000., 16000., -16000., 2 * M_PI);
 
 		Loader loader;
-		std::optional<TriangleInfo> leftInfo = loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
-		std::optional<TriangleInfo> rightInfo = loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
-		std::optional<TriangleInfo> floorInfo = loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
-		std::optional<TriangleInfo> sBoxInfo = loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
-		std::optional<TriangleInfo> tBoxInfo = loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
-		std::optional<TriangleInfo> lightInfo = loader.loadObj("D:/MyWorks/Raven/models/cornellbox/light.obj");
+		std::optional<TriangleInfo> leftInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
+		std::optional<TriangleInfo> rightInfo = 
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
+		std::optional<TriangleInfo> floorInfo = 
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
+		std::optional<TriangleInfo> sBoxInfo = 
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+		std::optional<TriangleInfo> tBoxInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
+		std::optional<TriangleInfo> lightInfo = 
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/light.obj");
 
 		std::shared_ptr<TriangleMesh> leftMesh =
-			std::make_shared<TriangleMesh>(buildMesh(identity.get(), identity.get(), *leftInfo));
+			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
 
-		std::shared_ptr<TriangleMesh> rightMesh =
-			std::make_shared<TriangleMesh>(buildMesh(identity.get(), identity.get(), *rightInfo));
+		std::shared_ptr<TriangleMesh> rightMesh = 
+			TriangleMesh::build(identity.get(), identity.get(), *rightInfo);
 
 		std::shared_ptr<TriangleMesh> floorMesh =
-			std::make_shared<TriangleMesh>(buildMesh(identity.get(), identity.get(), *floorInfo));
+			TriangleMesh::build(identity.get(), identity.get(), *floorInfo);
 
 		std::shared_ptr<TriangleMesh> sBoxMesh =
-			std::make_shared<TriangleMesh>(buildMesh(identity.get(), identity.get(), *sBoxInfo));
+			TriangleMesh::build(identity.get(), identity.get(), *sBoxInfo);
 
 		std::shared_ptr<TriangleMesh> tBoxMesh =
-			std::make_shared<TriangleMesh>(buildMesh(identity.get(), identity.get(), *tBoxInfo));
+			TriangleMesh::build(identity.get(), identity.get(), *tBoxInfo);
 
 		std::shared_ptr<TriangleMesh> lightMesh =
-			std::make_shared<TriangleMesh>(buildMesh(identity.get(), identity.get(), *lightInfo));
-
-		//if (leftInfo)
-		//	leftMesh =
-		//if (rightInfo)
-		//	rightMesh =
-		//if (floorInfo)
-		//	floorMesh =
-		//if (sBoxInfo)
-		//	sBoxMesh =
-		//if (tBoxInfo)
-		//	tBoxMesh =
-		//if (lightInfo)
-		//	lightMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *lightInfo);
 
 		meshes.push_back(leftMesh);
 		meshes.push_back(rightMesh);
@@ -149,7 +158,6 @@ namespace Raven {
 		Vector3f lightEmit = (8.0 * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f)
 			+ 15.6 * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4 *
 			Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
-		//Vector3f lightEmit(2.0, 2.0, 2.0);
 		std::shared_ptr<DiffuseAreaLight> aLight1 =
 			std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, sTri[0].get(), lightEmit);
 		std::shared_ptr<DiffuseAreaLight> aLight2 =
@@ -174,8 +182,8 @@ namespace Raven {
 		//	std::make_shared<TransformedPrimitive>(middleWorld.get(), middleLocal.get(), s1);
 		//	std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
 
-		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(greenLam);
-		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(redLam);
+		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
+		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
 		std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
 		std::vector<std::shared_ptr<Primitive>>  sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
 		std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(whiteLam);

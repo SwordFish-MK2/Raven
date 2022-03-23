@@ -34,6 +34,8 @@ namespace Raven {
 		wi = Normalize(CosWeightedSampleHemisphere(sample));//cos weighted sample wi
 		double cosTheta = CosTheta(wi);
 		*pdf = CosWeightedHemispherePdf(cosTheta);//compute pdf value related to wi
+
+
 		return f(wo, wi);
 	}
 

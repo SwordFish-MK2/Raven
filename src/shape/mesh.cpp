@@ -203,9 +203,12 @@ namespace Raven {
 		TriangleMesh mesh(LTW, WTL, 2, vertices, indices, normals, tangants, uvs, AccelType::List);
 		return mesh;
 	}
-	TriangleMesh buildMesh(const Transform* LTW, const Transform* WTL, const TriangleInfo& info,
-		AccelType buildType) {
-		return TriangleMesh(LTW, WTL, info.numbers, info.vertices, info.indices, info.normals, info.tangants, info.uvs, buildType);
+
+
+	std::shared_ptr<TriangleMesh> TriangleMesh::build(const Transform* LTW, const Transform* WTL,
+		const TriangleInfo& info,AccelType buildType) {
+		return std::make_shared<TriangleMesh>(LTW, WTL, info.numbers, info.vertices, 
+			info.indices, info.normals, info.tangants, info.uvs, buildType);
 	}
 
 }

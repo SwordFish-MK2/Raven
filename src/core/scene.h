@@ -19,8 +19,9 @@ namespace Raven {
 		std::vector<std::shared_ptr<Transform>> transforms;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
 		std::shared_ptr<Accelerate> objs;
-		std::vector<std::shared_ptr<Light>> lights;
+
 	public:
+		std::vector<std::shared_ptr<Light>> lights;
 		Scene() {}
 
 		Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
@@ -37,6 +38,8 @@ namespace Raven {
 		bool intersect(const Ray& r, SurfaceInteraction& its, double tMin, double tMax)const {
 			return objs->intersect(r, its, tMin, tMax);
 		}
+
+		const Light* chooseLight(double rand)const;
 
 		Vector3f sampleLight(const SurfaceInteraction& record, double s, const Point2f& uv, LightSample* sample)const;
 

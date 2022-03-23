@@ -6,14 +6,6 @@ namespace Raven {
 			std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
 			for (int j = 0; j < film.width; ++j) {
 				Vector3f pixelColor(0.0);
-				//auto cu = double(j);
-				//auto cv = double(i);
-				//CameraSample cs(cu, cv, 0.0, 0.0, 0.0);
-				//Ray gr;
-				//if (camera->GenerateRay(cs, gr)) {
-				//	film.setGBuffer(gBuffer(gr,scene),j,i);
-				//}
-
 				for (int s = 0; s < spp; s++) {
 					//camera sample
 					auto cu = double(j) + GetRand();
@@ -23,31 +15,39 @@ namespace Raven {
 					auto t = GetRand();
 					CameraSample sample(cu, cv, t, fu, fv);
 					Ray r;
+
 					if (camera->GenerateRay(sample, r)) {
 						pixelColor += integrate(scene, r);
 					}
 				}
 				double scaler = 1.0 / spp;
 				pixelColor *= scaler;
+
 				film.in(pixelColor);
 			}
 		}
 		std::cerr << "\nDone.\n";
 		film.write();
-		//		film.writeColor();
+		film.writeTxt();
 	}
 
 	//路径追踪算法，暂时只考虑了lambertain
-	Vector3f PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn)const {
-
+	Vector3f PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn,int depth)const {
+		Vector3f backgroundColor = Vector3f(0.235294, 0.67451, 0.843137);
 		Vector3f Li(0.0);
 		Vector3f beta(1.0);//光线的衰减参数
 		Ray ray = rayIn;
-		for (int depth = 0; depth < maxDepth; depth++) {
+		for (; depth < maxDepth; depth++) {
 
 			//获取场景与光线的相交信息
 			SurfaceInteraction record;
-			if (scene.intersect(ray, record, epsilon, std::numeric_limits<double>::max())) {
+			bool hit = scene.intersect(ray, record, epsilon, std::numeric_limits<double>::max());
+			//光线未与场景相交
+			if (!hit) {
+				//Li += backgroundColor * beta;
+				break;
+			}
+			else {
 				//光线与场景相交，相交的信息都储存在record中
 
 				Point3f p = record.p;
@@ -62,24 +62,31 @@ namespace Raven {
 					return Li;
 				}
 
-				//采样光源,计算以该交点为终点的路径的贡献
-				LightSample lSample;
-				Vector3f emit = scene.sampleLight(record, GetRand(), Point2f(GetRand(), GetRand()), &lSample);
-				Vector3f fLight = record.bsdf->f(wo, lSample.wi);
-				double length = (lSample.p - p).length();
-				Vector3f dirLi = emit * fLight * Dot(lSample.wi, n) * Dot(-lSample.wi, lSample.n)
-					/ (length * length * lSample.pdf);
-				//判断有无遮挡
-				Ray shadowRay(p, lSample.wi);
-				SurfaceInteraction test;//scene.hit函数存在bug，先用intersect代替一下
-				bool blocked = scene.intersect(shadowRay, test, epsilon, length - epsilon);
-				if (!blocked)
-					Li += dirLi * beta;
+				//
+				for (auto& light : scene.lights) {
+					//采样光源,计算以该交点为终点的路径的贡献
+					LightSample lightSample;
+					Vector3f emit = light->sampleLi(record, Point2f(GetRand(), GetRand()), &lightSample);
+					Vector3f fLight = record.bsdf->f(wo, lightSample.wi);
+					double length = (lightSample.p - p).length();
+					double dot1 = Max(0.0, Dot(lightSample.wi, n));
+					double dot2 = Max(0.0,Dot(-lightSample.wi, lightSample.n));
+					Vector3f dirLi = emit * fLight * dot1 * dot2
+						/ (length * length * lightSample.pdf);
+					//判断有无遮挡
+					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
+					Ray shadowRay(p, lightSample.wi);
+					SurfaceInteraction test;
+					bool blocked = scene.intersect(shadowRay, test, epsilon, length - 0.1);
+					if (!blocked)
+						Li += dirLi * beta / scene.lights.size();
+				}
+
 
 				//采样brdf，计算出射方向,更新beta
 				double pdf;
 				Vector3f f = record.bsdf->sample_f(wo, wi, Point2f(GetRand(), GetRand()), &pdf);
-				double cosTheta = Clamp(Dot(wi, n), 0.0, 1.0);
+				double cosTheta = Dot(wi, n);
 				beta *= f * cosTheta / pdf;
 				ray = Ray(record.p, wi);
 
@@ -90,69 +97,11 @@ namespace Raven {
 					beta /= 1 - q;
 				}
 			}
-			//光线未与场景相交
-			else {
-				break;
-			}
+
+
 		}
 		return Li;
 	}
-
-	//if (depth >= maxDepth)
-	//	return Vector3f(0.0);
-	//SurfaceInteraction sinter;
-	//if (scene.intersect(r_in, sinter, epsilon, std::numeric_limits<double>::max())) {
-	//	//get shading data
-	//
-	//
-	//	Vector3f L_dir(0.0);
-	//	Vector3f L_ind(0.0);
-	//	Vector3f wo = Normalize(-r_in.dir);
-	//	Vector3f wi;
-	//	Vector3f n = Normalize(Vector3f(sinter.n));
-	//	const Point3f& p = sinter.p;
-	//
-	//	//光线入射Area Light
-	//	if (sinter.hitLihgt) {
-	//		return sinter.light->Li(sinter, wo);
-	//	}
-	//
-	//	//采样光源，计算直接光照
-	//	double rand = GetRand();
-	//	const Light* light = scene.chooseLight(rand);
-	//	Point2f randuv(GetRand(), GetRand());
-	//	SurfaceInteraction lightSample;
-	//	Vector3f wiLight;//从交点指向光源
-	//	double pdfLight = 0.0;
-	//
-	//	for (int i = 0; i < 10; i++) {
-	//		Vector3f emit = light->sample_Li(sinter, randuv, &wiLight, &pdfLight, &lightSample);
-	//		//	std::cout << emit;
-	//		const Point3f& pLight = lightSample.p;
-	//		const Normal3f& nLight = lightSample.n;
-	//		Ray shadowRay(p, wiLight);
-	//		Vector3f temp = (pLight - p);
-	//		double t = temp.length();
-	//		//判断Shadow Ray是否被场景遮挡
-	//		SurfaceInteraction test;
-	//		if (!scene.intersect(shadowRay, test, 0.000001, t - 0.001)) {
-	//
-	//			L_dir += emit * sinter.bsdf->f(wo, wiLight) * Dot(wiLight, n) * Dot(-wiLight, nLight) / (t * t * pdfLight);
-	//		}
-	//	}
-	//	L_dir /= 10;
-	//
-	//	//采样brdf,间接光照
-	//	double pdf;
-	//	Vector3f f = sinter.bsdf->sample_f(wo, wi, Point2f(GetRand(), GetRand()), &pdf);//sample out direction
-	//	double cosTheta = Clamp(Dot(wi, n), 0.0, 1.0);
-	//	Ray r_out(sinter.p, wi);
-	//	L_ind = f * integrate(scene, r_out, depth + 1) * cosTheta / pdf;
-	//
-	//	return L_ind + L_dir;
-	//}
-	//return Vector3f(0.0);
-//}
 
 	GeometryData PathTracingRenderer::gBuffer(const Ray& ray, const Scene& scene)const {
 		SurfaceInteraction record;

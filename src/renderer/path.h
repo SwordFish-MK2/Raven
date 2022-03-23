@@ -12,8 +12,8 @@ namespace Raven {
 		virtual void render(const Scene& scene);
 
 	private:
-		Vector3f integrate(const Scene& scene, const Ray& r_in)const;
-		GeometryData gBuffer(const Ray& ray,const Scene& scene)const;
+		Vector3f integrate(const Scene& scene, const Ray& r_in,int depth=0)const;
+		GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
 
 		const double epsilon;
 		const int maxDepth;

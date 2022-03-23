@@ -11,7 +11,7 @@
 #include"math.h"
 
 //#define UniformSpherePdf 0.25/M_PI
-//#define UniformDiskPdf 1/M_PI
+//#define UniformDiskPdf 1/M_PI	
 //#define UniformHemiSphere 0.5/M_PI
 
 //edited by FrenchFriseWithPepper
@@ -76,9 +76,12 @@ namespace Raven {
 	}
 
 	inline Vector3f CosWeightedSampleHemisphere(const Point2f& uv) {
-		Point2f sampleOnDisk = UniformSampleDisk(uv);
-		double r2 = pow(sampleOnDisk[0], 2) + pow(sampleOnDisk[1], 2);
-		return Vector3f(sampleOnDisk[0], sampleOnDisk[1], sqrt(1 - r2));
+		//Point2f sampleOnDisk = UniformSampleDisk(uv);
+		//double r2 = pow(sampleOnDisk[0], 2) + pow(sampleOnDisk[1], 2);
+		//return Vector3f(sampleOnDisk[0], sampleOnDisk[1], sqrt(1 - r2));
+		Point2f d = UniformSampleDisk(uv);
+		double z = std::sqrt(Max((double)0, 1 - d.x * d.x - d.y * d.y));
+		return Vector3f(d.x, d.y, z);
 	}
 
 	inline double CosWeightedHemispherePdf(double cosTheta) {

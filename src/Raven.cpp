@@ -22,9 +22,9 @@ int main()
 	Raven::Transform cameraToWorld = Raven::Translate(Raven::Vector3f(278, 273, -800));
 	Raven::Transform screenToRaster = Raven::Raster(f.height, f.width);
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 150.f,
-		10.0f, 1000.0f, 45.0f, f.aspect_ratio);
+		10.0f, 1000.0f, 40.f, f.aspect_ratio);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::PathTracingRenderer renderer(cam, f, 128, 10, 0.1);
+	Raven::PathTracingRenderer renderer(cam, f, 20, 5, 0.001);
 	renderer.render(box);
 	delete cam;
 
