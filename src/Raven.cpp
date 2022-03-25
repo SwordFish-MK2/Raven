@@ -11,6 +11,7 @@
 #include"camera/projectiveCamera.h"
 #include"renderer/path.h"
 #include<chrono>
+#include"texture/solidTexture.h"
 using namespace std;
 
 int main()
@@ -18,7 +19,7 @@ int main()
 	auto start = std::chrono::system_clock::now();
 	Raven::Scene box = Raven::Scene::buildCornellBox();
 
-	Raven::Film f(500, 500, 1.0);
+	Raven::Film f(1024, 1024, 1.0);
 	Raven::Transform cameraToWorld = Raven::Translate(Raven::Vector3f(278, 273, -800));
 	Raven::Transform screenToRaster = Raven::Raster(f.height, f.width);
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 150.f,
