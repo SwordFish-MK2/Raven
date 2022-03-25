@@ -33,7 +33,9 @@ namespace Raven {
 		virtual  inline T evaluate(const SurfaceInteraction& its)const {
 			return value;
 		}
-		static std::shared_ptr<ConstTexture<T>> build(T value);
+		static std::shared_ptr<ConstTexture<T>> build(const T& value) {
+			return std::make_shared<ConstTexture<T>>(value);
+		}
 	private:
 		T value;
 	};

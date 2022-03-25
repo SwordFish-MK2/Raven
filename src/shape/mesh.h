@@ -57,7 +57,8 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>> generatePrimitive(const std::shared_ptr<Material>& mate,
 			const std::shared_ptr<Light>& light = nullptr);
 
-		static std::shared_ptr<TriangleMesh> build(const Transform* WTL, const Transform* LTW, const TriangleInfo& info, AccelType buildType = AccelType::KdTree);
+		static std::shared_ptr<TriangleMesh> build(const Transform* WTL, 
+			const Transform* LTW, const TriangleInfo& info, AccelType buildType = AccelType::KdTree);
 
 	private:
 		const Transform* OTW;

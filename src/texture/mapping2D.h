@@ -24,7 +24,9 @@ namespace Raven {
 	/// SphericalMapping,通过建立包围球，将点映射到球面上生成纹理坐标ST
 	/// </summary>
 	class SphericalMapping2D :public TextureMapping2D {
-		
+
+	private:
+		const std::shared_ptr<Transform> worldToTexture;
 	};
 }
 #endif

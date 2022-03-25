@@ -49,7 +49,6 @@ namespace Raven {
 			}
 			else {
 				//光线与场景相交，相交的信息都储存在record中
-
 				Point3f p = record.p;
 				Vector3f wo = Normalize(-ray.dir);
 				Normal3f n = record.n;
@@ -62,7 +61,6 @@ namespace Raven {
 					return Li;
 				}
 
-				//
 				for (auto& light : scene.lights) {
 					//采样光源,计算以该交点为终点的路径的贡献
 					LightSample lightSample;
@@ -81,7 +79,6 @@ namespace Raven {
 					if (!blocked)
 						Li += dirLi * beta / scene.lights.size();
 				}
-
 
 				//采样brdf，计算出射方向,更新beta
 				double pdf;
