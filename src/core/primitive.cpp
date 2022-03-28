@@ -3,40 +3,34 @@
 namespace Raven {
 	bool Primitive::hit(const Ray& r_in, double tMin, double tMax)const {
 		//perform ray-geometry intersection test
-		SurfaceInteraction its;
-		if (!shape_ptr->intersect(r_in, its, tMin, tMax)) {
+		if (!shape_ptr->hit(r_in, tMin, tMax)) {
 			return false;
 		}
-		if (light_ptr.get()) {
-			its.hitLight = true;
-			its.light = this->getAreaLight();
-			//its.emit = light_ptr->Li(its, r_in.dir);
-			return true;
-		}
-		else {
-			its.hitLight = false;
-		}
-		if (mate_ptr.get())
-			mate_ptr->computeScarttingFunctions(its);
+		;
 		return true;
 	}
 
-	bool Primitive::intersect(const Ray& ray, SurfaceInteraction& its, double tMin, double tMax)const {
-		//first perform ray-geometry intersection test,computing surfaceIntersection if hit, then compute bsdf
-		if (!shape_ptr->intersect(ray, its, tMin, tMax)) {
-			return false;
+	std::optional<SurfaceInteraction> Primitive::intersect(const Ray& ray, double tMin, double tMax)const {
+		//判断光线是否与几何体相交
+		std::optional<SurfaceInteraction> hitRecord = shape_ptr->intersect(ray, tMin, tMax);
+
+		//光线未与几何体相交
+		if (hitRecord == std::nullopt) {
+			return std::nullopt;
 		}
+
+		//相交并且击中光源
 		if (light_ptr.get()) {
-			its.hitLight = true;
-			its.light = this->getAreaLight();
+			hitRecord->hitLight = true;
+			hitRecord->light = this->getAreaLight();
 		}
 		else {
-			its.hitLight = false;
-			its.light = nullptr;
+			hitRecord->hitLight = false;
 		}
+		//计算材质
 		if (mate_ptr.get())
-			mate_ptr->computeScarttingFunctions(its);
-		return true;
+			mate_ptr->computeScarttingFunctions(*hitRecord);
+		return *hitRecord;
 	}
 
 	Bound3f Primitive::worldBounds()const {
@@ -51,15 +45,22 @@ namespace Raven {
 		return prim->hit(r_in, tMin, tMax);
 	}
 
-	bool TransformedPrimitive::intersect(const Ray& r_in, SurfaceInteraction& its, double tMin, double tMax)const {
+	std::optional<SurfaceInteraction> TransformedPrimitive::intersect(const Ray& r_in, double tMin, double tMax)const {
 		if (!primToWorld || !worldToPrim || !prim)
-			return false;
+			return std::nullopt;
+
+		//将光线变换到Prim坐标系下并求交
 		Ray transformedRay = (*worldToPrim)(r_in);
-		if (prim->intersect(transformedRay, its, tMin, tMax)) {//hit
-			its = (*primToWorld)(its);
-			return true;
+		std::optional<SurfaceInteraction> record = prim->intersect(transformedRay, tMin, tMax);
+
+		//未相交
+		if (record == std::nullopt) {
+			return std::nullopt;
 		}
-		return false;
+		else {
+			*record = (*primToWorld)(*record);
+			return *record;
+		}
 	}
 
 	Bound3f TransformedPrimitive::worldBounds()const {

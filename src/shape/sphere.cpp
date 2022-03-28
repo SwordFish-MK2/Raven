@@ -82,7 +82,7 @@ namespace Raven {
 		return localBox;
 	}
 
-	bool Sphere::intersect(const Ray& r_in, SurfaceInteraction& sinter, double tmin = 0.001F, double tmax = FLT_MAX)const {
+	std::optional<SurfaceInteraction> Sphere::intersect(const Ray& r_in, double tmin = 0.001F, double tmax = FLT_MAX)const {
 		//transform the ray from world space to local space
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -92,17 +92,17 @@ namespace Raven {
 		double c = Dot(Vector3f(localRay.origin), Vector3f(localRay.origin)) - radius * radius;
 		double t0, t1, tHit;
 		if (!Quadratic(a, b, c, t0, t1))
-			return false;
+			return std::nullopt;
 
 		//determinate>=0, at least has one hit point,test if tHit is out of time range
 		if (t0 > tmax || t1 < tmin)//since t0<t1 by default if t0>tmax || t1< tmin,both values are out of range
-			return false;
+			return std::nullopt;
 		//defaultly set tHit = t0, the smaller t value. if t0 is out of time limit, set tHit = t1
 		tHit = t0;
 		if (t0 < tmin) {
 			tHit = t1;
 			if (t1 > tmax)
-				return false;
+				return std::nullopt;
 		}
 
 		//get pHit and corresponding phi value
@@ -124,11 +124,11 @@ namespace Raven {
 				//test pHit1
 				if (pHit[2] > zMax || pHit[2]<zMin || phi>phiMax || t1 > tmax)
 					//false,both hit point failed
-					return false;
+					return std::nullopt;
 			}
 			else
 				//t0 is out of time range, pHit1 is clipped
-				return false;
+				return std::nullopt;
 		}
 		//else true
 
@@ -167,9 +167,8 @@ namespace Raven {
 		its.dpdv = dpdv;
 		its.dndu = dndu;
 		its.dndv = dndv;
-		sinter = (*this->localToWorld)(its);
-		//std::cout << "Ray_Dir:" << r_in.dir << " Normal:" << n << std::endl;
-		return true;
+		its = (*this->localToWorld)(its);
+		return its;
 	}
 
 	//在圆上均匀采样一个点

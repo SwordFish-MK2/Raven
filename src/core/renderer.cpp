@@ -19,9 +19,9 @@ namespace Raven {
 
 				//判断shadow ray是否被遮挡
 				Ray shadowRay(record.p, lSample.wi);
-				SurfaceInteraction test;
 				double distance = (record.p - lSample.p).length();
-				if (scene.intersect(shadowRay, test, 1e-6, distance - 1e-6))
+				std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, 1e-6, distance - 1e-6);
+				if (test)
 					Le = Vector3f(0.0);	//如果shadow ray被遮挡，返回Radiance=0
 
 				//计算此次采样的贡献
@@ -53,12 +53,11 @@ namespace Raven {
 
 			//出射shadow ray 判断光源是否被遮挡
 			Ray shadowRay(record.p, wi);
-			SurfaceInteraction lightIsect;
-			bool foundIntersection = scene.intersect(shadowRay, lightIsect, 1e-6, std::numeric_limits<double>::max());
+			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay, 1e-6, std::numeric_limits<double>::max());
 
 			//采样的shadow ray未被遮挡，计算光源的贡献
-			if (foundIntersection && lightIsect.hitLight && lightIsect.light == &light) {
-				Vector3f Le = light.Li(lightIsect, -wi);
+			if (intersection && (*intersection).hitLight && (*intersection).light == &light) {
+				Vector3f Le = light.Li(*intersection, -wi);
 				if (Le != Vector3f(0.0))
 					L += weight * f * Le / scarttingPdf;
 			}

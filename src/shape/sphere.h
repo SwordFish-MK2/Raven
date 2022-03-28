@@ -17,7 +17,7 @@ namespace Raven {
 			thetaMax(acos(Clamp(zMin / radius, -1.f, 1.f))),
 			thetaMin(acos(Clamp(zMax / radius, -1.f, 1.f))) {}
 		virtual bool hit(const Ray& r_in, double min, double tMax)const;
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tmin, double tmax)const;
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tmin, double tmax)const;
 		virtual Bound3f localBound()const;
 		virtual Bound3f worldBound()const;
 		virtual double area()const {

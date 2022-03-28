@@ -25,7 +25,7 @@ int main()
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 150.f,
 		10.0f, 1000.0f, 40.f, f.aspect_ratio);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::PathTracingRenderer renderer(cam, f, 20, 1, 0.001);
+	Raven::PathTracingRenderer renderer(cam, f, 50, 10, 0.001);
 	renderer.render(box);
 	delete cam;
 

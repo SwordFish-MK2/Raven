@@ -63,7 +63,7 @@ namespace Raven {
 		return true;
 	}
 
-	bool Triangle::intersect(const Ray& r_in, SurfaceInteraction& its, double tmin, double tmax)const {
+	std::optional<SurfaceInteraction> Triangle::intersect(const Ray& r_in, double tmin, double tmax)const {
 		//取从网格中取出三角形的三个顶点p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
@@ -75,22 +75,22 @@ namespace Raven {
 		Vector3f s1 = Cross(r_in.dir, e2);
 		Vector3f s2 = Cross(s, e1);
 		auto determinate = Dot(s1, e1);
-		if (determinate <= 0)return false;
+		if (determinate <= 0)return std::nullopt;
 
 		double invDet = 1.0 / determinate;
 		double t = invDet * Dot(s2, e2);
 		double b1 = invDet * Dot(s1, s);
 		double b2 = invDet * Dot(s2, r_in.dir);
-		double b0 = 1 - b1 - b2; if (b0 < 0)return false;
+		double b0 = 1 - b1 - b2; if (b0 < 0)return std::nullopt;
 		//光线必须沿正向传播
 		if (t <= 0)
-			return false;
+			return std::nullopt;
 		//重心坐标都大于0时，交点在三角形内，光线与三角形相交	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
-			return false;
+			return std::nullopt;
 		//TODO::检查相交时间
 		if (t >= tmax)
-			return false;
+			return std::nullopt;
 
 		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
 		Point2f uv[3];
@@ -109,8 +109,10 @@ namespace Raven {
 		Point3f pb3 = b2 * p2;
 		Point2f uvHit = b0 * uv0 + b1 * uv1 + b2 * uv2;
 		auto nHit = b0 * n0 + b1 * n1 + b2 * n2;
+
+		//只计算从正面入射
 		if (Dot(nHit, r_in.dir) > 0)
-			return false;
+			return std::nullopt;
 		////TODO:: 确认三角形朝向（顺时针？逆时针？），确保计算出的法线与原法线为同一方向
 		//Vector3f nHit = Cross(p0 - p1, p2 - p1);
 		////计算dpdu与dpdv以便在网格表面求出的切线向量为连续的值
@@ -132,6 +134,7 @@ namespace Raven {
 			dpdv = invDet * (du02 * dp12 - du12 * dp02);
 		}
 
+		SurfaceInteraction its;
 		its.dpdu = dpdu;
 		its.dpdv = dpdv;
 		its.n = nHit;
@@ -139,7 +142,7 @@ namespace Raven {
 		its.uv = uvHit;
 		its.t = t;
 		its.wo = -r_in.dir;
-		return true;
+		return its;
 	}
 
 	Bound3f Triangle::localBound()const {

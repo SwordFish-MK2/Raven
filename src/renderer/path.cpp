@@ -40,54 +40,52 @@ namespace Raven {
 		for (; depth < maxDepth; depth++) {
 
 			//获取场景与光线的相交信息
-			SurfaceInteraction record;
-			bool hit = scene.intersect(ray, record, epsilon, std::numeric_limits<double>::max());
+			std::optional<SurfaceInteraction> record = scene.intersect(ray,epsilon, std::numeric_limits<double>::max());
 			//光线未与场景相交
-			if (!hit) {
+			if (!record) {
 				//Li += backgroundColor * beta;
 				break;
 			}
 			else {
 				//光线与场景相交，相交的信息都储存在record中
-				Point3f p = record.p;
+				Point3f p = record->p;
 				Vector3f wo = Normalize(-ray.dir);
-				Normal3f n = record.n;
+				Normal3f n = record->n;
 				Vector3f wi;
 
 				//只有从相机出发的光线击中光源才直接返回光源的emittion
-				if (depth == 0 && record.hitLight) {
+				if (depth == 0 && (*record).hitLight) {
 					//从相机出发的光线直接击中光源
-					Li += record.light->Li(record, wo);
+					Li += record->light->Li(*record, wo);
 					return Li;
 				}
 
-				for (auto& light : scene.lights) {
-					//采样光源,计算以该交点为终点的路径的贡献
-					LightSample lightSample;
-					Vector3f emit = light->sampleLi(record, Point2f(GetRand(), GetRand()), &lightSample);
-					Vector3f fLight = record.bsdf->f(wo, lightSample.wi);
-					double length = (lightSample.p - p).length();
-					double dot1 = Max(0.0, Dot(lightSample.wi, n));
-					double dot2 = Max(0.0, Dot(-lightSample.wi, lightSample.n));
-					Vector3f dirLi = emit * fLight * dot1 / lightSample.pdf;
-					//判断有无遮挡
-					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
-					Ray shadowRay(p, lightSample.wi);
-					SurfaceInteraction test;
-					bool blocked = scene.intersect(shadowRay, test, epsilon, length - 0.1);
-					if (!blocked)
-						Li += dirLi * beta;
-				}
+				//for (auto& light : scene.lights) {
+				//	//采样光源,计算以该交点为终点的路径的贡献
+				//	LightSample lightSample;
+				//	Vector3f emit = light->sampleLi(*record, Point2f(GetRand(), GetRand()), &lightSample);
+				//	Vector3f fLight = record->bsdf->f(wo, lightSample.wi);
+				//	double length = (lightSample.p - p).length();
+				//	double dot1 = Max(0.0, Dot(lightSample.wi, n));
+				//	double dot2 = Max(0.0, Dot(-lightSample.wi, lightSample.n));
+				//	Vector3f dirLi = emit * fLight * dot1 / lightSample.pdf;
+				//	//判断有无遮挡
+				//	//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
+				//	Ray shadowRay(p, lightSample.wi);
+				//	std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, epsilon, length - 0.1);
+				//	if (test == std::nullopt)
+				//		Li += dirLi * beta;
+				//}
 
-				//Vector3f L_dir = SampleAllLights(record, scene);
-				//Li += beta * L_dir;
+				Vector3f L_dir = SampleAllLights(*record, scene);
+				Li += beta * L_dir;
 
 				//采样brdf，计算出射方向,更新beta
 				double pdf;
-				Vector3f f = record.bsdf->sample_f(wo, wi, Point2f(GetRand(), GetRand()), &pdf);
+				Vector3f f = record->bsdf->sample_f(wo, wi, Point2f(GetRand(), GetRand()), &pdf);
 				double cosTheta = Dot(wi, n);
 				beta *= f * cosTheta / pdf;
-				ray = Ray(record.p, wi);
+				ray = Ray(record->p, wi);
 
 				if (depth > 3) {
 					double q = Max((double).05, 1 - beta.y);
@@ -102,14 +100,13 @@ namespace Raven {
 	}
 
 	GeometryData PathTracingRenderer::gBuffer(const Ray& ray, const Scene& scene)const {
-		SurfaceInteraction record;
 		GeometryData data;
-
-		if (scene.intersect(ray, record, 0.001, std::numeric_limits<double>::max())) {
-			const Point3f& p = record.p;
-			const Normal3f& n = record.n;
-			data.n = record.n;
-			data.p = record.p;
+		std::optional<SurfaceInteraction> record = scene.intersect(ray, 1e-6, std::numeric_limits<double>::max());
+		if (record != std::nullopt) {
+			const Point3f& p = (*record).p;
+			const Normal3f& n = (*record).n;
+			data.n = (*record).n;
+			data.p = (*record).p;
 			data.hit = true;
 		}
 		return data;

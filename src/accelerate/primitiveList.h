@@ -8,7 +8,7 @@ namespace Raven {
 	public:
 		PrimitiveList(const std::vector<std::shared_ptr<Primitive>>& prims) :Accelerate(prims) {}
 		virtual bool hit(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.001, double tMax = FLT_MAX)const;
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
 		virtual Bound3f worldBounds()const;
 	};
 }

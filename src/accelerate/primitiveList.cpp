@@ -1,29 +1,32 @@
 #include"primitiveList.h"
 
 namespace Raven {
-	
+
 	bool PrimitiveList::hit(const Ray& r_in, double tMin, double tMax)const {
 		for (size_t i = 0; i < prims.size(); i++) {
 			SurfaceInteraction inter;
-			if (prims[i]->intersect(r_in,inter, tMin, tMax))
+			if (prims[i]->hit(r_in, tMin, tMax))
 				return true;
 		}
 		return false;
 	}
 
-	bool PrimitiveList::intersect(const Ray& r_in, SurfaceInteraction& its, double tMin, double tMax)const {
+	std::optional<SurfaceInteraction> PrimitiveList::intersect(const Ray& r_in, double tMin, double tMax)const {
 		bool flag = false;
-		SurfaceInteraction temp;
 		double closest = tMax;
+		SurfaceInteraction inter;
 		for (int i = 0; i < prims.size(); i++) {
-			if (prims[i]->intersect(r_in, temp, tMin, closest)) {
-				closest = temp.t;
+			std::optional<SurfaceInteraction> record = prims[i]->intersect(r_in, tMin, closest);
+			if (record) {
+				inter = *record;
+				closest = (*record).t;
 				flag = true;
 			}
 		}
 		if (flag)
-			its = temp;
-		return flag;
+			return inter;
+		else
+			return std::nullopt;
 	}
 
 	Bound3f PrimitiveList::worldBounds()const {

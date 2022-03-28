@@ -14,7 +14,7 @@ namespace Raven {
 			:shape_ptr(shape_ptr), mate_ptr(mate_ptr), light_ptr(light) {}
 		~Primitive() {}
 		virtual bool hit(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.001, double tMax = FLT_MAX)const;
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
 		virtual Bound3f worldBounds()const;
 		virtual const Material* getMaterial()const { return mate_ptr.get(); }
 		virtual const Light* getAreaLight()const { return light_ptr.get(); }
@@ -31,7 +31,7 @@ namespace Raven {
 			:Primitive(NULL, NULL), primToWorld(ptw), worldToPrim(wtp), prim(p) {}
 		~TransformedPrimitive() {}
 		virtual bool hit(const Ray& r_in, double tMin = 0.001F, double tMax = FLT_MAX)const;
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.001F, double tMax = FLT_MAX)const;
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMin = 0.001F, double tMax = FLT_MAX)const;
 		virtual Bound3f worldBounds()const;
 	private:
 		const Transform* primToWorld;

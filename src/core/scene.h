@@ -35,8 +35,8 @@ namespace Raven {
 			return objs->hit(r, tMin, tMax);
 		}
 		//判断光线是否与场景相交，如果相交，计算交点信息
-		bool intersect(const Ray& r, SurfaceInteraction& its, double tMin, double tMax)const {
-			return objs->intersect(r, its, tMin, tMax);
+		std::optional<SurfaceInteraction> intersect(const Ray& r, double tMin, double tMax)const {
+			return objs->intersect(r, tMin, tMax);
 		}
 
 		const Light* chooseLight(double rand)const;

@@ -73,7 +73,7 @@ namespace Raven {
 		Triangle(const Transform* LTW, const Transform* WTL, const TriangleMesh* m, int index) :
 			Shape(LTW, WTL), mesh(m), i(3 * index) {}
 		bool hit(const Ray& r_in, double tMin = 0.0001, double tMax = std::numeric_limits<double>::max())const;
-		bool intersect(const Ray& r_in, SurfaceInteraction& its, double tMin = 0.0001,
+		std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMin = 0.0001,
 			double tMax = std::numeric_limits<double>::max())const;
 		Bound3f localBound()const;
 		Bound3f worldBound()const;

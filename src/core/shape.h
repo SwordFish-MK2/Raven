@@ -7,7 +7,7 @@
 #include"transform.h"
 #include"aabb.h"
 #include"ray.h"
-
+#include<optional>
 namespace Raven {
 	/// <summary>
 	/// Shape interface, all geometrics must inherit this class
@@ -24,7 +24,7 @@ namespace Raven {
 		virtual bool hit(const Ray& r_in, double tmin, double tMax)const = 0;
 
 		//intersect incident ray with shape and compute surfaceIntersection 
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& its, double tmin, double tmax)const = 0;
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tmin, double tmax)const = 0;
 
 		//return the bounding box of shape in local space
 		virtual Bound3f localBound()const = 0;

@@ -3,7 +3,7 @@
 namespace Raven {
 
 	//default实现为在几何体上均匀的采样一个点，再将pdf转化为对面积的积分
-	std::tuple<SurfaceInteraction, double> Shape:: sample(const SurfaceInteraction& ref, const Point2f& rand)const {
+	std::tuple<SurfaceInteraction, double> Shape::sample(const SurfaceInteraction& ref, const Point2f& rand)const {
 
 		//在表面均匀的采样一个点并计算pdf
 		auto [inter, pdf] = sample(rand);
@@ -27,11 +27,11 @@ namespace Raven {
 		//intersect sample ray to light geometry
 		Point3f origin = inter.p;
 		Ray r(origin, wi);
-		SurfaceInteraction lightInter;
-		if (!intersect(r, lightInter, 1e-6, std::numeric_limits<double>::max()))
+		std::optional<SurfaceInteraction> lightInter = intersect(r, 1e-6, std::numeric_limits<double>::max());
+		if (!lightInter)
 			return 0;
 		//convert the pdf from integral of light surface to integral of the solid angle of sample point
-		double pdf = DistanceSquared(lightInter.p, inter.p) / (std::abs(Dot(lightInter.n, -wi)) * area());
+		double pdf = DistanceSquared((*lightInter).p, inter.p) / (std::abs(Dot((*lightInter).n, -wi)) * area());
 		return pdf;
 	}
 }
