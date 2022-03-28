@@ -23,11 +23,14 @@ namespace Raven {
 		virtual double area()const {
 			return 4 * M_PI * radius;
 		}
-		virtual SurfaceInteraction sample(const Point2f& uv)const;
-		virtual SurfaceInteraction sample(const SurfaceInteraction& inter, const Point2f& uv)const;
+		virtual std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
+
+		virtual std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& inter,const Point2f& rand)const;
+
 		virtual double pdf(const SurfaceInteraction& inter)const {
 			return 1 / area();
 		}
+
 		virtual double pdf(const SurfaceInteraction& inter, const Vector3f& wi)const;
 	};
 }

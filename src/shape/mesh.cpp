@@ -120,7 +120,9 @@ namespace Raven {
 		double det = du02 * dv12 - dv02 * du12;
 		//如果行列式等于0，随机生成一组互相垂直的dpdu与dpdv
 		if (det == 0) {
-			genTBN((Vector3f)nHit, &dpdu, &dpdv);
+			auto [dpu, dpv] = genTBN((Vector3f)nHit);
+			dpdu = dpu;
+			dpdv = dpv;
 		}
 		else {
 			auto invDet = 1 / det;
@@ -136,6 +138,7 @@ namespace Raven {
 		its.p = pHit;
 		its.uv = uvHit;
 		its.t = t;
+		its.wo = -r_in.dir;
 		return true;
 	}
 
@@ -171,7 +174,7 @@ namespace Raven {
 		return 0.5 * Cross(e1, e2).length();
 	}
 
-	SurfaceInteraction Triangle::sample(const Point2f& uv)const {
+	std::tuple<SurfaceInteraction, double> Triangle::sample(const Point2f& uv)const {
 		//求出uv值对应的重心坐标
 		Point2f b = UniformSampleTriangle(uv);
 
@@ -190,7 +193,8 @@ namespace Raven {
 		SurfaceInteraction sisec;
 		sisec.n = normal;
 		sisec.p = sample;
-		return sisec;
+		double pdf = 1 / area();
+		return std::tuple<SurfaceInteraction, double>(sisec, pdf);
 	}
 
 	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
@@ -206,8 +210,8 @@ namespace Raven {
 
 
 	std::shared_ptr<TriangleMesh> TriangleMesh::build(const Transform* LTW, const Transform* WTL,
-		const TriangleInfo& info,AccelType buildType) {
-		return std::make_shared<TriangleMesh>(LTW, WTL, info.numbers, info.vertices, 
+		const TriangleInfo& info, AccelType buildType) {
+		return std::make_shared<TriangleMesh>(LTW, WTL, info.numbers, info.vertices,
 			info.indices, info.normals, info.tangants, info.uvs, buildType);
 	}
 

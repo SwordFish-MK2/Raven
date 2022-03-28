@@ -32,6 +32,7 @@ namespace Raven {
 		}
 		else {
 			its.hitLight = false;
+			its.light = nullptr;
 		}
 		if (mate_ptr.get())
 			mate_ptr->computeScarttingFunctions(its);

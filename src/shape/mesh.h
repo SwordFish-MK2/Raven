@@ -78,13 +78,13 @@ namespace Raven {
 		Bound3f localBound()const;
 		Bound3f worldBound()const;
 		double area()const;
-		double pdf()const { return 1 / area(); }
 		void getUVs(Point2f uv[3])const;
 		inline int index(int num)const {
 			//TODO::¼ì²énumµÄÖµ
 			return mesh->indices[i + num];
 		}
-		SurfaceInteraction sample(const Point2f& uv)const;
+		std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
+		double pdf()const { return 1 / area(); }
 	};
 
 

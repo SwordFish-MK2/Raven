@@ -23,7 +23,7 @@ namespace Raven {
 		//partial derivatives of intersected plane
 		Vector3f dpdu, dpdv;
 		Vector3f dndu, dndv;
-
+		Vector3f wo;
 		//properties to filter texture
 		Vector3f dpdx, dpdy;
 		double dudx, dudy, dvdx, dvdy;

@@ -545,19 +545,8 @@ namespace Raven {
 		return Vector3<T>(v.x * k, v.y * k, v.z * k);
 	}
 
-	//输入一个向量，以该向量为z轴建立一个左手系
-	template<class T>
-	inline void genTBN(const Vector3<T>& v1, Vector3<T>* v2, Vector3<T>* v3) {
-		//首先通过将输入向量的一个分量置为零，交换剩下的两个分量并将其中一个分量取负值来求得一个与输入向量垂直的向量v2
-		//再通过向量积取得垂直于v1与v2的向量v3
-		if (std::abs(v1.x) > std::abs(v1.y))
-			*v2 = Vector3<T>(-v1.z, 0, v1.x) /
-			std::sqrt(v1.x * v1.x + v1.z * v1.z);
-		else
-			*v2 = Vector3<T>(0, v1.z, -v1.y) /
-			std::sqrt(v1.y * v1.y + v1.z * v1.z);
-		*v3 = Cross(v1, *v2);
-	}
+
+
 	template<class T>
 	inline int MaxDimention(const Vector3<T>& v) {
 		int demention = 0;
@@ -570,6 +559,7 @@ namespace Raven {
 		}
 		return demention;
 	}
+
 	template<class T>
 	inline Vector3<T> Cross(const Vector3<T>& v1, const Vector3<T>& v2) {
 		return Vector3<T>(
@@ -581,10 +571,28 @@ namespace Raven {
 	inline Vector3<T>Lerp(double t, const Vector3<T>& v1, const Vector3<T>& v2) {
 		return Vector3<T>(Lerp(t, v1[0], v2[0]), Lerp(t, v1[1], v2[1]), Lerp(t, v1[2], v2[2]));
 	}
+
 	template<class T>
 	inline T Dot(const Vector3<T>& v1, const Vector3<T>& v2) {
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
+
+	//TODO::Try template<class T> Vector3<T>
+//输入一个向量，以该向量为z轴建立一个左手系
+	inline std::tuple<Vector3f, Vector3f> genTBN(const Vector3f& v1) {
+		Vector3f v2, v3;
+		//首先通过将输入向量的一个分量置为零，交换剩下的两个分量并将其中一个分量取负值来求得一个与输入向量垂直的向量v2
+		//再通过向量积取得垂直于v1与v2的向量v3
+		if (std::abs(v1.x) > std::abs(v1.y))
+			v2 = Vector3f(-v1.z, 0, v1.x) /
+			std::sqrt(v1.x * v1.x + v1.z * v1.z);
+		else
+			v2 = Vector3f(0, v1.z, -v1.y) /
+			std::sqrt(v1.y * v1.y + v1.z * v1.z);
+		v3 = Cross(v1, v2);
+		return std::tuple<Vector3f, Vector3f>(v2, v3);
+	}
+
 	template<class T>
 	inline Vector2<T> Normalize(const Vector2<T>& v) {
 		//check v.length=0

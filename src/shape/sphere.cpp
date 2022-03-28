@@ -74,6 +74,7 @@ namespace Raven {
 		localBox.pMax = Point3f(radius, radius, zMax);
 		return (*localToWorld)(localBox);
 	}
+
 	Bound3f Sphere::localBound()const {
 		Bound3f localBox;
 		localBox.pMin = Point3f(-radius, -radius, zMin);
@@ -150,7 +151,7 @@ namespace Raven {
 		double e = Dot(n, dpduu);
 		double f = Dot(-n, dpduv);
 		double g = Dot(n, dpdvv);
-		
+
 		Vector3f dndu = ((f * F - e * G) / (E * G - F * F)) * dpdu +
 			((e * F - f * E) / (E * G - F * F)) * dpdv;
 		Vector3f dndv = ((g * F - f * G) / (E * G - F * F)) * dpdu +
@@ -171,54 +172,95 @@ namespace Raven {
 		return true;
 	}
 
-	//return sample point coordinate in world space
-	SurfaceInteraction Sphere::sample(const Point2f& uv)const {
-		//uniformly sample sphere
+	//在圆上均匀采样一个点
+	std::tuple<SurfaceInteraction, double> Sphere::sample(const Point2f& uv)const {
+		//采样点p与法线n
 		Point3f p = UniformSampleSphere(uv);
-		p *= radius;
 		Normal3f n(p);
+
+		p *= radius;
+		//将n与p变换到世界坐标
+		p = (*localToWorld)(p);
+		n = (*localToWorld)(n);
+
 		SurfaceInteraction inter;
 		inter.p = p;
 		inter.n = n;
-		inter = (*Shape::localToWorld)(inter);
-		return inter;
+
+		//计算pdf
+		double pdf = 1 / area();
+		return std::tuple<SurfaceInteraction, double>(inter, pdf);
 	}
 
-	//return sample point coordinate in world space
-	SurfaceInteraction Sphere::sample(const SurfaceInteraction& inter, const Point2f& uv)const {
-		//get point that receving light
-		Point3f pCenter = (*localToWorld)(Point3f(0.0));
-		double dc = Distance(pCenter, inter.p);
-		if (radius > dc) {
-			//if pRec is inside the sphere,uniformly sample the sphere
-			return sample(uv);
-		}
-		//compute sample direction
-		double cosThetaMax = acos(sqrt(Max(0.0, 1 - pow(radius / dc, 2))));
-		double c = 1 / ((1 - cosThetaMax) * 2 * M_PI);
-		double cosTheta = 1 - uv[0] * (1 - cosThetaMax);
-		double sinTheta = std::sqrt(std::max(0.0, 1 - cosTheta * cosTheta));
-		double phi = 2 * M_PI * uv[1];
+	//基于点p采样圆上的一个点，返回的pdf为对立体角的积分
+	std::tuple<SurfaceInteraction, double> Sphere::sample(const SurfaceInteraction& inter, const Point2f& uv)const {
+		Point3f pCenter = (*localToWorld)(Point3f(0.0));//圆心的世界坐标
 
-		//compute sample point on the sphere
-		double dtemp = sqrt(radius * radius - dc * dc * sinTheta * sinTheta);
-		double ds = dc * cosTheta - dtemp;
-		double cosAlpha = (dc * dc - ds * ds + radius * radius) / (2 * dc * radius);
-		double sinAlpha = std::sqrt(Max(0.0, 1 - cosAlpha * cosAlpha));
-		Point3f pSample(sinAlpha * cos(phi), sinAlpha * sin(phi), cosAlpha);
-		SurfaceInteraction lightInter;
-		lightInter.p = (*localToWorld)(pSample * radius);
-		lightInter.n = (*localToWorld)(Normalize(lightInter.p - pCenter));
-		return lightInter;
+		//若p点在圆内，均匀采样
+		double distanceSquared = DistanceSquared(pCenter, inter.p);
+		if (distanceSquared < radius * radius) {
+			auto [lightInter, pdf] = sample(uv);
+
+			//将采样的pdf转为对立体角的积分
+			Vector3f wi = lightInter.p - inter.p;
+			double dis2 = wi.lengthSquared();
+			if (dis2 == 0.0)
+				pdf = 0.0;
+			else {
+				wi = Normalize(wi);
+				pdf *= DistanceSquared(lightInter.p, inter.p) / abs(Dot(lightInter.n, -wi));
+			}
+			if (std::isinf(pdf))
+				pdf = 0.0;
+			return std::tuple<SurfaceInteraction, double>(lightInter, pdf);
+		}
+
+		//采样p点可见圆锥
+		else {
+			//计算新的坐标系，使得点p与圆心的连线位于心坐标系的z轴
+			Vector3f z = Normalize(pCenter - inter.p);//由参考点为原点，z轴指向圆心
+			auto [x, y] = genTBN(z);
+
+			//在以p点与圆的圆锥上采样一个向量
+			//计算cosThetaMax
+			double dc = Distance(inter.p, pCenter);
+			double sinThetaMax = radius / dc;
+			double sinThetaMax2 = sinThetaMax * sinThetaMax;
+			double cosThetaMax = sqrt(Max(0.0, 1 - sinThetaMax2));
+			//采样从P点出射的光线的方向
+			double cosTheta = (1 - uv[0]) + uv[0] * cosThetaMax;
+			double sinTheta2 = 1 - cosTheta * cosTheta;
+			double phi = 2 * uv[1] * M_PI;
+
+			//给定从p点出射的向量，计算该向量与圆的交点pL
+			//计算对于pL对于圆心的角度alpha
+			double ds = dc * cosTheta - std::sqrt(Max(0.0, radius * radius - dc * sinTheta2));
+			double cosAlpha = (dc * dc + radius * radius - ds * ds) /
+				(2 * dc * radius);
+			double sinAlpha = std::sqrt(Max(0.0, 1 - cosTheta * cosTheta));
+
+			Vector3f nWorld = sinAlpha * cos(phi) * (-x) + sinAlpha * sin(phi) * (-y) + cosAlpha * (-z);
+			Point3f  pWorld = pCenter + nWorld * radius;
+
+			SurfaceInteraction lightSample;
+			lightSample.p = pWorld;
+			lightSample.n = Normal3f(nWorld);
+
+			double pdf = 1 / (2 * M_PI * (1 - cosThetaMax));
+
+			return std::tuple<SurfaceInteraction, double>(lightSample, pdf);
+		}
 	}
 
 	double Sphere::pdf(const SurfaceInteraction& inter, const Vector3f& wi)const {
 		Point3f pCenter = (*localToWorld)(Point3f(0.0));
 		double dc2 = DistanceSquared(pCenter, inter.p);
+
 		if (dc2 < radius * radius)
-			//point is inside the sphere, uniform sample sphere
-			return pdf(inter);
-		//point is outside the shpere, compute cosThetaMax and call UniformConePdf
+			//点在圆内，均匀采样整个圆并变换pdf为对立体角的积分
+			return Shape::pdf(inter, wi);
+
+		//点在圆外，计算cosThetaMax，直接计算pdf
 		double sinThetaMax2 = radius * radius / dc2;
 		double cosThetaMax = std::sqrt(1 - sinThetaMax2);
 		return UniformConePdf(cosThetaMax);

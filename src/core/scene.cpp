@@ -187,7 +187,7 @@ namespace Raven {
 		//	std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
 
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
-		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(checkered);
+		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
 		std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
 		std::vector<std::shared_ptr<Primitive>>  sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
 		std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(whiteLam);

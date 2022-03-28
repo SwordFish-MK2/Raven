@@ -9,9 +9,12 @@ namespace Raven {
 	Vector3f DiffuseAreaLight::sampleLi(const SurfaceInteraction& inter, const Point2f& uv,
 		LightSample* lightSample)const {
 		//在光源表面采样一个点，算出从该点射向点p的方向向量
-		SurfaceInteraction lightInter = shape_ptr->sample(inter, uv);
+		auto [lightInter, pdf] = shape_ptr->sample(inter, uv);
+		if (pdf == 0 || DistanceSquared(lightInter.p, inter.p) == 0) {
+			return 0;
+		}
 		//调用Shape的pdf函数求出采样该点的pdf
-		lightSample->pdf = shape_ptr->pdf(lightInter);
+		lightSample->pdf = pdf;
 		lightSample->wi = Normalize(lightInter.p - inter.p);//方向为从点p入射光源
 		lightSample->n = lightInter.n;
 		lightSample->p = lightInter.p;

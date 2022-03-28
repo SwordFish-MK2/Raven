@@ -32,7 +32,7 @@ namespace Raven {
 	}
 
 	//路径追踪算法，暂时只考虑了lambertain
-	Vector3f PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn,int depth)const {
+	Vector3f PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn, int depth)const {
 		Vector3f backgroundColor = Vector3f(0.235294, 0.67451, 0.843137);
 		Vector3f Li(0.0);
 		Vector3f beta(1.0);//光线的衰减参数
@@ -68,17 +68,19 @@ namespace Raven {
 					Vector3f fLight = record.bsdf->f(wo, lightSample.wi);
 					double length = (lightSample.p - p).length();
 					double dot1 = Max(0.0, Dot(lightSample.wi, n));
-					double dot2 = Max(0.0,Dot(-lightSample.wi, lightSample.n));
-					Vector3f dirLi = emit * fLight * dot1 * dot2
-						/ (length * length * lightSample.pdf);
+					double dot2 = Max(0.0, Dot(-lightSample.wi, lightSample.n));
+					Vector3f dirLi = emit * fLight * dot1 / lightSample.pdf;
 					//判断有无遮挡
 					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
 					Ray shadowRay(p, lightSample.wi);
 					SurfaceInteraction test;
 					bool blocked = scene.intersect(shadowRay, test, epsilon, length - 0.1);
 					if (!blocked)
-						Li += dirLi * beta / scene.lights.size();
+						Li += dirLi * beta;
 				}
+
+				//Vector3f L_dir = SampleAllLights(record, scene);
+				//Li += beta * L_dir;
 
 				//采样brdf，计算出射方向,更新beta
 				double pdf;
@@ -94,7 +96,6 @@ namespace Raven {
 					beta /= 1 - q;
 				}
 			}
-
 
 		}
 		return Li;
