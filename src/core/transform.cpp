@@ -74,6 +74,10 @@ namespace Raven {
 		return Transform(m);
 	}
 
+	Transform Transform::inverse()const {
+		return Transform(invm, m);
+	}
+
 	Normal3f Transform::operator()(const Normal3f& n)const {
 		//Nprime=normalize((T-1)T*N)
 		Eigen::Vector4f nv(n[0], n[1], n[2], 0.0f);
@@ -92,6 +96,7 @@ namespace Raven {
 		inter.dndv = t(its.dndv);
 		inter.dpdu = t(its.dpdu);
 		inter.dpdv = t(its.dpdv);
+		inter.wo = t(its.wo);
 		inter.bsdf = its.bsdf;
 		inter.uv = its.uv;
 		inter.t = its.t;

@@ -25,13 +25,16 @@ namespace Raven {
 		}
 		virtual std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
 
-		virtual std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& inter,const Point2f& rand)const;
+		virtual std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& inter, const Point2f& rand)const;
 
 		virtual double pdf(const SurfaceInteraction& inter)const {
 			return 1 / area();
 		}
 
 		virtual double pdf(const SurfaceInteraction& inter, const Vector3f& wi)const;
+
+		static std::shared_ptr<Sphere> build(const Transform* LTW, const Transform* WTL, 
+			double radius, double zMax, double zMin, double phiMax);
 	};
 }
 #endif

@@ -6,7 +6,6 @@ namespace Raven {
 		if (!shape_ptr->hit(r_in, tMin, tMax)) {
 			return false;
 		}
-		;
 		return true;
 	}
 
@@ -27,6 +26,7 @@ namespace Raven {
 		else {
 			hitRecord->hitLight = false;
 		}
+
 		//¼ÆËã²ÄÖÊ
 		if (mate_ptr.get())
 			mate_ptr->computeScarttingFunctions(*hitRecord);
@@ -35,6 +35,11 @@ namespace Raven {
 
 	Bound3f Primitive::worldBounds()const {
 		return shape_ptr->worldBound();
+	}
+
+	std::shared_ptr<Primitive> Primitive::build(const std::shared_ptr<Shape>& s, const std::shared_ptr<Material>& m,
+		const std::shared_ptr<Light>& l) {
+		return std::make_shared<Primitive>(s, m, l);
 	}
 
 	bool TransformedPrimitive::hit(const Ray& r_in, double tMin, double tMax)const {
@@ -68,5 +73,10 @@ namespace Raven {
 			return (*primToWorld)(prim->worldBounds());
 		else
 			return Bound3f();
+	}
+
+	std::shared_ptr<TransformedPrimitive> TransformedPrimitive::build(const Transform* ptw, const Transform* wtp,
+		const std::shared_ptr<Primitive>& prim) {
+		return std::make_shared<TransformedPrimitive>(ptw, wtp, prim);
 	}
 }

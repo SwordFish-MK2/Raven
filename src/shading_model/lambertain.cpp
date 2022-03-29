@@ -29,13 +29,13 @@ namespace Raven {
 
 	//uniformly or cos weighted sample wi direction on the upper hemisphere, compute correspoding pdf value, compute and return brdf 
 	Vector3f LambertainReflection::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const {
-		if (wo.z <= 0)
-			return Vector3f(0.0);
+
 		wi = Normalize(CosWeightedSampleHemisphere(sample));//cos weighted sample wi
 		double cosTheta = CosTheta(wi);
 		*pdf = CosWeightedHemispherePdf(cosTheta);//compute pdf value related to wi
 
-
+		if (wo.z <= 0)
+			wi *= -1;
 		return f(wo, wi);
 	}
 

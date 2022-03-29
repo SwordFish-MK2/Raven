@@ -9,6 +9,7 @@
 #include"math.h"
 
 namespace Raven {
+
 	class BSDF {
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	public:
@@ -34,6 +35,7 @@ namespace Raven {
 
 		Vector3f worldToLocal(const Vector3f& v)const;
 	};
+
 }
 
 #endif

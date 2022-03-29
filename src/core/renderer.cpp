@@ -53,8 +53,8 @@ namespace Raven {
 
 			//出射shadow ray 判断光源是否被遮挡
 			Ray shadowRay(record.p, wi);
-			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay, 1e-6, std::numeric_limits<double>::max());
-
+			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay, 0.1, std::numeric_limits<double>::max());
+			
 			//采样的shadow ray未被遮挡，计算光源的贡献
 			if (intersection && (*intersection).hitLight && (*intersection).light == &light) {
 				Vector3f Le = light.Li(*intersection, -wi);

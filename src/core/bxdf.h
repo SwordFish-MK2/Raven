@@ -6,6 +6,41 @@
 #include"math.h"
 
 namespace Raven {
+
+	double FDielectric(double cosThetaI, double etaI, double etaT);
+
+	double FConductor(double cosThetaI, double etaI, double etaT, double k);
+
+	inline Vector3f Reflect(const Vector3f& wo, const Normal3f& n) {
+		return -wo + n * Dot(wo, n) * 2.0;
+	}
+
+	inline Vector3f Reflect(const Vector3f& wo, const Vector3f& n) {
+		return -wo + n * Dot(wo, n) * 2.0;
+	}
+
+	//fresnel class只用于计算反射的辐射度
+	class Fresnel {
+	public:
+		virtual double evaluate(double cosTheta)const = 0;
+	};
+
+	class FresnelConductor :public Fresnel {
+	private:
+		//index of refraction of incident and emergent light etaI and etaT
+		//complex-valued index of refraction k
+		double etaI, etaT, k;
+	public:
+		FresnelConductor(double etai, double etat, double k) :etaI(etai), etaT(etat), k(k) {}
+		double evaluate(double cosTheta)const {
+
+			return FConductor(cosTheta, etaI, etaT, k);
+		}
+	};
+
+	class FresnelDielectric :public Fresnel {
+	};
+
 	enum BxDFType {
 		Reflection = 1 << 0,
 		Transmission = 1 << 1,
@@ -55,6 +90,7 @@ namespace Raven {
 		//Spectrum scaler;
 		Vector3f scaler;
 	};
+
 	inline double CosTheta(const Vector3f& w) {
 		return Clamp(Dot(w, Vector3f(0.f, 0.f, 1.f)), 0.f, 1.f);
 	}
@@ -87,6 +123,6 @@ namespace Raven {
 	inline double Sin2Phi(const Vector3f& w) {
 		return SinPhi(w) * SinPhi(w);
 	}
-
 }
+
 #endif

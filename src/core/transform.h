@@ -48,6 +48,7 @@ namespace Raven {
 		}
 		//wheather the coordinate system is changed is determined by wheather the determinant of the uper3*3 matrix < 0
 		//bool SwapsHandness()const;
+		Transform inverse()const;
 	};
 
 	Transform Identity();

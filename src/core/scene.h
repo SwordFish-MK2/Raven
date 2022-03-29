@@ -15,6 +15,7 @@
 
 namespace Raven {
 	class Scene {
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	private:
 		std::vector<std::shared_ptr<Transform>> transforms;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
@@ -26,7 +27,7 @@ namespace Raven {
 
 		Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
 			const std::vector<std::shared_ptr<TriangleMesh>>& meshes, const std::vector<std::shared_ptr<Primitive>>& prims,
-			AccelType type=AccelType::List);
+			AccelType type = AccelType::List);
 
 		Scene(const Scene& s);
 
@@ -47,8 +48,9 @@ namespace Raven {
 			return objs->worldBounds();
 		}
 
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			static Scene buildCornellBox();
+		static Scene buildTestScene();
+
+		static Scene buildCornellBox();
 	};
 }
 #endif

@@ -93,7 +93,6 @@ namespace Raven {
 		double t0, t1, tHit;
 		if (!Quadratic(a, b, c, t0, t1))
 			return std::nullopt;
-
 		//determinate>=0, at least has one hit point,test if tHit is out of time range
 		if (t0 > tmax || t1 < tmin)//since t0<t1 by default if t0>tmax || t1< tmin,both values are out of range
 			return std::nullopt;
@@ -104,7 +103,9 @@ namespace Raven {
 			if (t1 > tmax)
 				return std::nullopt;
 		}
-
+		//光线必须沿正向传播
+		if (tHit < 0.0)
+			return std::nullopt;
 		//get pHit and corresponding phi value
 		Point3f pHit = localRay.position(tHit);//get hit point 
 		double phi = atan(pHit[1] / pHit[0]);
@@ -138,6 +139,8 @@ namespace Raven {
 		double v = theta - thetaMin / abs(thetaMax - thetaMin);
 		Normal3f n = Normal3f(pHit - Point3f(0.0, 0.0, 0.0)).normalized();
 
+
+
 		Vector3f dpdu(-pHit[1] * phiMax, -pHit[0] * phiMax, 0);
 		Vector3f dpdv = (thetaMax - thetaMin) * Vector3f(pHit[2] * cos(phi), pHit[2] * sin(theta), -radius * sin(theta));
 
@@ -167,7 +170,10 @@ namespace Raven {
 		its.dpdv = dpdv;
 		its.dndu = dndu;
 		its.dndv = dndv;
+		its.wo = -localRay.dir;
 		its = (*this->localToWorld)(its);
+
+
 		return its;
 	}
 
@@ -265,4 +271,8 @@ namespace Raven {
 		return UniformConePdf(cosThetaMax);
 	}
 
+	std::shared_ptr<Sphere> Sphere::build(const Transform* LTW, const Transform* WTL,
+		double radius, double zMax, double zMin, double phiMax) {
+		return std::make_shared<Sphere>(LTW, WTL, radius, zMax, zMin, phiMax);
+	}
 }
