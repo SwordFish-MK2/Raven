@@ -3,18 +3,27 @@
 namespace Raven {
 
 	double FDielectric(double cosThetaI, double etaI, double etaT) {
+		cosThetaI = Clamp(cosThetaI, -1.0, 1.0);
+
+		//如果cosTheta小于0，则说明此时光线为出射，因此交换etaI与etaT
 		if (cosThetaI < 0.f) {
-			double temp = etaI;
-			etaI = etaT;
-			etaT = temp;
+			std::swap(etaI, etaT);
 			cosThetaI = abs(cosThetaI);
 		}
-		double sinThetaI = sqrt(1.0 - cosThetaI * cosThetaI);
+
+		double sinThetaI = sqrt(Max(0.0, 1.0 - cosThetaI * cosThetaI));
 		double sinThetaT = sinThetaI * etaI / etaT;
-		double cosThetaT = sqrt(1.0 - sinThetaT * sinThetaT);
-		double frePara = (etaT * cosThetaI - etaI * cosThetaT) / (etaT * cosThetaI + etaT * cosThetaT);
-		double freOrth = (etaI * cosThetaI - etaT * cosThetaT) / (etaI * cosThetaI + etaT * cosThetaT);
-		return 0.5f * (frePara + freOrth);
+		double cosThetaT = sqrt(Max(0.0, 1.0 - sinThetaT * sinThetaT));
+
+		//全反射
+		if (sinThetaT >= 1) return 1;
+
+		double frePara = (etaT * cosThetaI - etaI * cosThetaT) /
+			(etaT * cosThetaI + etaI * cosThetaT);
+		double frePerp = (etaI * cosThetaI - etaT * cosThetaT) /
+			(etaI * cosThetaI + etaT * cosThetaT);
+
+		return 0.5 * (frePara * frePara + frePerp * frePerp);
 	}
 
 	double FConductor(double cosTheta, double etaI, double etaT, double k) {

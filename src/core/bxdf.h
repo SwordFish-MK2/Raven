@@ -11,9 +11,9 @@ namespace Raven {
 
 	double FConductor(double cosThetaI, double etaI, double etaT, double k);
 
-	inline Vector3f Reflect(const Vector3f& wo, const Normal3f& n) {
-		return -wo + n * Dot(wo, n) * 2.0;
-	}
+	//inline Vector3f Reflect(const Vector3f& wo, const Normal3f& n) {
+	//	return -wo + n * Dot(wo, n) * 2.0;
+	//}
 
 	inline Vector3f Reflect(const Vector3f& wo, const Vector3f& n) {
 		return -wo + n * Dot(wo, n) * 2.0;
@@ -32,13 +32,20 @@ namespace Raven {
 		double etaI, etaT, k;
 	public:
 		FresnelConductor(double etai, double etat, double k) :etaI(etai), etaT(etat), k(k) {}
-		double evaluate(double cosTheta)const {
+		virtual double evaluate(double cosTheta)const {
 
 			return FConductor(cosTheta, etaI, etaT, k);
 		}
 	};
 
 	class FresnelDielectric :public Fresnel {
+	private:
+		double etaI, etaT;
+	public:
+		FresnelDielectric(double etaI, double etaT) :etaI(etaI), etaT(etaT) {}
+		virtual double evaluate(double cosTheta)const {
+			return FDielectric(cosTheta, etaI, etaT);
+		}
 	};
 
 	enum BxDFType {
@@ -92,10 +99,13 @@ namespace Raven {
 	};
 
 	inline double CosTheta(const Vector3f& w) {
-		return Clamp(Dot(w, Vector3f(0.f, 0.f, 1.f)), 0.f, 1.f);
+		return w.z;
 	}
 	inline double Cos2Theta(const Vector3f& w) {
-		return pow(CosTheta(w), 2);
+		return w.z * w.z;
+	}
+	inline double AbsCosTheta(const Vector3f& w) {
+		return abs(w.z);
 	}
 	inline double Sin2Theta(const Vector3f& w) {
 		return Max(0., 1. - Cos2Theta(w));
@@ -109,9 +119,12 @@ namespace Raven {
 	inline double AbsTanTheta(const Vector3f& w) {
 		return abs(SinTheta(w) / CosTheta(w));
 	}
+	inline double Tan2Theta(const Vector3f& w) {
+		return TanTheta(w) * TanTheta(w);
+	}
 	inline double CosPhi(const Vector3f& w) {
-		double sin = SinTheta(w);
-		return sin == 0 ? 1 : Clamp(w.x / sin, -1.f, 1.f);
+		double sinTheta = SinTheta(w);
+		return sinTheta == 0 ? 1 : Clamp(w.x / sinTheta, -1.f, 1.f);
 	}
 	inline double SinPhi(const Vector3f& w) {
 		double sin = SinTheta(w);

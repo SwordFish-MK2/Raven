@@ -5,6 +5,7 @@
 #include"../light/areaLight.h"
 #include"../utils/loader.h"
 #include"../texture/solidTexture.h"
+#include"../material/plastic.h"
 namespace Raven {
 
 	Scene::Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
@@ -246,8 +247,8 @@ namespace Raven {
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
 		std::optional<TriangleInfo> floorInfo =
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
-//		std::optional<TriangleInfo> sBoxInfo =
-//			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+		//		std::optional<TriangleInfo> sBoxInfo =
+		//			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
@@ -283,6 +284,11 @@ namespace Raven {
 		std::shared_ptr<Texture<Vector3f>> blackTexture = ConstTexture<Vector3f>::build(Vector3f(0.235294, 0.67451, 0.843137));
 		std::shared_ptr<Texture<Vector3f>> cheTex = CheckeredTexture<Vector3f>::build(greenTexture, blackTexture);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
+
+		std::shared_ptr<Texture<Vector3f>> kdTex = ConstTexture<Vector3f>::build(Vector3f(0.3f, 0.3f, 0.25f));
+		std::shared_ptr<Texture<Vector3f>> ksTex = ConstTexture<Vector3f>::build(Vector3f(0.8f, 0.8f, 0.8f));
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
+
 		//Material
 		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, Vector3f(0.1, 0.97, 0.4));
 		std::shared_ptr<MatteMaterial> mate2 = MatteMaterial::buildConst(0.0, Vector3f(0.5, 0.5, 0.5));
@@ -291,6 +297,8 @@ namespace Raven {
 		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, Vector3f(0.725f, 0.71f, 0.68f));
 		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, Vector3f(0.65f));
 		std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
+
+		std::shared_ptr<Plastic> plastic = Plastic::build(kdTex, ksTex, roughTex);
 
 		//Light
 		std::vector<std::shared_ptr<Triangle>> sTri = lightMesh->getTriangles();
@@ -307,7 +315,7 @@ namespace Raven {
 		lights.push_back(aLight2);
 
 		//Primitives
-		std::shared_ptr<Primitive> sLocalPrim = Primitive::build(sphere, whiteLam, nullptr);
+		std::shared_ptr<Primitive> sLocalPrim = Primitive::build(sphere, plastic, nullptr);
 		std::shared_ptr<Primitive>sworldPrim = TransformedPrimitive::build(sphereWorld.get(), invSphereWorld.get(), sLocalPrim);
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
 		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);

@@ -36,7 +36,6 @@ namespace Raven {
 		//overload operator() to apply transform-----------------------------
 		Vector3f operator()(const Vector3f& v)const;
 		Point3f operator()(const Point3f& p)const;
-		Transform Rotate(double angle, const Vector3f& axis);
 		Normal3f operator()(const Normal3f& n)const;
 		Bound3f operator()(const Bound3f& b)const;
 		Ray operator()(const Ray& r)const;

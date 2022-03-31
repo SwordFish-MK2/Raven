@@ -26,10 +26,11 @@ namespace Raven {
 
 	//给定入射与出射方向，计算brdf
 	Vector3f BSDF::f(const Vector3f& wo, const Vector3f& wi)const {
-		Vector3f wout = worldToLocal(wo);//将入射光变换到BSDF坐标系下并使入射光朝向平面外侧
+		Vector3f woLocal = worldToLocal(wo);//将入射光变换到BSDF坐标系下并使入射光朝向平面外侧
+		Vector3f wiLocal = worldToLocal(wi);
 		Vector3f result = Vector3f(0.0);
 		for (int i = 0; i < bxdfs.size(); i++) {
-			result += bxdfs[i]->f(wo, wi);
+			result += bxdfs[i]->f(woLocal, wiLocal);
 		}
 
 		return result /= (double)bxdfs.size();
@@ -42,13 +43,15 @@ namespace Raven {
 		int bxdfIndex = Min((unsigned int)(bxdfs.size() - 1), (unsigned int)std::floor(bxdfs.size() * sample[0]));
 
 		//sample choosen BxDF
-		Vector3f woLocal = worldToLocal(wo);
+		Vector3f woLocal = Normalize(worldToLocal(wo));
+		if (woLocal.z < 0)
+			std::cout << "?";
 		Vector3f wiLocal;
 
 		*pdf = 0.0;
 		Vector3f f = bxdfs[bxdfIndex]->sampled_f(woLocal, wiLocal, sample, pdf);
-		//if (*pdf == 0)
-		//	return 0;
+		if (*pdf == 0)
+			return Vector3f(0.0);
 		wi = Normalize(localToWorld(wiLocal));
 
 		//compute overall pdf of sampled wi
@@ -72,8 +75,8 @@ namespace Raven {
 	}
 
 	double BSDF::pdf(const Vector3f& wo, const Vector3f& wi)const {
-		const Vector3f woLocal = worldToLocal(wo);
-		const Vector3f wiLocal = worldToLocal(wi);
+		const Vector3f woLocal = Normalize(worldToLocal(wo));
+		const Vector3f wiLocal = Normalize(worldToLocal(wi));
 		if (woLocal.z == 0)
 			return 0.0;
 		double pdf = 0.0;

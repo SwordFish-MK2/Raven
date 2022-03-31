@@ -65,25 +65,25 @@ namespace Raven {
 					return Li;
 				}
 
-				for (auto& light : scene.lights) {
-					//采样光源,计算以该交点为终点的路径的贡献
-					LightSample lightSample;
-					Vector3f emit = light->sampleLi(*record, Point2f(GetRand(), GetRand()), &lightSample);
-					Vector3f fLight = record->bsdf->f(wo, lightSample.wi);
-					double length = (lightSample.p - p).length();
-					double dot1 = Max(0.0,Dot(lightSample.wi, n));
-					double dot2 = Max(0.0,Dot(-lightSample.wi, lightSample.n));
-					Vector3f dirLi = emit * fLight * dot1 / lightSample.pdf;
-					//判断有无遮挡
-					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
-					Ray shadowRay(p, lightSample.wi);
-					std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, epsilon, length - 0.1);
-					if (test == std::nullopt)
-						Li += dirLi * beta;
-				}
+				//for (auto& light : scene.lights) {
+				//	//采样光源,计算以该交点为终点的路径的贡献
+				//	LightSample lightSample;
+				//	Vector3f emit = light->sampleLi(*record, Point2f(GetRand(), GetRand()), &lightSample);
+				//	Vector3f fLight = record->bsdf->f(wo, lightSample.wi);
+				//	double length = (lightSample.p - p).length();
+				//	double dot1 = Max(0.0,Dot(lightSample.wi, n));
+				//	double dot2 = Max(0.0,Dot(-lightSample.wi, lightSample.n));
+				//	Vector3f dirLi = emit * fLight * dot1 / lightSample.pdf;
+				//	//判断有无遮挡
+				//	//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
+				//	Ray shadowRay(p, lightSample.wi);
+				//	std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, epsilon, length - 0.1);
+				//	if (test == std::nullopt)
+				//		Li += dirLi * beta;
+				//}
 
-				//Vector3f L_dir = SampleAllLights(*record, scene);
-				//Li += beta * L_dir;
+				Vector3f L_dir = SampleAllLights(*record, scene);
+				Li += beta * L_dir;
 
 				//采样brdf，计算出射方向,更新beta
 				double pdf;

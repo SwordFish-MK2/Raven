@@ -545,7 +545,15 @@ namespace Raven {
 		return Vector3<T>(v.x * k, v.y * k, v.z * k);
 	}
 
+	template<class T> inline
+		bool SameHemisphere(const Vector3<T>& v, const Vector3<T>& w) {
+		return v.z * w.z > 0;
+	}
 
+	template<class T> inline
+		bool SameHemisphere(const Vector3<T>& v, const Normal3<T>& w) {
+		return v.z * w.z > 0;
+	}
 
 	template<class T>
 	inline int MaxDimention(const Vector3<T>& v) {
@@ -575,6 +583,18 @@ namespace Raven {
 	template<class T>
 	inline T Dot(const Vector3<T>& v1, const Vector3<T>& v2) {
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+	}
+
+	inline Vector3f SphericalDirection(double sinTheta, double cosTheta, double phi) {
+		return Vector3f(sinTheta * std::cos(phi), sinTheta * std::sin(phi),
+			cosTheta);
+	}
+
+	inline Vector3f SphericalDirection(double sinTheta, double cosTheta, double phi,
+		const Vector3f& x, const Vector3f& y,
+		const Vector3f& z) {
+		return sinTheta * std::cos(phi) * x + sinTheta * std::sin(phi) * y +
+			cosTheta * z;
 	}
 
 	//TODO::Try template<class T> Vector3<T>
@@ -706,6 +726,12 @@ namespace Raven {
 		T Dot(const Vector3<T>& v, const Normal3<T>& n) {
 		return n.x * v.x + n.y * v.y + n.z * v.z;
 	}
+
+	template<class T> inline
+		bool SameHemisphere(const Normal3<T>& n, const Normal3<T>& w) {
+		return n.z * w.z > 0;
+	}
+
 	//filp the normal so that it lies in the same hemispere with a vector
 	template<class T> inline
 		Normal3<T> FaceForward(const Normal3<T>& n, const Vector3<T>& v) {

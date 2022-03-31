@@ -79,12 +79,10 @@ namespace Raven {
 	}
 
 	Normal3f Transform::operator()(const Normal3f& n)const {
-		//Nprime=normalize((T-1)T*N)
-		Eigen::Vector4f nv(n[0], n[1], n[2], 0.0f);
-		nv = invm.transpose() * nv;
-		Normal3f result(nv(0), nv(1), nv(2));
-		result.normalize();
-		return result;
+		double x = n.x, y = n.y, z = n.z;
+		return Normal3f(invm(0,0) * x + invm(1,0) * y + invm(2,0) * z,
+			invm(0,1) * x + invm(1,1) * y + invm(2,1) * z,
+			invm(0,2) * x +invm(1,2) * y + invm(2,2) * z);
 	}
 
 	SurfaceInteraction Transform::operator()(const SurfaceInteraction& its)const {

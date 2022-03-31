@@ -142,7 +142,8 @@ namespace Raven {
 
 
 		Vector3f dpdu(-pHit[1] * phiMax, -pHit[0] * phiMax, 0);
-		Vector3f dpdv = (thetaMax - thetaMin) * Vector3f(pHit[2] * cos(phi), pHit[2] * sin(theta), -radius * sin(theta));
+		Vector3f dpdv = (thetaMax - thetaMin) * Vector3f(pHit[2] * cos(phi), 
+			pHit[2] * sin(theta), -radius * sin(theta));
 
 		//coefficients to compute dndu dndv
 		double E = abs(Dot(dpdu, dpdu));

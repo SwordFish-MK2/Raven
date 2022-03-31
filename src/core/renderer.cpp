@@ -20,7 +20,7 @@ namespace Raven {
 				//判断shadow ray是否被遮挡
 				Ray shadowRay(record.p, lSample.wi);
 				double distance = (record.p - lSample.p).length();
-				std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, 1e-6, distance - 1e-6);
+				std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, 0.1, distance - 0.1);
 				if (test)
 					Le = Vector3f(0.0);	//如果shadow ray被遮挡，返回Radiance=0
 
@@ -39,11 +39,13 @@ namespace Raven {
 		Vector3f wi;
 		double scarttingPdf;
 		Vector3f f = record.bsdf->sample_f(record.wo, wi, Point2f(GetRand(), GetRand()), &scarttingPdf);
-		double cosTheta = abs(Dot(wi, record.n));
-		f *= cosTheta;
 
 		double lightPdf = 1.0;
 		if (f != Vector3f(0.0) && scarttingPdf > 0) {
+
+			double cosTheta = abs(Dot(wi, record.n));
+			f *= cosTheta;
+
 
 			//计算lightPdf，求MIS权重
 			lightPdf = light.pdf_Li(record, wi);
