@@ -23,7 +23,7 @@ namespace Raven {
 		const int height, width;
 		const double aspect_ratio;
 
-		Film(int w, int h, double ratio) :height(h), width(w), aspect_ratio(ratio), index(0) {
+		Film(int w, int h) :height(h), width(w), aspect_ratio(w/h), index(0) {
 			data = (unsigned char*)malloc(sizeof(unsigned char) * h * w * 3);
 		}
 		Film(const Film& f) :height(f.height), width(f.width), aspect_ratio(f.aspect_ratio), index(0)
@@ -44,9 +44,9 @@ namespace Raven {
 			double invGamma = 1.0 / 2.2;
 			for (int i = 0; i < 3; i++)
 			{
-				//double c = GammaCorrect(color[i]);
+				double c = GammaCorrect(color[i]);
 
-				double c = pow(color[i], invGamma);//gamma correct
+				//double c = pow(color[i], invGamma);//gamma correct
 				int intC = static_cast<int>(255 * Clamp(c, 0.0, 0.999));
 				in(intC);
 			}

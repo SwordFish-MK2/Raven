@@ -16,13 +16,13 @@ namespace Raven {
 		//add shading_model to bsdf
 		if (kdValue != Vector3f(0.0, 0.0, 0.0)) {
 			std::shared_ptr<BxDF> lam = std::make_shared<LambertainReflection>(kdValue);
-			//bsdf->addBxDF(lam);
+			bsdf->addBxDF(lam);
 		}
 
 		if (ksValue != Vector3f(0.0, 0.0, 0.0)) {
 			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.85f, 1.f);
 			double alpha = GGX::RoughnessToAlpha(roughValue);
-			std::shared_ptr<MicrofacetDistribution> distribute = std::make_shared<BeckmannSpizzichino>(roughValue, roughValue);
+			std::shared_ptr<MicrofacetDistribution> distribute = std::make_shared<GGX>(roughValue, roughValue);
 
 			std::shared_ptr<BxDF> spec = std::make_shared<MicrofacetReflection>(fresnel, distribute, ksValue);
 			bsdf->addBxDF(spec);

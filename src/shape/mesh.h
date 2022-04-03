@@ -57,7 +57,7 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>> generatePrimitive(const std::shared_ptr<Material>& mate,
 			const std::shared_ptr<Light>& light = nullptr);
 
-		static std::shared_ptr<TriangleMesh> build(const Transform* WTL, 
+		static std::shared_ptr<TriangleMesh> build(const Transform* WTL,
 			const Transform* LTW, const TriangleInfo& info, AccelType buildType = AccelType::KdTree);
 
 	private:
@@ -72,18 +72,27 @@ namespace Raven {
 	public:
 		Triangle(const Transform* LTW, const Transform* WTL, const TriangleMesh* m, int index) :
 			Shape(LTW, WTL), mesh(m), i(3 * index) {}
-		bool hit(const Ray& r_in, double tMin = 0.0001, double tMax = std::numeric_limits<double>::max())const;
-		std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMin = 0.0001,
+
+		bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const;
+
+		std::optional<SurfaceInteraction> intersect(const Ray& r_in,
 			double tMax = std::numeric_limits<double>::max())const;
+
 		Bound3f localBound()const;
+
 		Bound3f worldBound()const;
+
 		double area()const;
+
 		void getUVs(Point2f uv[3])const;
+
 		inline int index(int num)const {
 			//TODO::¼ì²énumµÄÖµ
 			return mesh->indices[i + num];
 		}
+
 		std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
+
 		double pdf()const { return 1 / area(); }
 	};
 

@@ -2,28 +2,53 @@
 
 namespace Raven {
 
-	double FDielectric(double cosThetaI, double etaI, double etaT) {
-		cosThetaI = Clamp(cosThetaI, -1.0, 1.0);
+	double FDielectric(double cosI, double etaI, double etaT) {
+		//cosThetaI = Clamp(cosThetaI, -1.0, 1.0);
 
-		//如果cosTheta小于0，则说明此时光线为出射，因此交换etaI与etaT
-		if (cosThetaI < 0.f) {
+		////如果cosTheta小于0，则说明此时光线为出射，因此交换etaI与etaT
+		//if (cosThetaI < 0.f) {
+		//	std::swap(etaI, etaT);
+		//	cosThetaI = abs(cosThetaI);
+		//}
+
+		//double sinThetaI = sqrt(Max(0.0, 1.0 - cosThetaI * cosThetaI));
+		//double sinThetaT = sinThetaI * etaI / etaT;
+		//double cosThetaT = sqrt(Max(0.0, 1.0 - sinThetaT * sinThetaT));
+
+		////全反射
+		//if (sinThetaT >= 1) return 1;
+
+		//double frePara = (etaT * cosThetaI - etaI * cosThetaT) /
+		//	(etaT * cosThetaI + etaI * cosThetaT);
+		//double frePerp = (etaI * cosThetaI - etaT * cosThetaT) /
+		//	(etaI * cosThetaI + etaT * cosThetaT);
+
+		//return 0.5 * (frePara * frePara + frePerp * frePerp);
+
+		if (cosI <= 0)
+		{
 			std::swap(etaI, etaT);
-			cosThetaI = abs(cosThetaI);
 		}
+		// Compute sini using Snell's law
+		float sinT = etaI / etaT * sqrt(Max(0.0, 1 - cosI * cosI));
+		// Total internal reflection
+		if (sinT >= 1)
+		{
+			return 1.0;
+		}
+		else
+		{
+			float cosT = sqrt(Max(0.0, 1.0 - sinT * sinT));
+			cosI = fabs(cosI);
+			float Rs = ((etaT * cosI) - (etaI * cosT)) /
+				((etaT * cosI) + (etaI * cosT));
+			float Rp = ((etaI * cosI) - (etaT * cosT)) /
+				((etaI * cosI) + (etaT * cosT));
+			return  (Rs * Rs + Rp * Rp) / 2;
+		}
+		// As a consequence of the conservation of energy, transmittance is given by:
+		// kt = 1 - kr;
 
-		double sinThetaI = sqrt(Max(0.0, 1.0 - cosThetaI * cosThetaI));
-		double sinThetaT = sinThetaI * etaI / etaT;
-		double cosThetaT = sqrt(Max(0.0, 1.0 - sinThetaT * sinThetaT));
-
-		//全反射
-		if (sinThetaT >= 1) return 1;
-
-		double frePara = (etaT * cosThetaI - etaI * cosThetaT) /
-			(etaT * cosThetaI + etaI * cosThetaT);
-		double frePerp = (etaI * cosThetaI - etaT * cosThetaT) /
-			(etaI * cosThetaI + etaT * cosThetaT);
-
-		return 0.5 * (frePara * frePara + frePerp * frePerp);
 	}
 
 	double FConductor(double cosTheta, double etaI, double etaT, double k) {

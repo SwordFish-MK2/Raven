@@ -108,7 +108,7 @@ namespace Raven {
 		return abs(w.z);
 	}
 	inline double Sin2Theta(const Vector3f& w) {
-		return Max(0., 1. - Cos2Theta(w));
+		return Max(0.0, 1. - Cos2Theta(w));
 	}
 	inline double SinTheta(const Vector3f& w) {
 		return sqrt(Sin2Theta(w));

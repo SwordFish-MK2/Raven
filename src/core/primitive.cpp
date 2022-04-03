@@ -1,17 +1,17 @@
 #include"primitive.h"
 
 namespace Raven {
-	bool Primitive::hit(const Ray& r_in, double tMin, double tMax)const {
+	bool Primitive::hit(const Ray& r_in, double tMax)const {
 		//perform ray-geometry intersection test
-		if (!shape_ptr->hit(r_in, tMin, tMax)) {
+		if (!shape_ptr->hit(r_in, tMax)) {
 			return false;
 		}
 		return true;
 	}
 
-	std::optional<SurfaceInteraction> Primitive::intersect(const Ray& ray, double tMin, double tMax)const {
+	std::optional<SurfaceInteraction> Primitive::intersect(const Ray& ray, double tMax)const {
 		//判断光线是否与几何体相交
-		std::optional<SurfaceInteraction> hitRecord = shape_ptr->intersect(ray, tMin, tMax);
+		std::optional<SurfaceInteraction> hitRecord = shape_ptr->intersect(ray, tMax);
 
 		//光线未与几何体相交
 		if (hitRecord == std::nullopt) {
@@ -42,21 +42,21 @@ namespace Raven {
 		return std::make_shared<Primitive>(s, m, l);
 	}
 
-	bool TransformedPrimitive::hit(const Ray& r_in, double tMin, double tMax)const {
+	bool TransformedPrimitive::hit(const Ray& r_in, double tMax)const {
 		if (!primToWorld || !worldToPrim || !prim)
 			return false;
 		//transform the incident ray to primitive space then perform ray intersection test
 		Ray transformedRay = Inverse(*primToWorld)(r_in);
-		return prim->hit(r_in, tMin, tMax);
+		return prim->hit(r_in, tMax);
 	}
 
-	std::optional<SurfaceInteraction> TransformedPrimitive::intersect(const Ray& r_in, double tMin, double tMax)const {
+	std::optional<SurfaceInteraction> TransformedPrimitive::intersect(const Ray& r_in, double tMax)const {
 		if (!primToWorld || !worldToPrim || !prim)
 			return std::nullopt;
 
 		//将光线变换到Prim坐标系下并求交
 		Ray transformedRay = (*worldToPrim)(r_in);
-		std::optional<SurfaceInteraction> record = prim->intersect(transformedRay, tMin, tMax);
+		std::optional<SurfaceInteraction> record = prim->intersect(transformedRay, tMax);
 
 		//未相交
 		if (record == std::nullopt) {

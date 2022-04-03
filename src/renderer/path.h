@@ -1,5 +1,5 @@
-#ifndef _RAVEN_RENDERER_SIMPLIFIED_H_
-#define _RAVEN_RENDERER_SIMPLIFIED_H_
+#ifndef _RAVEN_RENDERER_PATH_TRACING_H_
+#define _RAVEN_RENDERER_PATH_TRACING_H_
 
 #include"../core/renderer.h"
 #include"../core/base.h"

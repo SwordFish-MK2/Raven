@@ -87,14 +87,17 @@ namespace Raven {
 	class KdTreeAccel :public Accelerate {
 	public:
 		KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int num);
+
 		KdTreeAccel(const KdTreeAccel& tree) :Accelerate(tree.prims), maxDepth(tree.maxDepth), primsThreshold(tree.primsThreshold),
 			isectCost(tree.isectCost), traversalCost(tree.traversalCost), emptyBonus(tree.emptyBonus), nAccelNode(tree.nAccelNode),
 			nextFreeNode(tree.nextFreeNode), primIndices(tree.primIndices) {
 			treeNodes = new KdTreeNode[nAccelNode];
 			std::memcpy(treeNodes, tree.treeNodes, sizeof(KdTreeNode) * nAccelNode);
 		}
-		virtual bool hit(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMin = 0.001, double tMax = FLT_MAX)const;
+
+		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
 		~KdTreeAccel() {
 			if (treeNodes)
 				delete[] treeNodes;

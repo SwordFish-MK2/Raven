@@ -2,21 +2,21 @@
 
 namespace Raven {
 
-	bool PrimitiveList::hit(const Ray& r_in, double tMin, double tMax)const {
+	bool PrimitiveList::hit(const Ray& r_in, double tMax)const {
 		for (size_t i = 0; i < prims.size(); i++) {
 			SurfaceInteraction inter;
-			if (prims[i]->hit(r_in, tMin, tMax))
+			if (prims[i]->hit(r_in, tMax))
 				return true;
 		}
 		return false;
 	}
 
-	std::optional<SurfaceInteraction> PrimitiveList::intersect(const Ray& r_in, double tMin, double tMax)const {
+	std::optional<SurfaceInteraction> PrimitiveList::intersect(const Ray& r_in, double tMax)const {
 		bool flag = false;
 		double closest = tMax;
 		SurfaceInteraction inter;
 		for (int i = 0; i < prims.size(); i++) {
-			std::optional<SurfaceInteraction> record = prims[i]->intersect(r_in, tMin, closest);
+			std::optional<SurfaceInteraction> record = prims[i]->intersect(r_in, closest);
 			if (record) {
 				inter = *record;
 				closest = (*record).t;

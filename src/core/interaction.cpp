@@ -63,4 +63,10 @@ namespace Raven {
 		shading.dndu = dndu;
 		shading.dndv = dndv;
 	}
+
+	Ray SurfaceInteraction::scartterRay(const Vector3f& dir)const {
+		Point3f ori = p + dir * 0.0001;
+		return Ray(ori, dir);
+	}
+
 }

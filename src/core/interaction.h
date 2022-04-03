@@ -9,7 +9,7 @@ namespace Raven {
 	};
 
 	struct SurfaceInteraction :public Interaction {
-		double t;//interscetion time for motion blur
+		double t;//光线的传播距离参数t
 		double eta = 1;//refract index
 		Point2f uv;//texture coodinate
 		Point3f p;//intersected point 
@@ -40,6 +40,8 @@ namespace Raven {
 
 		//compute dudx dudy dvdx dvdy
 		void computeDifferential(const RayDifferential& rd);
+
+		Ray scartterRay(const Vector3f& dir)const;
 	};
 }
 

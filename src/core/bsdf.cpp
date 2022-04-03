@@ -17,7 +17,7 @@ namespace Raven {
 		sx = x;
 		sy = y;
 		ns = n;
-	}
+	} 
 
 	void BSDF::addBxDF(std::shared_ptr<BxDF> bxdf) {
 		bxdfs.push_back(bxdf);
@@ -44,14 +44,15 @@ namespace Raven {
 
 		//sample choosen BxDF
 		Vector3f woLocal = Normalize(worldToLocal(wo));
-		if (woLocal.z < 0)
-			std::cout << "?";
+		//if (woLocal.z < 0)
+		//		std::cout << "?";
 		Vector3f wiLocal;
 
 		*pdf = 0.0;
 		Vector3f f = bxdfs[bxdfIndex]->sampled_f(woLocal, wiLocal, sample, pdf);
 		if (*pdf == 0)
 			return Vector3f(0.0);
+
 		wi = Normalize(localToWorld(wiLocal));
 
 		//compute overall pdf of sampled wi

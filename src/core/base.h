@@ -62,17 +62,15 @@ namespace Raven {
 	}
 	//solve quadratic function ,return to solutions in tmin and tmax if exist
 	inline bool Quadratic(double a, double b, double c, double& tmin, double& tmax) {
-		double determinate = b * b - 4 * a * c;
-		if (determinate < 0.0) {
-			//no solution
-			tmin = tmax = -1;
-			return false;
-		}
-		//has one or two solutions, set tmin the smaller one 
-		double squareRoot = sqrt(determinate);
-		double temp = 0.5 / a;
-		tmin = (-b - squareRoot) * temp;
-		tmax = (-b + squareRoot) * temp;
+		double discrim = b * b - 4 * a * c;
+		if (discrim <= 0) return false;
+		double rootDiscrim = std::sqrt(discrim);
+		double q;
+		if (b < 0) q = -.5 * (b - rootDiscrim);
+		else       q = -.5 * (b + rootDiscrim);
+		tmin = q / a;
+		tmax = c / q;
+		if (tmin > tmax) std::swap(tmin, tmax);
 		return true;
 	}
 	template<class T>

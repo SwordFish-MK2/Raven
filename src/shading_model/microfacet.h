@@ -12,7 +12,7 @@ namespace Raven {
 
 		virtual Vector3f sample_wh(const Vector3f& wo, const Point2f& uv)const = 0;
 		virtual double pdf(const Vector3f& wo, const Vector3f& wi)const;
-				virtual double G2(const Vector3f& wo, const Vector3f& wi)const;
+		virtual double G2(const Vector3f& wo, const Vector3f& wi)const;
 		virtual double G1(const Vector3f& w)const;
 	protected:
 
@@ -25,7 +25,9 @@ namespace Raven {
 
 		virtual double lambda(const Vector3f& wh)const;
 	public:
-		BeckmannSpizzichino(double alphaX, double alphaY) :alphaX(Max(0.001,alphaX)), alphaY(Max(0.001,alphaY)) {}
+		BeckmannSpizzichino(double alphaX, double alphaY) :alphaX(Max(0.001, alphaX)), alphaY(Max(0.001, alphaY)) {}
+
+		virtual double pdf(const Vector3f& wo, const Vector3f& wi)const;
 
 		virtual double NDF(const Vector3f& wh)const;
 		virtual Vector3f sample_wh(const Vector3f& wo, const Point2f& uv)const;
@@ -44,9 +46,10 @@ namespace Raven {
 		bool sampleVisibleArea;
 		virtual double lambda(const Vector3f& wh)const;
 	public:
-		GGX(double alphaX, double alphaY) :alphaX(Max(0.001,alphaX)), alphaY(Max(0.001,alphaY)), sampleVisibleArea(false) {}
+		GGX(double alphaX, double alphaY) :alphaX(Max(0.001, alphaX)), alphaY(Max(0.001, alphaY)), sampleVisibleArea(false) {}
 
 		virtual double NDF(const Vector3f& wh)const;
+
 		virtual Vector3f sample_wh(const Vector3f& wo, const Point2f& uv)const;
 
 		static double RoughnessToAlpha(double roughness);
