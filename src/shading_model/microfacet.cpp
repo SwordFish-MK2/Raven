@@ -25,13 +25,16 @@ namespace Raven {
 
 	double BeckmannSpizzichino::pdf(const Vector3f& wo, const Vector3f& wi)const {
 		Vector3f wh = Normalize(wi + wo);
-		double tanThetah = AbsTanTheta(wh);
-		double cos_wh = CosTheta(wh);
-		double tan2 = tanThetah * tanThetah;
-		float alpha2 = alphaX * alphaX;
-		float cos4 = cos_wh * cos_wh * cos_wh * cos_wh;
-		float D = exp(-tan2 / alpha2) / (M_PI * alpha2 * cos4);
-		return D * cos_wh;
+		if (!sampleVNDF) {
+			double cosThetah = CosTheta(wh);
+			double D = NDF(wh);
+			return D * cosThetah;
+		}
+		else {
+			double G = G1(wo);
+			double D = NDF(wh);
+			return D * G * abs(Dot(wo, wh)) / AbsCosTheta(wo);
+		}
 	}
 
 	//normal distribution function of microfacets
@@ -82,92 +85,135 @@ namespace Raven {
 
 	//sample overall directions of upper hemisphere respect to ndf,return unit sampled normal vector
 	Vector3f BeckmannSpizzichino::sample_wh(const Vector3f& wo, const Point2f& uv)const {
-		if (alphaX == alphaY) {
-			//isotropic case
+		if (!sampleVNDF) {
+			if (alphaX == alphaY) {
+				//isotropic case
 
-			double logSample = log(1 - uv[0]);
-			if (std::isinf(logSample))
-				logSample = 0;
+				double logSample = log(1 - uv[0]);
+				if (std::isinf(logSample))
+					logSample = 0;
 
-			double tanTheta2 = -alphaX * alphaX * logSample;
-			double phi = 2 * M_PI * uv[1];
+				double tanTheta2 = -alphaX * alphaX * logSample;
+				double phi = 2 * M_PI * uv[1];
 
-			double cosTheta = 1 / sqrt(1 + tanTheta2);
-			double sinTheta = sqrt(Max(0.0, 1 - cosTheta * cosTheta));
+				double cosTheta = 1 / sqrt(1 + tanTheta2);
+				double sinTheta = sqrt(Max(0.0, 1 - cosTheta * cosTheta));
 
-			double x = sinTheta * cos(phi);
-			double y = sinTheta * sin(phi);
+				double x = sinTheta * cos(phi);
+				double y = sinTheta * sin(phi);
 
-			Vector3f wh = Vector3f(x, y, cosTheta);
-			//确保采样的wh位于上半球
-			if (!SameHemisphere(wo, wh) < 0)
-				wh = -wh;
+				Vector3f wh = Vector3f(x, y, cosTheta);
+				//确保采样的wh位于上半球
+				if (!SameHemisphere(wo, wh) < 0)
+					wh = -wh;
 
-			return wh;
+				return wh;
+			}
+			else {
+				//antisotropic
+				double alpha = alphaY / alphaX;
+				double phi = atan(alpha * tan(2 * M_PI * uv[1] + 0.5f * M_PI));
+				if (uv[1] > 0.5f)
+					phi += M_PI;
+
+				double cosPhi = cos(phi);
+				double sinPhi = sin(phi);
+				double alphaX2 = alphaX * alphaX;
+				double alphaY2 = alphaY * alphaY;
+				double t = cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2;
+
+				double logSample = log(1 - uv[0]);
+
+				double theta = -logSample / t;
+
+				double x = sin(theta) * cosPhi;
+				double y = sin(theta) * sinPhi;
+				double z = cos(theta);
+
+				Vector3f wh = Vector3f(x, y, z);
+				if (Dot(wh, wo) < 0)
+					wh = -wh;
+				return wh;
+			}
 		}
 		else {
-			//antisotropic
-			double alpha = alphaY / alphaX;
-			double phi = atan(alpha * tan(2 * M_PI * uv[1] + 0.5f * M_PI));
-			if (uv[1] > 0.5f)
-				phi += M_PI;
+			//拉伸入射光线
+			Vector3f woStretched = Normalize(Vector3f(wo.x * alphaX, wo.y * alphaY, wo.z));
 
-			double cosPhi = cos(phi);
-			double sinPhi = sin(phi);
-			double alphaX2 = alphaX * alphaX;
-			double alphaY2 = alphaY * alphaY;
-			double t = cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2;
+			auto [slopeX, slopeY] = BeckmannSample11(woStretched, uv);
 
-			double logSample = log(1 - uv[0]);
+			// 3. rotate
+			double tmp = CosPhi(woStretched) * slopeX - SinPhi(woStretched) * slopeY;
+			slopeY = SinPhi(woStretched) * slopeX + CosPhi(woStretched) * slopeY;
+			slopeX = tmp;
 
-			double theta = -logSample / t;
+			// 4. unstretch
+			slopeX = alphaX * slopeX;
+			slopeY = alphaY * slopeY;
 
-			double x = sin(theta) * cosPhi;
-			double y = sin(theta) * sinPhi;
-			double z = cos(theta);
+			// 5. compute normal
+			return Normalize(Vector3f(-slopeX, -slopeY, 1.f));
 
-			Vector3f wh = Vector3f(x, y, z);
-			if (Dot(wh, wo) < 0)
-				wh = -wh;
-			return wh;
+		}
+	}
+
+	double GGX::pdf(const Vector3f& wo, const Vector3f& wi)const {
+		Vector3f wh = Normalize(wo + wi);
+		if (!sampleVNDF) {
+			double D = NDF(wh);
+			double cosThetah = AbsCosTheta(wh);
+			return D * cosThetah;
+		}
+		else {
+			double D = NDF(wh);
+			double G = G1(wo);
+			return D * G * abs(Dot(wo, wh)) / AbsCosTheta(wo);
 		}
 	}
 
 	double GGX::NDF(const Vector3f& wh)const {
 
-		double tan2 = Tan2Theta(wh);
-		if (std::isinf(tan2))
-			return 0;
+		//double tan2 = Tan2Theta(wh);
+		//if (std::isinf(tan2))
+		//	return 0;
 
-		double cos2Thetah = Cos2Theta(wh);
-		double cos4 = cos2Thetah * cos2Thetah;
+		//double cos2Thetah = Cos2Theta(wh);
+		//double cos4 = cos2Thetah * cos2Thetah;
 
-		double cos2Phih = Cos2Phi(wh);
-		double sin2Phih = Sin2Phi(wh);
-		double alphaX2 = alphaX * alphaX;
-		double alphaY2 = alphaY * alphaY;
+		//double cos2Phih = Cos2Phi(wh);
+		//double sin2Phih = Sin2Phi(wh);
+		//double alphaX2 = alphaX * alphaX;
+		//double alphaY2 = alphaY * alphaY;
 
-		double e = tan2 / alphaX2;
+		//double e = tan2 / alphaX2;
 
-		return 1.0 / (M_PI * alphaX2 * cos4 * (1 + e) * (1 + e));
+		//return 1.0 / (M_PI * alphaX2 * cos4 * (1 + e) * (1 + e));
+
+		double tan2Theta = Tan2Theta(wh);
+		if (std::isinf(tan2Theta)) return 0.;
+		const double cos4Theta = Cos2Theta(wh) * Cos2Theta(wh);
+		double e =
+			(Cos2Phi(wh) / (alphaX * alphaX) + Sin2Phi(wh) / (alphaY * alphaY)) *
+			tan2Theta;
+		return 1 / (M_PI * alphaX * alphaY * cos4Theta * (1 + e) * (1 + e));
 
 	}
 
 	double GGX::lambda(const Vector3f& w)const {
-		/*	double tan = AbsTanTheta(w);
+		//double tan = AbsTanTheta(w);
 
-			if (std::isinf(tan))
-				return 0.0;
+		//if (std::isinf(tan))
+		//	return 0.0;
 
-			double tan2 = tan * tan;
+		//double tan2 = tan * tan;
 
-			double cos2Phih = Cos2Phi(w);
-			double sin2Phih = Sin2Phi(w);
+		//double cos2Phih = Cos2Phi(w);
+		//double sin2Phih = Sin2Phi(w);
 
-			double alpha = sqrt(cos2Phih * alphaX * alphaX +
-				sin2Phih * alphaY * alphaY);
+		//double alpha = sqrt(cos2Phih * alphaX * alphaX +
+		//	sin2Phih * alphaY * alphaY);
 
-			return (-1.0 + sqrt(1.0 + alpha * alpha * tan2)) / 2;*/
+		//return (-1.0 + sqrt(1.0 + alpha * alpha * tan2)) / 2;
 
 		double absTanTheta = std::abs(TanTheta(w));
 		if (std::isinf(absTanTheta)) return 0.;
@@ -178,66 +224,71 @@ namespace Raven {
 		return (-1 + std::sqrt(1.f + alpha2Tan2Theta)) / 2;
 	}
 
-
 	Vector3f GGX::sample_wh(const Vector3f& wo, const Point2f& uv)const {
+		if (!sampleVNDF) {
+			//Sample whole hemisphere
+			if (alphaX == alphaY) {
+				//各项异性
+				double phi = 2 * M_PI * uv[1];
 
-		//double cosTheta = 0, phi = (2 * M_PI) * uv[1];
-		//if (alphaX == alphaY) {
-		//	double tanTheta2 = alphaX * alphaX * uv[0] / (1.0f - uv[0]);
-		//	cosTheta = 1 / std::sqrt(1 + tanTheta2);
-		//}
-		//else {
-		//	phi =
-		//		std::atan(alphaY / alphaX * std::tan(2 * M_PI * uv[1] + .5f * M_PI));
-		//	if (uv[1] > .5f) phi += M_PI;
-		//	double sinPhi = std::sin(phi), cosPhi = std::cos(phi);
-		//	const double alphax2 = alphaX * alphaX, alphay2 = alphaY * alphaY;
-		//	const double alpha2 =
-		//		1 / (cosPhi * cosPhi / alphax2 + sinPhi * sinPhi / alphay2);
-		//	double tanTheta2 = alpha2 * uv[0] / (1 - uv[0]);
-		//	cosTheta = 1 / std::sqrt(1 + tanTheta2);
-		//}
-		//double sinTheta =
-		//	std::sqrt(std::max((double)0., (double)1. - cosTheta * cosTheta));
-		//Vector3f wh = Normalize(SphericalDirection(sinTheta, cosTheta, phi));
-		//if (!SameHemisphere(wo, wh))
-		//	wh = -wh;
-		//return wh;
-		if (alphaX == alphaY) {
-			//isotropic
-			double phi = 2 * M_PI * uv[1];
+				double tanTheta2 = uv[0] * alphaX * alphaX / (1.0 - uv[0]);
+				double cosTheta = 1.0 / sqrt(1 + tanTheta2);//tan2 + 1 = sec2
+				double sinTheta = sqrt(Max(0.0, 1 - cosTheta * cosTheta));
 
-			double tanTheta2 = uv[0] * alphaX * alphaX / (1.0 - uv[0]);
-			double cosTheta = 1.0 / sqrt(1 + tanTheta2);//tan2 + 1 = sec2
-			double sinTheta = sqrt(Max(0.0 , 1 - cosTheta * cosTheta));
+				Vector3f wh = Normalize(SphericalDirection(sinTheta, cosTheta, phi));
+				if (!SameHemisphere(wo, wh))
+					wh = -wh;
+				return wh;
+			}
+			else {
+				double alpha = alphaY / alphaX;
+				double phi = atan(alpha * tan(2 * M_PI * uv[1] + 0.5 * M_PI));
+				if (uv[1] > 0.5)
+					phi += M_PI;
 
-			Vector3f wh = Normalize(SphericalDirection(sinTheta, cosTheta, phi));
-			if (!SameHemisphere(wo, wh))
+				double sinPhi = sin(phi), cosPhi = cos(phi);
+				double alphaX2 = alphaX * alphaX;
+				double alphaY2 = alphaY * alphaY;
+
+				double t = cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2;
+
+				double tanTheta2 = uv[0] / (t * (1 - uv[0]));
+
+				double cosTheta = 1 / sqrt(1 + tanTheta2);
+				double sinTheta = Max(0.0, sqrt(1 - cosTheta * cosTheta));
+
+				Vector3f wh = Vector3f(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+				if (Dot(wh, wo) < 0)
+					wh = -wh;
+				return wh;
+			}
+		}
+		else {
+			//采样可见法线
+			Vector3f woStreched = Normalize(Vector3f(wo.x * alphaX, wo.y * alphaY, wo.z));
+
+			Vector3f t1 = (woStreched.z < 0.9999) ? Normalize(Cross(woStreched, Vector3f(0, 0, 1))) : Vector3f(1, 0, 0);
+			Vector3f t2 = Normalize(Cross(t1, woStreched));
+			//auto [t1, t2] = genTBN(woStreched);
+
+			double a = 1.0 / (1.0 + woStreched.z);
+
+			double r = sqrt(uv[1]);
+			double phi = (uv[0] < a) ? uv[0] / a * M_PI :
+				(uv[0] - a) / (1.0 - a) * M_PI + M_PI;
+
+			double p1 = r * cos(phi);
+			double p2 = r * sin(phi);
+			if (uv[0] >= a)
+				p2 *= woStreched.z;
+
+			Vector3f n = p1 * t1 + p2 * t2 + sqrt(Max(0.0, 1.0 - p1 * p1 - p2 * p2)) * woStreched;
+
+			Vector3f wh = Normalize(Vector3f(alphaX * n.x, alphaY * n.y, Max(0.0, n.z)));
+			if (!SameHemisphere(wh, wo))
 				wh = -wh;
 			return wh;
 		}
-		//	else {
-		//		double alpha = alphaY / alphaX;
-		//		double phi = atan(alpha * tan(2 * M_PI * uv[0] + 0.5 * M_PI));
-		//		if (uv[0] > 0.5)
-		//			phi += M_PI;
-
-		//		double sinPhi = sin(phi), cosPhi = cos(phi);
-		//		double alphaX2 = alphaX * alphaX;
-		//		double alphaY2 = alphaY * alphaY;
-
-		//		double t = cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2;
-
-		//		double tanTheta2 = uv[1] / (t * (1 - uv[1]));
-
-		//		double cosTheta = 1 / sqrt(1 + tanTheta2);
-		//		double sinTheta = Max(0.0, sqrt(1 - cosTheta * cosTheta));
-
-		//		Vector3f wh = Vector3f(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
-		//		if (Dot(wh, wo) < 0)
-		//			wh = -wh;
-		//		return wh;
-		//	}
 	}
 
 	MicrofacetReflection::MicrofacetReflection(std::shared_ptr<Fresnel> fresnel,
@@ -316,5 +367,48 @@ namespace Raven {
 	//	return albedo * D * G * F * abs(cosThetaO) * abs(cosThetaI) / (temp * cosThetaO * cosThetaI);
 	//
 	//}
+
+
+	std::tuple<double, double> BeckmannSample11(const Vector3f& wo, const Point2f& uv) {
+		double invSqrtPI = 1.0 / sqrt(M_PI);
+
+		double tanTheta = TanTheta(wo);
+		double cotTheta = 1 / tanTheta;
+
+		double a = -1, c = erf(cotTheta);
+
+		double thetaO = atan(tanTheta);
+
+		double fit = 1.0 + thetaO * (-0.876 + thetaO * (0.4265 - thetaO * 0.0594));
+		double b = c - (1.0 + c) * std::pow(1.0 - uv[0], fit);
+
+		float normalization = 1.0f / (1.0f + c +
+			invSqrtPI * tanTheta * std::exp(-cotTheta * cotTheta));
+
+		while (true) {
+			if (!b >= a || b <= c)
+				b = 0.5f * (a + c);
+
+			double invErf = ErfInv(b);
+			double value = normalization * (1.0f + b +
+				invSqrtPI * tanTheta * std::exp(-invErf * invErf)) - uv[0];
+
+			if (abs(value) < 1e-5)
+				break;
+
+			if (value > 0.0)
+				c = b;
+			else
+				a = b;
+
+			double derivative = (1 - invErf * tanTheta) * normalization;
+			b -= value / derivative;
+		}
+
+		double slopeX = ErfInv(b);
+		double slopeY = ErfInv(2.0 * uv[1] - 1.0);
+
+		return std::tuple<double, double>(slopeX, slopeY);
+	}
 
 }

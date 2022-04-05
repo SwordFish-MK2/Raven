@@ -28,4 +28,5 @@ namespace Raven {
 	std::shared_ptr<LambertainReflection> LambertainReflection::build(const Vector3f& albedo) {
 		return std::make_shared<LambertainReflection>(albedo);
 	}
+
 }

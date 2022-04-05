@@ -302,10 +302,10 @@ namespace Raven {
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
 		usedTransform.push_back(identity);
 
-		Point3f p0(-10000.0, -1.0, 10000.0);
-		Point3f p1(10000.0, -1.0, 10000.0);
-		Point3f p2(10000.0, -1.0, -10000.0);
-		Point3f p3(-10000.0, -1.0, -10000.0);
+		Point3f p0(-10000.0, -2.0, 10000.0);
+		Point3f p1(10000.0, -2.0, 10000.0);
+		Point3f p2(10000.0, -2.0, -10000.0);
+		Point3f p3(-10000.0, -2.0, -10000.0);
 
 		std::shared_ptr<TriangleMesh> plane = std::make_shared<TriangleMesh>(CreatePlane(identity.get(), identity.get(),
 			p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0)));
@@ -338,7 +338,7 @@ namespace Raven {
 
 		std::shared_ptr<Texture<Vector3f>> kdTex = ConstTexture<Vector3f>::build(Vector3f(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<Texture<Vector3f>> ksTex = ConstTexture<Vector3f>::build(Vector3f(0.7f, 0.7f, 0.7f));
-		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.4);
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.2);
 
 		std::shared_ptr<Material> plastic = Plastic::build(kdTex, ksTex, roughTex);
 

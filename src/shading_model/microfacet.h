@@ -3,7 +3,7 @@
 
 #include"../core/bxdf.h"
 #include"../core/base.h"
-
+#include<tuple>
 namespace Raven {
 
 	class MicrofacetDistribution {
@@ -11,8 +11,11 @@ namespace Raven {
 		virtual double NDF(const Vector3f& wh)const = 0;
 
 		virtual Vector3f sample_wh(const Vector3f& wo, const Point2f& uv)const = 0;
+
 		virtual double pdf(const Vector3f& wo, const Vector3f& wi)const;
+
 		virtual double G2(const Vector3f& wo, const Vector3f& wi)const;
+
 		virtual double G1(const Vector3f& w)const;
 	protected:
 
@@ -22,14 +25,17 @@ namespace Raven {
 	class BeckmannSpizzichino : public MicrofacetDistribution {
 	private:
 		double alphaX, alphaY;
+		bool sampleVNDF;
 
 		virtual double lambda(const Vector3f& wh)const;
 	public:
-		BeckmannSpizzichino(double alphaX, double alphaY) :alphaX(Max(0.001, alphaX)), alphaY(Max(0.001, alphaY)) {}
+		BeckmannSpizzichino(double alphaX, double alphaY,bool sampleVNDF=false) 
+			:alphaX(Max(0.001, alphaX)), alphaY(Max(0.001, alphaY)),sampleVNDF(sampleVNDF) {}
 
 		virtual double pdf(const Vector3f& wo, const Vector3f& wi)const;
 
 		virtual double NDF(const Vector3f& wh)const;
+
 		virtual Vector3f sample_wh(const Vector3f& wo, const Point2f& uv)const;
 
 		static double RoughnessToAlpha(double roughness) {
@@ -43,14 +49,17 @@ namespace Raven {
 	class GGX :public MicrofacetDistribution {
 	private:
 		double alphaX, alphaY;
-		bool sampleVisibleArea;
+		bool sampleVNDF;
 		virtual double lambda(const Vector3f& wh)const;
 	public:
-		GGX(double alphaX, double alphaY) :alphaX(Max(0.001, alphaX)), alphaY(Max(0.001, alphaY)), sampleVisibleArea(false) {}
+		GGX(double alphaX, double alphaY, bool sampleVNDF = false)
+			:alphaX(Max(0.001, alphaX)), alphaY(Max(0.001, alphaY)), sampleVNDF(sampleVNDF) {}
 
 		virtual double NDF(const Vector3f& wh)const;
 
 		virtual Vector3f sample_wh(const Vector3f& wo, const Point2f& uv)const;
+
+		virtual double pdf(const Vector3f& wo, const Vector3f& wi)const;
 
 		static double RoughnessToAlpha(double roughness);
 	};
@@ -95,6 +104,7 @@ namespace Raven {
 			0.000640711f * x * x * x * x;
 	}
 
+	std::tuple<double, double> BeckmannSample11(const Vector3f& wo, const Point2f& uv);
 }
 
 #endif

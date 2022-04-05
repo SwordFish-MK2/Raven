@@ -17,13 +17,13 @@ namespace Raven {
 					Ray r;
 
 					if (camera->GenerateRay(sample, r)) {
-						//if (i == 360 && j == 168)
+						//if (i == 310 && j == 140)
 						//	std::cout << "?";
 						pixelColor += integrate(scene, r);
 					}
 				}
-				//if (i == 300 || j == 228 || j == 108 || i == 425) {
-				//	pixelColor = Vector3f(0.0);
+				//if (i == 300 || j == 350 || j == 135 || i == 350) {
+				//	pixelColor = Vector3f(1.0,1.0,0.0);
 				//}
 				double scaler = 1.0 / spp;
 				pixelColor *= scaler;

@@ -63,7 +63,7 @@ namespace Raven {
 				bxdfNum++;
 			}
 		}
-		*pdf /= (double)bxdfNum;
+		*pdf /= (double)bxdfs.size();
 
 		//compute value of sampled direction
 		for (int i = 0; i < bxdfs.size(); ++i) {
@@ -71,7 +71,7 @@ namespace Raven {
 				f += bxdfs[i]->f(woLocal, wiLocal);
 			}
 		}
-		f /= (double)bxdfNum;
+		f /= (double)(double)bxdfs.size();
 		return f;
 	}
 
