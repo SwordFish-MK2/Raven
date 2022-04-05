@@ -40,6 +40,7 @@ int main()
 	auto hours = std::chrono::duration_cast<std::chrono::hours>(stop - start).count();
 	auto minutes = std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() - hours * 60;
 	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() - minutes * 60;
+
 	std::cout << hours << "hours\n";
 	std::cout << minutes<< "minutes\n";
 	std::cout <<  seconds << "seconds\n";

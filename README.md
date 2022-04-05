@@ -1,14 +1,63 @@
-# Raven
- Toy offline renderer
+# Raven Introduction
 
-毕业设计demo
+![image](https://github.com/FrenchFries-With-Pepper/Raven/blob/main/results/cornellbox/cornellbox_path_tracing.jpg)
 
-##	参考书目
+Raven is an under developing offline ray tracing renderer written in C++17 and runs on windows. It provides basic implementation of the functionalities required to solve the rendering equation. 
 
-Ray Tracing in one weekend The Book Serise     https://raytracing.github.io/
+Raven only supports reflective materials by now, transmissive materials and volume scattering participating media will be  added in the future. 
 
-PBRT-V3   https://www.pbr-book.org/3ed-2018/contents
+## News
 
-## Test images
+Microfacet shading models is now available! Raven is now supporting  smith GGX and Beckmann microfacet distributions, it also adds a new class to compute fresnel value for dielectrics and conductors.  
 
-![image](https://github.com/FrenchFries-With-Pepper/Raven/blob/main/results/large_area_light.jpg)
+## Key modules
+
+| Name                 | Description                                                  |
+| :------------------- | :----------------------------------------------------------- |
+| Renderer(Integrator) | Loop over film, solve rendering equation and compute pixel color |
+| Film                 | Store pixel value computed by renderer class, filter and output rendered image |
+| Camera               | Generate rays                                                |
+| Light Source         | Provide illumination to scene                                |
+| Scene                | Store shapes,lights and their related pointers, passing them to renderer |
+| Shape                | Geometric entities in the scene                              |
+| Material             | Surface attributes of a primitive, composed of a set of shading models |
+| Shading model(BxDF)  | Implementation of surface bxdf, decide reflection/ transmission direction and energy attenuation |
+| Texture              | a set of values mapped to 2D surface/3D volume               |
+| Sampler              | Generating random numbers between [0,1]                      |
+
+
+
+## Implements 
+
+### Integrators
+
+- Path Tracing
+
+- Direct Lighting
+
+### Cameras
+
+- Perspective Camera
+- Orthographic Camera
+
+### Light Sources
+
+- Diffuse Area Lights
+
+### Shapes
+
+- Sphere
+- Triangle Meshes
+
+### Shading Models
+
+- Lambertain
+- Smith GGX
+- Beckmann-Spizzichino
+
+### Textures
+
+- Constant Texture
+- Checkered Texture
+- Image Texture (Under developing)
+
