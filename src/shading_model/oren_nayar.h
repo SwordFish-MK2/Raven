@@ -30,20 +30,20 @@ namespace Raven {
 	class OrenNayar :public BxDF {
 	private:
 		double sigma;
-		Vector3f albedo;
+		Spectrum albedo;
 		double A;
 		double B;
 
 	public:
-		OrenNayar(Vector3f albedo, double sigma) :BxDF(BxDFType(Reflection)), albedo(albedo), sigma(sigma) {
+		OrenNayar(Spectrum albedo, double sigma) :BxDF(BxDFType(Reflection)), albedo(albedo), sigma(sigma) {
 			double sigmaPow = pow(sigma, 2);
 			A = 1.0 - (sigmaPow * 0.5f / (sigmaPow + 0.33f));
 			B = 0.45f * sigmaPow / (sigmaPow + 0.09f);
 		}
 
-		virtual Vector3f f(const Vector3f& wo, const Vector3f& wi)const;
+		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
 
-		virtual Vector3f sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const;
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi)const;
 

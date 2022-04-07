@@ -66,14 +66,14 @@ namespace Raven {
 
 	class MicrofacetReflection :public BxDF {
 	private:
-		Vector3f albedo;
+		Spectrum albedo;
 		std::shared_ptr<Fresnel> fresnel;
 		std::shared_ptr<MicrofacetDistribution> microfacet;
 	public:
 		MicrofacetReflection(std::shared_ptr<Fresnel> fresnel,
-			std::shared_ptr<MicrofacetDistribution> mircrofacet, Vector3f albedo);
-		virtual Vector3f f(const Vector3f& wo, const Vector3f& wi)const;
-		virtual Vector3f sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double* pdf)const;
+			std::shared_ptr<MicrofacetDistribution> mircrofacet, Spectrum albedo);
+		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double* pdf)const;
 		virtual double pdf(const Vector3f& wo, const Vector3f& wh)const;
 	};
 

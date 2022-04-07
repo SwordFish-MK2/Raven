@@ -292,21 +292,21 @@ namespace Raven {
 	}
 
 	MicrofacetReflection::MicrofacetReflection(std::shared_ptr<Fresnel> fresnel,
-		std::shared_ptr<MicrofacetDistribution> microfacet, Vector3f albedo) :
+		std::shared_ptr<MicrofacetDistribution> microfacet, Spectrum albedo) :
 		BxDF(BxDFType(Reflection | Glossy)), fresnel(fresnel), microfacet(microfacet), albedo(albedo) {}
 
 	//compute brdf value of given wo and wi directions
-	Vector3f MicrofacetReflection::f(const Vector3f& wo, const Vector3f& wi)const {
+	Spectrum MicrofacetReflection::f(const Vector3f& wo, const Vector3f& wi)const {
 		//compute brdf value
 		Vector3f wh = wo + wi;
 
 		double cosThetaO = abs(CosTheta(wo));
 		double cosThetaI = abs(CosTheta(wi));
 		if (cosThetaO == 0 || cosThetaI == 0)
-			return Vector3f(0.0);
+			return Spectrum(0.0);
 
 		if (wh == Vector3f(0.0))
-			return Vector3f(0.0);
+			return Spectrum(0.0);
 
 		wh = wh.normalized();
 
@@ -321,7 +321,7 @@ namespace Raven {
 	}
 
 	//sample wi from microfacet distribution, compute corresponding pdf value, conpute and return brdf value 
-	Vector3f MicrofacetReflection::sampled_f(const Vector3f& wo, Vector3f& wi,
+	Spectrum MicrofacetReflection::sampled_f(const Vector3f& wo, Vector3f& wi,
 		const Point2f& uv, double* pdf)const {
 		//generate wh sample with respect to ndf and given random numbers
 		Vector3f wh = microfacet->sample_wh(wo, uv);
@@ -329,10 +329,10 @@ namespace Raven {
 
 		//compute pdf
 		if (!SameHemisphere(wi, wo))
-			return Vector3f(0.0);
+			return Spectrum(0.0);
 
 		*pdf = microfacet->pdf(wo, wi) / (4 * Dot(wo, wh));
-		Vector3f v = f(wo, wi);
+		Spectrum v = f(wo, wi);
 		return v;
 	}
 

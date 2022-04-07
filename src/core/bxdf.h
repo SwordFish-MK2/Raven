@@ -4,6 +4,7 @@
 
 #include"base.h"
 #include"math.h"
+#include"spectrum.h"
 
 namespace Raven {
 
@@ -63,20 +64,12 @@ namespace Raven {
 
 		BxDF() {}
 		BxDF(BxDFType type) :type(type) {}
-
-		////compute brdf value
-		//virtual Spectrum f(const vectorf3& wo, const vectorf3& wi)const = 0;
-		////sample wi,compute pdf and brdf values
-		//virtual Spectrum sampled_f(const vectorf3& wo, vectorf3& wi, const pointf2& sample, double* pdf)const = 0;
-		//virtual Spectrum hdf(const vectorf3& wo, int nSamples, pointf2* samples) { return Spectrum(0); }
-		//virtual Spectrum hhf(int nSamples, pointf2* outSamples, pointf2* inSamples) { return Spectrum(0); }
-
 		//compute brdf value
-		virtual Vector3f f(const Vector3f& wo, const Vector3f& wi)const = 0;
+		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const = 0;
 		//sample wi,compute pdf and brdf values
-		virtual Vector3f sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const = 0;
-		virtual Vector3f hdf(const Vector3f& wo, int nSamples, Point2f* samples) { return Vector3f(0.0); }
-		virtual Vector3f hhf(int nSamples, Point2f* outSamples, Point2f* inSamples) { return Vector3f(0.0); }
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const = 0;
+		virtual Spectrum hdf(const Vector3f& wo, int nSamples, Point2f* samples) { return Spectrum(0.0); }
+		virtual Spectrum hhf(int nSamples, Point2f* outSamples, Point2f* inSamples) { return Spectrum(0.0); }
 
 		virtual double pdf(const Vector3f& wo, const Vector3f& wi)const = 0;
 		bool matchType(BxDFType t) { return t | type; }
@@ -84,18 +77,13 @@ namespace Raven {
 
 	class scaledBxDF :public BxDF {
 	public:
-		//scaledBxDF(BxDFType type, BxDF* bxdf, Spectrum scaler) :BxDF(type), bxdf(bxdf), scaler(scaler) {}
-		//Spectrum f(const vectorf3& wo, vectorf3& wi) {
-		//	return scaler * bxdf->f(wo, wi);
-		//}
-		scaledBxDF(BxDFType type, BxDF* bxdf, Vector3f scaler) :BxDF(type), bxdf(bxdf), scaler(scaler) {}
-		Vector3f f(const Vector3f& wo, Vector3f& wi) {
+		scaledBxDF(BxDFType type, BxDF* bxdf, Spectrum scaler) :BxDF(type), bxdf(bxdf), scaler(scaler) {}
+		Spectrum f(const Vector3f& wo, Vector3f& wi) {
 			return scaler * bxdf->f(wo, wi);
 		}
 	private:
 		BxDF* bxdf;
-		//Spectrum scaler;
-		Vector3f scaler;
+		Spectrum scaler;
 	};
 
 	inline double CosTheta(const Vector3f& w) {

@@ -9,8 +9,11 @@
 namespace Raven {
 	class Plastic :public Material {
 	public:
-		Plastic(const std::shared_ptr<Texture<Vector3f>>& kdTexture, const std::shared_ptr<Texture<Vector3f>>& ksTexture,
-			const std::shared_ptr<Texture<double>>& roughnessTexture, const std::shared_ptr<Texture<double>>& bumpTexture = nullptr) :
+		Plastic(
+			const std::shared_ptr<Texture<Spectrum>>& kdTexture,
+			const std::shared_ptr<Texture<Spectrum>>& ksTexture,
+			const std::shared_ptr<Texture<double>>& roughnessTexture, 
+			const std::shared_ptr<Texture<double>>& bumpTexture = nullptr) :
 			kd(kdTexture),
 			ks(ksTexture),
 			roughness(roughnessTexture),
@@ -18,12 +21,14 @@ namespace Raven {
 
 		virtual void computeScarttingFunctions(SurfaceInteraction& its)const;
 
-		static std::shared_ptr<Plastic> build(const std::shared_ptr<Texture<Vector3f>>& kd,
-			const std::shared_ptr<Texture<Vector3f>>& ks, const std::shared_ptr<Texture<double>>& roughness,
+		static std::shared_ptr<Plastic> build(
+			const std::shared_ptr<Texture<Spectrum>>& kd,
+			const std::shared_ptr<Texture<Spectrum>>& ks,
+			const std::shared_ptr<Texture<double>>& roughness,
 			const std::shared_ptr<Texture<double>>& bump = nullptr);
 	private:
-		std::shared_ptr<Texture<Vector3f>> kd;
-		std::shared_ptr<Texture<Vector3f>> ks;
+		std::shared_ptr<Texture<Spectrum>> kd;
+		std::shared_ptr<Texture<Spectrum>> ks;
 		std::shared_ptr<Texture<double>> roughness;
 		std::shared_ptr<Texture<double>> bump;
 

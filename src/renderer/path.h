@@ -3,7 +3,7 @@
 
 #include"../core/renderer.h"
 #include"../core/base.h"
-
+#include"../core/spectrum.h"
 namespace Raven {
 	class PathTracingRenderer : public Renderer {
 	public:
@@ -12,8 +12,8 @@ namespace Raven {
 		virtual void render(const Scene& scene);
 
 	private:
-		Vector3f integrate(const Scene& scene, const Ray& r_in,int depth=0)const;
-		GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
+		Spectrum integrate(const Scene& scene, const Ray& r_in,int depth=0)const;
+	//	GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
 
 
 		const int maxDepth;

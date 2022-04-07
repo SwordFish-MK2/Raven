@@ -18,8 +18,8 @@ using namespace std;
 int main()
 {
 	auto start = std::chrono::system_clock::now();
-	//Raven::Scene box = Raven::Scene::buildCornellBox();
-	Raven::Scene box = Raven::Scene::buildTestScene();
+	Raven::Scene box = Raven::Scene::buildCornellBox();
+	//Raven::Scene box = Raven::Scene::buildTestScene();
 	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 

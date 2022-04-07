@@ -16,13 +16,13 @@ namespace Raven {
 			Light(LTW, WTL, flag, nSamples), shape_ptr(shape), area(shape->area()) {}
 
 		////输入空间中的一个点p，在光源上随机采样，并计算出射的Radiance
-		virtual Vector3f sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
+		virtual Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
 
 		//给定光源上的一个点与出射方向，计算出射的Radiance
-		virtual Vector3f Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
+		virtual Spectrum Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 
 		//返回光源向空间中辐射的总的能量
-		virtual Vector3f power()const = 0;
+		virtual Spectrum power()const = 0;
 
 		//给定光源上的一个点与出射方向，计算采样的pdf
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
@@ -41,22 +41,26 @@ namespace Raven {
 	/// </summary>
 	class DiffuseAreaLight :public AreaLight {
 	public:
-		DiffuseAreaLight(const Transform* LTW, const Transform* WTL,
-			int nSamples, const Shape* shape, Vector3f I) :
+		DiffuseAreaLight(
+			const Transform* LTW,
+			const Transform* WTL,
+			int nSamples,
+			const Shape* shape,
+			const Spectrum& I) :
 			AreaLight(LTW, WTL, LightFlag::AreaLight, nSamples, shape), emittedRadiance(I) {}
 
-		virtual Vector3f Li(const SurfaceInteraction& p, const Vector3f& wi)const;
+		virtual Spectrum Li(const SurfaceInteraction& p, const Vector3f& wi)const;
 
-		virtual Vector3f sampleLi(const SurfaceInteraction& inter, const Point2f& uv,
+		virtual Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv,
 			LightSample* lightSample)const;
 
-		virtual Vector3f power()const;
+		virtual Spectrum power()const;
 
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const;
 
 
 	private:
-		const Vector3f emittedRadiance;
+		const Spectrum emittedRadiance;
 	};
 }
 

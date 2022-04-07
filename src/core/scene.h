@@ -42,7 +42,7 @@ namespace Raven {
 
 		const Light* chooseLight(double rand)const;
 
-		Vector3f sampleLight(const SurfaceInteraction& record, double s, const Point2f& uv, LightSample* sample)const;
+		Spectrum sampleLight(const SurfaceInteraction& record, double s, const Point2f& uv, LightSample* sample)const;
 
 		Bound3f worldBound()const {
 			return objs->worldBounds();

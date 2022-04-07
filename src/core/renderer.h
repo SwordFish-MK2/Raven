@@ -6,6 +6,8 @@
 #include"film.h"
 #include"scene.h"
 #include"interaction.h"
+#include"spectrum.h"
+
 namespace Raven {
 	class Renderer {
 	public:
@@ -24,11 +26,11 @@ namespace Raven {
 		return f * f / (f * f + g * g);
 	}
 
-	Vector3f EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light);
+	Spectrum EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light);
 
-	Vector3f SampleOneLight(const SurfaceInteraction& record, const Scene& scene, int nSample);
+	Spectrum SampleOneLight(const SurfaceInteraction& record, const Scene& scene, int nSample);
 
-	Vector3f SampleAllLights(const SurfaceInteraction& record, const Scene& scene);
+	Spectrum SampleAllLights(const SurfaceInteraction& record, const Scene& scene);
 }
 
 #endif

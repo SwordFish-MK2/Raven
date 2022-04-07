@@ -5,6 +5,7 @@
 #include"math.h"
 #include"interaction.h"
 #include"scene.h"
+#include"spectrum.h"
 
 namespace Raven {
 	enum LightFlag :int {
@@ -26,10 +27,10 @@ namespace Raven {
 		Light(const Transform* LTW, const Transform* WTL, int flag, int nSamples) :
 			lightToWorld(LTW), worldToLight(WTL), flag(flag), nSamples(nSamples) {}
 		//return radiance reached the given point emitted by light source, compute light incident direction and sampling pdf
-		virtual Vector3f sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
-		virtual Vector3f Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
+		virtual Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
+		virtual Spectrum Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 		//return total power emitted by light source
-		virtual Vector3f power()const = 0;
+		virtual Spectrum power()const = 0;
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 		virtual void preprocess(const Scene& scene) {}
 		virtual bool isDeltaLight() { return flag & DeltaPosition || flag & DeltaDirection; }
@@ -42,24 +43,6 @@ namespace Raven {
 		const Transform* worldToLight;
 		const int nSamples;				//n shadow rays prefered by the integrater
 	};
-
-	///// <summary>
-	///// Class for testing whether given light sample is visiable from the receiving point
-	///// </summary>
-	//class VisibilityTester {
-	//private:
-	//	SurfaceInteraction p0, p1;//two end points of shadow ray to be traced in world space
-	//public:
-	//	VisibilityTester(const SurfaceInteraction& po, const SurfaceInteraction& p1) :
-	//		p0(p0), p1(p1) {}
-	//	bool testVisitbility(const Scene& scene)const {
-	//		Vector3f direction = Normalize(p1.p - p0.p);
-	//		Ray testRay(p0.p, direction);
-	//		SurfaceInteraction lightInter;
-	//		if (!scene.intersect(testRay, lightInter, 1e-6, FLT_MAX))
-	//			return true;
-	//	}
-	//};
 }
 
 #endif

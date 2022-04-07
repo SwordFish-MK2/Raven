@@ -26,21 +26,21 @@ namespace Raven {
 
 	class LambertainReflection :public BxDF {
 	public:
-		LambertainReflection(Vector3f albedo) :BxDF(BxDFType(Reflection | Diffuse)), albedo(albedo) {}
+		LambertainReflection(Spectrum albedo) :BxDF(BxDFType(Reflection | Diffuse)), albedo(albedo) {}
 
-		virtual Vector3f f(const Vector3f& wo, const Vector3f& wi)const;
+		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
 
-		virtual Vector3f sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const;
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi)const;
 
-		Vector3f hdf(const Vector3f& wo, int nSamples, Point2f* samples) { return  albedo; }
+		Spectrum hdf(const Vector3f& wo, int nSamples, Point2f* samples) { return  albedo; }
 
-		Vector3f hhf(int nSamples, Point2f* outSamples, Point2f* inSamples) { return albedo; }
+		Spectrum hhf(int nSamples, Point2f* outSamples, Point2f* inSamples) { return albedo; }
 
-		static std::shared_ptr<LambertainReflection> build(const Vector3f& albedo);
+		static std::shared_ptr<LambertainReflection> build(const Spectrum& albedo);
 	private:
-		Vector3f albedo;
+		Spectrum albedo;
 	};
 }
 

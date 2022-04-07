@@ -32,7 +32,7 @@ namespace Raven {
 	//	return CosWeightedHemispherePdf(cosTheta);
 	//}
 
-	Vector3f OrenNayar::f(const Vector3f& wo, const  Vector3f& wi)const {
+	Spectrum OrenNayar::f(const Vector3f& wo, const  Vector3f& wi)const {
 		double sinThetaI = SinTheta(wi);
 		double sinThetaO = SinTheta(wo);
 		//¼ÆËãcos(phiI-phiO)
@@ -51,12 +51,12 @@ namespace Raven {
 
 		double sinAlpha = cosThetaI > cosThetaO ? sinThetaI : sinThetaO;
 		double tanBeta = cosThetaI > cosThetaO ? sinThetaI / cosThetaI : sinThetaO / cosThetaO;
-		Vector3f fr = albedo / M_PI * ((A + B * cosDelta) * sinAlpha * tanBeta);
+		Spectrum fr = albedo / M_PI * ((A + B * cosDelta) * sinAlpha * tanBeta);
 		return fr;
 	}
 
-	Vector3f OrenNayar::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double* pdf)const {
-		if (wo.z < 0)return Vector3f(0.0);
+	Spectrum OrenNayar::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double* pdf)const {
+		if (wo.z < 0)return Spectrum(0.0);
 		wi = CosWeightedSampleHemisphere(uv);
 		double cosTheta = CosTheta(wi);
 		*pdf = CosWeightedHemispherePdf(cosTheta);

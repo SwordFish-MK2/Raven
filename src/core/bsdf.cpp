@@ -25,10 +25,10 @@ namespace Raven {
 	}
 
 	//给定入射与出射方向，计算brdf
-	Vector3f BSDF::f(const Vector3f& wo, const Vector3f& wi)const {
+	Spectrum BSDF::f(const Vector3f& wo, const Vector3f& wi)const {
 		Vector3f woLocal = worldToLocal(wo);//将入射光变换到BSDF坐标系下并使入射光朝向平面外侧
 		Vector3f wiLocal = worldToLocal(wi);
-		Vector3f result = Vector3f(0.0);
+		Spectrum result = Spectrum(0.0);
 		for (int i = 0; i < bxdfs.size(); i++) {
 			result += bxdfs[i]->f(woLocal, wiLocal);
 		}
@@ -37,21 +37,19 @@ namespace Raven {
 	}
 
 	//给定入射方向，根据BRDF分布采样出射方向并计算brdf的值
-	Vector3f BSDF::sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample,
+	Spectrum BSDF::sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample,
 		double* pdf, BxDFType type)const {
 		//choose a bxdf to sample
 		int bxdfIndex = Min((unsigned int)(bxdfs.size() - 1), (unsigned int)std::floor(bxdfs.size() * sample[0]));
 
 		//sample choosen BxDF
 		Vector3f woLocal = Normalize(worldToLocal(wo));
-		//if (woLocal.z < 0)
-		//		std::cout << "?";
 		Vector3f wiLocal;
 
 		*pdf = 0.0;
-		Vector3f f = bxdfs[bxdfIndex]->sampled_f(woLocal, wiLocal, sample, pdf);
+		Spectrum f = bxdfs[bxdfIndex]->sampled_f(woLocal, wiLocal, sample, pdf);
 		if (*pdf == 0)
-			return Vector3f(0.0);
+			return Spectrum(0.0);
 
 		wi = Normalize(localToWorld(wiLocal));
 

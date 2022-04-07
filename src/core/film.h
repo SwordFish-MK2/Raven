@@ -6,17 +6,18 @@
 #include<fstream>
 #include"math.h"
 #include<vector>
+#include"spectrum.h"
 
 namespace Raven {
-	struct GeometryData {
+	//struct GeometryData {
 
-		Normal3f n;
-		Point3f p;
-		Vector3f color;
-		bool hit;
-		GeometryData() :n(Normal3f(0.0)), color(Vector3f(0.0)), hit(false), p(0, 0, 0) {}
-		GeometryData(const GeometryData& data) :n(data.n), color(data.color), p(data.p), hit(data.hit) {}
-	};
+	//	Normal3f n;
+	//	Point3f p;
+	//	Vector3f color;
+	//	bool hit;
+	//	GeometryData() :n(Normal3f(0.0)), color(Vector3f(0.0)), hit(false), p(0, 0, 0) {}
+	//	GeometryData(const GeometryData& data) :n(data.n), color(data.color), p(data.p), hit(data.hit) {}
+	//};
 
 	class Film {
 	public:
@@ -40,7 +41,7 @@ namespace Raven {
 		void in(int value) {
 			data[index++] = value;
 		}
-		void in(Vector3f color) {
+		void in(const Spectrum& color) {
 			double invGamma = 1.0 / 2.2;
 			for (int i = 0; i < 3; i++)
 			{

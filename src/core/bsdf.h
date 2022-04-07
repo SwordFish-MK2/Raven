@@ -7,6 +7,7 @@
 #include"transform.h"
 #include"bxdf.h"
 #include"math.h"
+#include"spectrum.h"
 
 namespace Raven {
 
@@ -18,9 +19,9 @@ namespace Raven {
 
 		void addBxDF(std::shared_ptr<BxDF> bxdf);
 
-		Vector3f f(const Vector3f& wo, const Vector3f& wi)const;
+		Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
 
-		Vector3f sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf, BxDFType type = All)const;
+		Spectrum sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf, BxDFType type = All)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi)const;
 	private:
