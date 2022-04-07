@@ -3,6 +3,14 @@
 
 #include"base.h"
 #include<iostream>
+
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
+#include<math.h>
+
+
 namespace Raven {
 	using Vector3f = Vector3<double>;
 	using Vector3i = Vector3<int>;
@@ -595,6 +603,17 @@ namespace Raven {
 		const Vector3f& z) {
 		return sinTheta * std::cos(phi) * x + sinTheta * std::sin(phi) * y +
 			cosTheta * z;
+	}
+
+	inline double SphericalTheta(const Vector3f& v) {
+		return acos(Clamp(v.z,-1.0,1.0));
+	}
+
+	inline double SphericalPhi(const Vector3f& v) {
+		double phi = atan2(v.y, v.x);
+		if (phi < 0)
+			phi += 2 * M_PI;
+		return phi;
 	}
 
 	//TODO::Try template<class T> Vector3<T>

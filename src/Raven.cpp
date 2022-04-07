@@ -31,7 +31,7 @@ int main()
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
 	Raven::PathTracingRenderer renderer(cam, f, 100, 10, 0.1);
 	//Raven::NormalRenderer nRenderer(cam, f, 10, 1, 0.00001);
-	renderer.render(sphere);
+	renderer.render(box);
 	//nRenderer.render(sphere);
 	delete cam;
 

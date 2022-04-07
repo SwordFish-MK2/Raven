@@ -7,6 +7,8 @@
 #include"../texture/solidTexture.h"
 #include"../material/plastic.h"
 #include"../core/Spectrum.h"
+#include"../texture/mapping.h"
+
 namespace Raven {
 
 	Scene::Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
@@ -21,7 +23,7 @@ namespace Raven {
 		}
 	}
 
-	Scene::Scene(const Scene& s) :transforms(s.transforms), 
+	Scene::Scene(const Scene& s) :transforms(s.transforms),
 		lights(s.lights), meshes(s.meshes), objs(s.objs) {}
 
 	const Light* Scene::chooseLight(double rand) const {
@@ -52,11 +54,13 @@ namespace Raven {
 		usedTransform.push_back(identity);
 
 		//Texture
-		std::shared_ptr<Texture<Spectrum>> greenTexture = 
+		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build();
+
+		std::shared_ptr<Texture<Spectrum>> greenTexture =
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.843137, 0.843137, 0.091f));
-		std::shared_ptr<Texture<Spectrum>> blackTexture = 
+		std::shared_ptr<Texture<Spectrum>> blackTexture =
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
-		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(greenTexture, blackTexture);
+		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(greenTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
 		//Material
 		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.1, 0.97, 0.4));

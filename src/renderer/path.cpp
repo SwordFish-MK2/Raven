@@ -71,8 +71,8 @@ namespace Raven {
 					Spectrum emit = light->sampleLi(*record, Point2f(GetRand(), GetRand()), &lightSample);
 					Spectrum fLight = record->bsdf->f(wo, lightSample.wi);
 					double length = (lightSample.p - p).length();
-					double dot1 = abs(Dot(lightSample.wi, n));
-					double dot2 = abs(Dot(-lightSample.wi, lightSample.n));
+					double dot1 = Max(0.0, Dot(lightSample.wi, n));
+					double dot2 = Max(0.0, Dot(-lightSample.wi, lightSample.n));
 					Spectrum dirLi = emit * fLight * dot1 / lightSample.pdf;
 					//判断有无遮挡
 					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect

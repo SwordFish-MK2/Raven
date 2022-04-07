@@ -9,7 +9,16 @@ namespace Raven {
 	/// 2DŒ∆¿Ìmapping 
 	/// </summary>
 	class TextureMapping2D {
+	public:
 		virtual std::tuple<Point2f, Vector2f, Vector2f> map(const SurfaceInteraction& si)const = 0;
+	};
+
+	/// <summary>
+	/// 3DŒ∆¿Ìmapping
+	/// </summary>
+	class TextureMapping3D {
+	public:
+		virtual std::tuple<Point3f, Vector3f, Vector3f>map(const SurfaceInteraction& si)const = 0;
 	};
 
 	/// <summary>
