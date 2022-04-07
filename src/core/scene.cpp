@@ -340,8 +340,19 @@ namespace Raven {
 
 		std::shared_ptr<MatteMaterial> kd = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
 
+		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build(3,3);
+		std::shared_ptr<Texture<Spectrum>>whiteTexture =
+			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.80, 0.80, 0.080));
+		std::shared_ptr<Texture<Spectrum>> blackTexture =
+			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
+		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(whiteTexture, blackTexture, mapping);
+		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
+
+
 		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.65f));
+
+		std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
 
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
@@ -364,7 +375,7 @@ namespace Raven {
 		std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(lightTris[0], lightLam, aLight1);
 		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(lightTris[1], lightLam, aLight2);
 
-		std::shared_ptr<Primitive> p = Primitive::build(sphere, whiteLam, nullptr);
+		std::shared_ptr<Primitive> p = Primitive::build(sphere, checkered, nullptr);
 		std::vector<std::shared_ptr<Primitive>> ground = plane->generatePrimitive(whiteLam);
 
 		prim_ptrs.push_back(lightp1);

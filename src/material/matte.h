@@ -9,16 +9,6 @@
 #include"../shading_model/lambertain.h"
 #include"../shading_model/oren_nayar.h"
 namespace Raven {
-	//class MatteMaterial :public Material {
-//private:
-//	Texture<double>* sigma;//surface roughness value 
-//	Texture<Spectrum>* kd;//diffuse reflection value
-//	Texture<double>* bump;//bump function
-//public:
-//	MatteMaterial(Texture<double>* sigma, Texture<Spectrum>* Kd, Texture<double>* bump = NULL) :sigma(sigma), kd(Kd), bump(bump) {}
-//	//MatteMaterial(double Kd) :Kd(Kd) {}
-//	void computeScarttingFunctions(surfaceIntersection& its) const;
-//};
 
 	class MatteMaterial :public Material {
 	private:
