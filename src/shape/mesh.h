@@ -8,7 +8,6 @@
 #include"../core/math.h"
 #include"../core/accelerate.h"
 #include"../accelerate/kdTree.h"
-#include"../accelerate/primitiveList.h"
 namespace Raven {
 	struct TriangleInfo {
 		int numbers;

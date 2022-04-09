@@ -3,6 +3,8 @@
 
 #include"base.h"
 #include"primitive.h"
+#include<optional>
+#include"interaction.h"
 
 enum AccelType {
 	List, KdTree
@@ -29,6 +31,17 @@ namespace Raven {
 	protected:
 		Bound3f worldBound;
 
+	};
+
+	class PrimitiveList :public	Accelerate {
+	public:
+		PrimitiveList(const std::vector<std::shared_ptr<Primitive>>& prims) :Accelerate(prims) {}
+
+		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+
+		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
+
+		virtual Bound3f worldBounds()const;
 	};
 }
 

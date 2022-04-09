@@ -1,6 +1,7 @@
 #include"sphere.h"
 #include"../core/distribution.h"
 namespace Raven {
+
 	bool Sphere::hit(const Ray& r_in, double tMax = FLT_MAX)const {
 		//将光线从世界坐标系变换到圆的Local坐标系内
 		Ray localRay = (*worldToLocal)(r_in);
@@ -28,15 +29,15 @@ namespace Raven {
 
 	Bound3f Sphere::worldBound()const {
 		Bound3f localBox;
-		//localBox.pMin = Point3f(-radius, -radius, zMin);
-		//localBox.pMax = Point3f(radius, radius, zMax);
+		localBox.pMin = Point3f(-radius, -radius, -radius);
+		localBox.pMax = Point3f(radius, radius, radius);
 		return (*localToWorld)(localBox);
 	}
 
 	Bound3f Sphere::localBound()const {
 		Bound3f localBox;
-		//localBox.pMin = Point3f(-radius, -radius, zMin);
-		//localBox.pMax = Point3f(radius, radius, zMax);
+		localBox.pMin = Point3f(-radius, -radius, -radius);
+		localBox.pMax = Point3f(radius, radius, radius);
 		return localBox;
 	}
 
@@ -47,7 +48,7 @@ namespace Raven {
 		const Point3f& ori = localRay.origin;
 		const Vector3f& dir = localRay.dir;
 
-		//perform intersection test
+		//判断光线是否与圆相交
 		double a = Dot(dir, dir);
 		double b = 2.0 * Dot(Vector3f(ori), dir);
 		double c = Dot(Vector3f(ori), Vector3f(ori)) - radius * radius;
@@ -65,6 +66,7 @@ namespace Raven {
 				return std::nullopt;
 		}
 
+		//计算交点信息，pHit,uvHit,nHit
 		Point3f pHit = localRay.position(tHit);
 
 		double phi = -atan(pHit.z / pHit.x);
@@ -76,61 +78,48 @@ namespace Raven {
 
 		Normal3f nHit = (Normal3f)(pHit - Point3f(0.0)).normalized();
 
+
+		//计算偏导dpdu，dpdv
+		double invR = 1. / radius;
+		double cosPhi = pHit.x * invR;
+		double sinPhi = -pHit.z * invR;
+		Vector3f dpdu = (pHit.z * 2 * M_PI, 0.0, -pHit.x * 2 * M_PI);
+		Vector3f dpdv = M_PI * (pHit.y * cosPhi, -sin(theta) * radius, -pHit.y * M_PI * sinPhi);
+
+
+		//计算偏导dndu，dndv
+		double pi2 = M_PI * M_PI;
+		Vector3f d2pduu = -4 * pi2 * Vector3f(pHit.x, 0.0, pHit.z);
+		Vector3f d2pduv = -2 * pi2 * pHit.y * Vector3f(sin(phi), 0.0, cos(phi));
+		Vector3f d2pdvv = -pi2 * Vector3f(pHit.x, pHit.y, pHit.z);
+
+		double e = Dot(nHit, d2pduu);
+		double f = Dot(nHit, d2pduv);
+		double g = Dot(nHit, d2pdvv);
+
+		double E = Dot(dpdu, dpdu);
+		double F = Dot(dpdu, dpdv);
+		double G = Dot(dpdv, dpdv);
+
+		double temp = 1.0 / (E * G - F * F);
+		Vector3f dndu = (f * F - e * G) * dpdu * temp +
+			(e * F - f * E) * dpdv * temp;
+		Vector3f dndv = (g * F - f * G) * dpdu * temp +
+			(f * F - g * E) * dpdv * temp;
+
+		//记录相交信息并变换到世界坐标系
 		SurfaceInteraction record;
 		record.p = pHit;
 		record.t = tHit;
 		record.n = nHit;
 		record.wo = -localRay.dir;
 		record.uv = Point2f(u, v);
+		record.dpdu = dpdu;
+		record.dpdv = dpdv;
+		record.dndu = dndu;
+		record.dndv = dndv;
 		record = (*localToWorld)(record);
 		return record;
-	
-
-		////compute geometric parameters of surface intersection
-		//double u = phi / phiMax;
-		//double theta = acos(Clamp(pHit[2] / radius, -1.0, 1.0));
-		//double v = theta - thetaMin / abs(thetaMax - thetaMin);
-		//Normal3f n = Normal3f(pHit - Point3f(0.0, 0.0, 0.0)).normalized();
-
-
-
-		//Vector3f dpdu(-pHit[1] * phiMax, -pHit[0] * phiMax, 0);
-		//Vector3f dpdv = (thetaMax - thetaMin) * Vector3f(pHit[2] * cos(phi), 
-		//	pHit[2] * sin(theta), -radius * sin(theta));
-
-		////coefficients to compute dndu dndv
-		//double E = abs(Dot(dpdu, dpdu));
-		//double F = abs(Dot(dpdu, dpdv));
-		//double G = abs(Dot(dpdv, dpdv));
-		//Vector3f dpduu = -phiMax * phiMax * Vector3f(pHit[0], pHit[1], 0);
-		//Vector3f dpduv = (thetaMax - thetaMin) * pHit[2] * phiMax * Vector3f(-sin(phi), cos(phi), 0);
-		//Vector3f dpdvv = -(thetaMax - thetaMin) * (thetaMax - thetaMin) * Vector3f(pHit[0], pHit[1], pHit[2]);
-		//double e = Dot(n, dpduu);
-		//double f = Dot(-n, dpduv);
-		//double g = Dot(n, dpdvv);
-
-		//Vector3f dndu = ((f * F - e * G) / (E * G - F * F)) * dpdu +
-		//	((e * F - f * E) / (E * G - F * F)) * dpdv;
-		//Vector3f dndv = ((g * F - f * G) / (E * G - F * F)) * dpdu +
-		//	((f * F - g * E) / (E * G - F * F)) * dpdv;
-
-		////generate surfaceIntersection and transform it to world space 
-		//SurfaceInteraction its;
-		//its.p = pHit;
-		//its.t = tHit;
-		//its.uv = Point2f(u, v);
-		//its.n = n;
-		//its.dpdu = dpdu;
-		//its.dpdv = dpdv;
-		//its.dndu = dndu;
-		//its.dndv = dndv;
-		//its.wo = -localRay.dir;
-		//its = (*this->localToWorld)(its);
-
-
-		////return its;
-
-		//return std::nullopt;
 	}
 
 	//在圆上均匀采样一个点

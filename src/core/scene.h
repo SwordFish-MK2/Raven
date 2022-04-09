@@ -9,7 +9,6 @@
 #include"primitive.h"
 #include"texture.h"
 #include"accelerate.h"
-#include"../accelerate/primitiveList.h"
 #include"../shape/mesh.h"
 
 
