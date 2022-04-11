@@ -41,93 +41,93 @@ namespace Raven {
 	}
 
 	std::optional<SurfaceInteraction> KdTreeAccel::intersect(const Ray& r_in, double tMax)const {
-		//SurfaceInteraction inter;
+		SurfaceInteraction inter;
+		double tMin;
+		IntersectInfo nodeInfo[64];
+		IntersectInfo root(0, worldBound);
+		nodeInfo[0] = root;
+		int head = -1;
+		int rear = 0;
+		int flag = false;
+		Vector3f invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
+		bool rayNegDir[3] = { r_in.dir[0] < 0.0, r_in.dir[1] < 0.0, r_in.dir[2] < 0.0 };
 
-		//IntersectInfo nodeInfo[64];
-		//IntersectInfo root(0, worldBound);
-		//nodeInfo[0] = root;
-		//int head = -1;
-		//int rear = 0;
-		//int flag = false;
-		//Vector3f invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
-		//bool rayNegDir[3] = { r_in.dir[0] < 0.0, r_in.dir[1] < 0.0, r_in.dir[2] < 0.0 };
+		//iterate over kd-tree node to find intersection
+		while (head < rear) {
+			head++;//process next node
+			double t0, t1;//parameter distances  =
+			//test if incident ray intersect with current node
+			if (nodeInfo[head].bound.hit(r_in, &t0, &t1)) {
+				if (t0 > tMax || t1 < tMin)
+					//miss
+					continue;
+				//hit 
+				KdTreeNode node = treeNodes[nodeInfo[head].nodeInd];
+				int i = nodeInfo[head].nodeInd;
+				if (!node.isLeaf()) {
+					//interior node 
 
-		////iterate over kd-tree node to find intersection
-		//while (head < rear) {
-		//	head++;//process next node
-		//	double t0, t1;//parameter distances  =
-		//	//test if incident ray intersect with current node
-		//	if (nodeInfo[head].bound.hit(r_in, &t0, &t1)) {
-		//		if (t0 > tMax || t1 < tMin)
-		//			//miss
-		//			continue;
-		//		//hit 
-		//		KdTreeNode node = treeNodes[nodeInfo[head].nodeInd];
-		//		int i = nodeInfo[head].nodeInd;
-		//		if (!node.isLeaf()) {
-		//			//interior node 
+					//get node split info
+					int axis = node.getAxis();
+					double splitPos = (double)node.getSplitPos();
 
-		//			//get node split info
-		//			int axis = node.getAxis();
-		//			double splitPos = (double)node.getSplitPos();
+					//compute intersect info of child node
+					Bound3f belowBound = nodeInfo[head].bound;
+					Bound3f aboveBound = nodeInfo[head].bound;
+					belowBound.pMax[axis] = splitPos;
+					aboveBound.pMin[axis] = splitPos;
+					int belowInd = nodeInfo[head].nodeInd + 1;
+					int aboveInd = node.getAboveChild();
+					IntersectInfo below(belowInd, belowBound);
+					IntersectInfo above(aboveInd, aboveBound);
 
-		//			//compute intersect info of child node
-		//			Bound3f belowBound = nodeInfo[head].bound;
-		//			Bound3f aboveBound = nodeInfo[head].bound;
-		//			belowBound.pMax[axis] = splitPos;
-		//			aboveBound.pMin[axis] = splitPos;
-		//			int belowInd = nodeInfo[head].nodeInd + 1;
-		//			int aboveInd = node.getAboveChild();
-		//			IntersectInfo below(belowInd, belowBound);
-		//			IntersectInfo above(aboveInd, aboveBound);
+					//decide which child node shold be processed or in what order to be processed
+					double tSplit = (splitPos - r_in.origin[axis]) * invDir[axis];
 
-		//			//decide which child node shold be processed or in what order to be processed
-		//			double tSplit = (splitPos - r_in.origin[axis]) * invDir[axis];
-
-		//			//if incident ray has negative direction in split axis, the order of processed node should be reversed
-		//			if (rayNegDir[axis])
-		//				std::swap(below, above);
-		//			if (tSplit < t0)
-		//				nodeInfo[++rear] = above;
-		//			else if (tSplit > t1)
-		//				nodeInfo[++rear] = below;
-		//			else {
-		//				nodeInfo[++rear] = below;
-		//				nodeInfo[++rear] = above;
-		//			}
-		//		}
-		//		else {
-		//			//leaf node
-		//			int primNum = node.getPrimNum();
-		//			if (primNum == 1) {
-		//				//only one primitive in this node
-		//				std::optional<SurfaceInteraction> record = prims[node.onePrimitive]->intersect(r_in, tMin, tMax);
-		//				if (record) {
-		//					//incident ray hit primitive
-		//					tMax = (*record).t;//update tMin
-		//					inter = *record;
-		//					flag = true;
-		//				}
-		//			}
-		//			else {
-		//				//a few primitives in this node
-		//				for (int i = 0; i < primNum; i++) {
-		//					int index = primIndices[node.indexOffset + i];
-		//					std::optional<SurfaceInteraction> record = prims[index]->intersect(r_in, tMin, tMax);
-		//					if (record) {
-		//						//incident ray hit this primitive
-		//						tMax = (*record).t;
-		//						inter = *record;
-		//						flag = true;
-		//					}
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
-		//if (flag == false)
-		//	return std::nullopt;
-		//return inter;
+					//if incident ray has negative direction in split axis, the order of processed node should be reversed
+					if (rayNegDir[axis])
+						std::swap(below, above);
+					if (tSplit < t0)
+						nodeInfo[++rear] = above;
+					else if (tSplit > t1)
+						nodeInfo[++rear] = below;
+					else {
+						nodeInfo[++rear] = below;
+						nodeInfo[++rear] = above;
+					}
+				}
+				else {
+					//leaf node
+					int primNum = node.getPrimNum();
+					if (primNum == 1) {
+						//only one primitive in this node
+						std::optional<SurfaceInteraction> record = prims[node.onePrimitive]->intersect(r_in, tMax);
+						if (record) {
+							//incident ray hit primitive
+							tMax = (*record).t;//update tMin
+							inter = *record;
+							flag = true;
+						}
+					}
+					else {
+						//a few primitives in this node
+						for (int i = 0; i < primNum; i++) {
+							int index = primIndices[node.indexOffset + i];
+							std::optional<SurfaceInteraction> record = prims[index]->intersect(r_in, tMax);
+							if (record) {
+								//incident ray hit this primitive
+								tMax = (*record).t;
+								inter = *record;
+								flag = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (flag == false)
+			return std::nullopt;
+		return inter;
 		return std::nullopt;
 	}
 

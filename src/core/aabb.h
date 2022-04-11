@@ -23,8 +23,8 @@ namespace Raven {
 			//defual constructor set pmin>pmax to make sure this aabb do not exist
 			T minNum = std::numeric_limits<T>::lowest();
 			T maxNum = std::numeric_limits<T>::max();
-			pMin = Point3<T>(maxNum, maxNum, maxNum);
-			pMax = Point3<T>(minNum, minNum, minNum);
+			pMin = Point3<T>(1, 1, 1);
+			pMax = Point3<T>(-1, -1, -1);
 		}
 		AABB3<T>(const AABB3<T>& box) { this->pMax = box.pMax; this->pMin = box.pMin; }
 		AABB3<T>(const Point3<T>& p) { pMax = p; pMin = p; }
@@ -88,6 +88,7 @@ namespace Raven {
 			if (pMax.x > pMin.x) o.x /= pMax.x - pMin.x;
 			if (pMax.y > pMin.y) o.y /= pMax.y - pMin.y;
 			if (pMax.z > pMin.z)o.z /= pMax.z - pMin.z;
+			return o;
 		}
 
 		void boundingSphere(Point3<T>& center, double& radius)const {
@@ -95,18 +96,18 @@ namespace Raven {
 			radius = (pMax - center).length();
 		}
 
-		//compute whether incident ray hit this boundingbox,if hit, return tMin and tMax
+		//计算光线是否与该bounding box相交，如果相交，返回tMax与tMin
 		bool hit(const Ray& r_in, double* tMin, double* tMax) const {
 			//
 			//TODO:CHECK IF r_in.dir = 0
 			//
-			*tMin = -std::numeric_limits<double>::infinity();
+			*tMin = 0.0;
 			*tMax = std::numeric_limits<double>::infinity();
 			Vector3f invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
 			for (int i = 0; i < 3; i++) {
 				double tHitNear = (pMin[i] - r_in.origin[i]) * invDir[i];
 				double tHitFar = (pMax[i] - r_in.origin[i]) * invDir[i];
-				if (r_in.dir[i] < 0)
+				if (tHitNear > tHitFar)
 					std::swap(tHitNear, tHitFar);
 				if (tHitNear > *tMin)*tMin = tHitNear;
 				if (tHitFar < *tMax)*tMax = tHitFar;

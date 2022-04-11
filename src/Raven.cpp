@@ -20,7 +20,7 @@ int main()
 	auto start = std::chrono::system_clock::now();
 	Raven::Scene box = Raven::Scene::buildCornellBox();
 	//Raven::Scene box = Raven::Scene::buildTestScene();
-	Raven::Scene sphere = Raven::Scene::buildTestSphere();
+	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 
 	Raven::Film f(500, 500);
@@ -31,7 +31,7 @@ int main()
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
 	Raven::PathTracingRenderer renderer(cam, f, 100, 10, 0.1);
 	//Raven::NormalRenderer nRenderer(cam, f, 10, 1, 0.00001);
-	renderer.render(sphere);
+	renderer.render(box);
 	//nRenderer.render(sphere);
 	delete cam;
 
@@ -42,8 +42,8 @@ int main()
 	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() - minutes * 60;
 
 	std::cout << hours << "hours\n";
-	std::cout << minutes<< "minutes\n";
-	std::cout <<  seconds << "seconds\n";
+	std::cout << minutes << "minutes\n";
+	std::cout << seconds << "seconds\n";
 	return 0;
 
 }

@@ -18,6 +18,7 @@ namespace Raven {
 			int nPrims;			//if this node is leaf node, the upper 30 bits record the number of primitives within this node
 			int aboveChild;		//if this node is interior node, the upper 30 bits record the index of above child of this node
 		};
+
 		void createLeaf(int n, const int* prims, std::vector<int>* primIndices) {
 			//set flag in lower 2 bits and store nPrims in upper 30 bits
 			flag = 3;
@@ -38,23 +39,29 @@ namespace Raven {
 			}
 
 		}
+
 		bool isLeaf() {
 			return (flag & 3) == 3;
 		}
+
 		void createInterior(int axis, int above, double pos) {
 			splitPos = pos;
 			aboveChild = above << 2;
 			flag |= axis;
 		}
+
 		int getAboveChild() {
 			return aboveChild >> 2;
 		}
+
 		int getAxis() {
 			return flag & 3;
 		}
+
 		float getSplitPos() {
 			return splitPos;
 		}
+
 		int getPrimNum() {
 			if ((flag & 3) != 3)
 				return -1;
@@ -74,6 +81,7 @@ namespace Raven {
 		BoundEdge(bool start, double pos, int prim) :pos(pos), prim(prim) {
 			type = start ? EdgeStart : EdgeEnd;
 		}
+
 		BoundEdge() {}
 	};
 

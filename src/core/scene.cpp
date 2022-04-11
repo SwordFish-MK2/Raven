@@ -8,19 +8,30 @@
 #include"../material/plastic.h"
 #include"../core/Spectrum.h"
 #include"../texture/mapping.h"
+#include"../accelerate/bvh.h"
 
 namespace Raven {
 
-	Scene::Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
-		const std::vector<std::shared_ptr<TriangleMesh>>& meshes, const std::vector<std::shared_ptr<Primitive>>& prims,
+	Scene::Scene(
+		const std::vector<std::shared_ptr<Transform>>& trans,
+		const std::vector<std::shared_ptr<Light>>& lights,
+		const std::vector<std::shared_ptr<TriangleMesh>>& meshes,
+		const std::vector<std::shared_ptr<Primitive>>& prims,
 		AccelType type) :
 		meshes(meshes), lights(lights), transforms(trans) {
-		if (type == AccelType::List) {
+
+		switch (type) {
+		case AccelType::List:
 			objs = std::make_shared<PrimitiveList>(prims);
+			break;
+		case AccelType::KdTree:
+			objs = std::make_shared<KdTreeAccel>(prims,10, 80, 1, 0.5, 5);
+			break;
+		case AccelType::BVH:
+			objs = std::make_shared<BVHAccel>(prims, 1);
+			break;
 		}
-		else if (type == AccelType::KdTree) {
-			objs = std::make_shared<KdTreeAccel>(prims, 10, 80, 1, 0.5, 5);
-		}
+
 	}
 
 	Scene::Scene(const Scene& s) :transforms(s.transforms),
@@ -142,16 +153,6 @@ namespace Raven {
 		//meshes.push_back(square);
 
 		//Primitive
-		//std::shared_ptr<Primitive> s1 = std::make_shared<Primitive>(s, mate2);//small sphere
-		//std::shared_ptr<Primitive> s2 = std::make_shared<Primitive>(ground, mate2);//ground
-		//std::shared_ptr<Primitive> sLeft =
-		//	std::make_shared<TransformedPrimitive>(leftWorld.get(), leftLocal.get(), s1);
-		//std::shared_ptr<Primitive> sRight =
-		//	std::make_shared<TransformedPrimitive>(rightWorld.get(), rightLocal.get(), s1);
-		//std::shared_ptr<Primitive> sMiddle =
-		//	std::make_shared<TransformedPrimitive>(middleWorld.get(), middleLocal.get(), s1);
-		//	std::shared_ptr<Primitive> sq = std::make_shared<Primitive>(square, mate2);
-
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
 		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
 		std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
@@ -172,7 +173,7 @@ namespace Raven {
 
 		//prim_ptrs.push_back(sq);
 		//squareTri.push_back(sMiddle);
-		return Scene(usedTransform, lights, meshes, prim_ptrs);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
 
 	}
 
@@ -340,7 +341,7 @@ namespace Raven {
 
 		std::shared_ptr<MatteMaterial> kd = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
 
-		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build(3,3);
+		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build(3, 3);
 		std::shared_ptr<Texture<Spectrum>>whiteTexture =
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.80, 0.80, 0.080));
 		std::shared_ptr<Texture<Spectrum>> blackTexture =
@@ -382,7 +383,7 @@ namespace Raven {
 		prim_ptrs.push_back(lightp2);
 		prim_ptrs.push_back(p);
 		prim_ptrs.insert(prim_ptrs.end(), ground.begin(), ground.end());
-		return Scene(usedTransform, lights, meshes, prim_ptrs);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
 	}
 
 	Spectrum Scene::sampleLight(const SurfaceInteraction& record, double s,

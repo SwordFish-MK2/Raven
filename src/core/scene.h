@@ -47,7 +47,7 @@ namespace Raven {
 			return objs->worldBounds();
 		}
 
-		static Scene buildTestScene();
+	//	static Scene buildTestScene();
 
 		static Scene buildCornellBox();
 

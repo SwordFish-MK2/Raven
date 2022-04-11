@@ -7,7 +7,7 @@
 #include"interaction.h"
 
 enum AccelType {
-	List, KdTree
+	List, KdTree, BVH
 };
 
 namespace Raven {
