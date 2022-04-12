@@ -12,18 +12,18 @@ namespace Raven {
 	public:
 		Sphere(const Transform* LTW, const Transform* WTL, double radius) :
 			Shape(LTW, WTL), radius(radius) {}
-		virtual bool hit(const Ray& r_in, double tMax)const;
+		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax)const;
+		virtual bool intersect(const Ray& r_in, SurfaceInteraction& record, double tMax = FLT_MAX)const;
 
 		virtual Bound3f localBound()const;
-		
+
 		virtual Bound3f worldBound()const;
-		
+
 		virtual double area()const {
 			return 4 * M_PI * radius;
 		}
-		
+
 		virtual std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
 
 		virtual std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& inter, const Point2f& rand)const;

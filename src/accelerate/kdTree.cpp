@@ -41,7 +41,7 @@ namespace Raven {
 	}
 
 	std::optional<SurfaceInteraction> KdTreeAccel::intersect(const Ray& r_in, double tMax)const {
-		SurfaceInteraction inter;
+		SurfaceInteraction record;
 		double tMin;
 		IntersectInfo nodeInfo[64];
 		IntersectInfo root(0, worldBound);
@@ -101,11 +101,10 @@ namespace Raven {
 					int primNum = node.getPrimNum();
 					if (primNum == 1) {
 						//only one primitive in this node
-						std::optional<SurfaceInteraction> record = prims[node.onePrimitive]->intersect(r_in, tMax);
-						if (record) {
+						bool foundIntersection = prims[node.onePrimitive]->intersect(r_in, record, tMax);
+						if (foundIntersection) {
 							//incident ray hit primitive
-							tMax = (*record).t;//update tMin
-							inter = *record;
+							tMax = record.t;//update tMin
 							flag = true;
 						}
 					}
@@ -113,11 +112,10 @@ namespace Raven {
 						//a few primitives in this node
 						for (int i = 0; i < primNum; i++) {
 							int index = primIndices[node.indexOffset + i];
-							std::optional<SurfaceInteraction> record = prims[index]->intersect(r_in, tMax);
-							if (record) {
+							bool foundIntersection = prims[index]->intersect(r_in, record, tMax);
+							if (foundIntersection) {
 								//incident ray hit this primitive
-								tMax = (*record).t;
-								inter = *record;
+								tMax = record.t;
 								flag = true;
 							}
 						}
@@ -127,8 +125,7 @@ namespace Raven {
 		}
 		if (flag == false)
 			return std::nullopt;
-		return inter;
-		return std::nullopt;
+		return record;
 	}
 
 	void KdTreeAccel::buildNode(int* nodeNum, int depth, const int* pIndStart, int nPrimitives,

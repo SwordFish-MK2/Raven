@@ -14,17 +14,16 @@ namespace Raven {
 	std::optional<SurfaceInteraction> PrimitiveList::intersect(const Ray& r_in, double tMax)const {
 		bool flag = false;
 		double closest = tMax;
-		SurfaceInteraction inter;
+		SurfaceInteraction record;
 		for (int i = 0; i < prims.size(); i++) {
-			std::optional<SurfaceInteraction> record = prims[i]->intersect(r_in, closest);
-			if (record) {
-				inter = *record;
-				closest = (*record).t;
+			bool foundIntersection = prims[i]->intersect(r_in, record, closest);
+			if (foundIntersection) {
+				closest = record.t;
 				flag = true;
 			}
 		}
 		if (flag)
-			return inter;
+			return record;
 		else
 			return std::nullopt;
 	}

@@ -24,7 +24,7 @@ namespace Raven {
 		virtual bool hit(const Ray& r_in, double tMax)const = 0;
 
 		//intersect incident ray with shape and compute surfaceIntersection 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax)const = 0;
+		virtual bool intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const = 0;
 
 		//return the bounding box of shape in local space
 		virtual Bound3f localBound()const = 0;

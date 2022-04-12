@@ -261,7 +261,7 @@ namespace Raven {
 		int nodesToVisite[64];
 		int currentIndex = 0;
 		int offset = 0;
-		SurfaceInteraction r;
+		SurfaceInteraction record;
 		while (1) {
 			const LinearBVHNode* node = &linearTree[currentIndex];
 			double t0, t1;
@@ -274,12 +274,11 @@ namespace Raven {
 					for (size_t i = 0; i < node->nPrims; i++) {
 						//与节点内的Primitive求交
 						size_t index = node->firstOffset + i;
-						std::optional<SurfaceInteraction> record =
-							prims[index]->intersect(ray, closest);
-						if (record.has_value()) {
-							r = *record;
+						bool foundIntersection =
+							prims[index]->intersect(ray, record, closest);
+						if (foundIntersection) {
 							hit = true;
-							closest = record->t;
+							closest = record.t;
 						}
 					}
 
@@ -305,7 +304,7 @@ namespace Raven {
 			}
 		}
 		if (hit)
-			return std::optional<SurfaceInteraction>(r);
+			return std::optional<SurfaceInteraction>(record);
 		else
 			return std::nullopt;
 	}

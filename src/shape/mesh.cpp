@@ -63,7 +63,7 @@ namespace Raven {
 		return true;
 	}
 
-	std::optional<SurfaceInteraction> Triangle::intersect(const Ray& r_in, double tMax)const {
+	bool Triangle::intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const {
 		//取从网格中取出三角形的三个顶点p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
@@ -78,30 +78,28 @@ namespace Raven {
 
 		//行列式为零，无解
 		if (determinate <= 0)
-			return std::nullopt;
+			return false;
 
 		double invDet = 1.0 / determinate;
 		double t = invDet * Dot(s2, e2);
 		double b1 = invDet * Dot(s1, s);
 		double b2 = invDet * Dot(s2, r_in.dir);
-		double b0 = 1 - b1 - b2; 
+		double b0 = 1 - b1 - b2;
 
 		//交点不在三角形内
 		if (b0 < 0)
-			return std::nullopt;
+			return false;
 
 		//光线必须沿正向传播
 		if (t <= 0)
-			return std::nullopt;
+			return false;
 
 		//重心坐标都大于0时，交点在三角形内，光线与三角形相交	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
-			return std::nullopt;
-
+			return false;
 		//TODO::检查相交时间
 		if (t >= tMax)
-			return std::nullopt;
-
+			return false;
 		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
 		Point2f uv[3];
 		getUVs(uv);
@@ -122,7 +120,7 @@ namespace Raven {
 
 		//只计算从正面入射
 		if (Dot(nHit, r_in.dir) > 0)
-			return std::nullopt;
+			return false;
 
 		////计算dpdu与dpdv以便在网格表面求出的切线向量为连续的值
 		Vector3f dpdu, dpdv;
@@ -152,7 +150,8 @@ namespace Raven {
 		its.uv = uvHit;
 		its.t = t;
 		its.wo = -r_in.dir;
-		return its;
+		record = its;
+		return true;
 	}
 
 	Bound3f Triangle::localBound()const {

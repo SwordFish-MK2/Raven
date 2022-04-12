@@ -18,7 +18,7 @@ namespace Raven {
 		//diffuse
 		if (kdValue != Spectrum(0.0)) {
 			std::shared_ptr<BxDF> lam = std::make_shared<LambertainReflection>(kdValue);
-		//	bsdf->addBxDF(lam);
+			bsdf->addBxDF(lam);
 		}
 
 		//glossy

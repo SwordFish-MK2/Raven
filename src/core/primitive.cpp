@@ -9,28 +9,28 @@ namespace Raven {
 		return true;
 	}
 
-	std::optional<SurfaceInteraction> Primitive::intersect(const Ray& ray, double tMax)const {
+	bool Primitive::intersect(const Ray& ray, SurfaceInteraction& record, double tMax)const {
 		//判断光线是否与几何体相交
-		std::optional<SurfaceInteraction> hitRecord = shape_ptr->intersect(ray, tMax);
+		bool foundIntersection = shape_ptr->intersect(ray, record, tMax);
 
 		//光线未与几何体相交
-		if (hitRecord == std::nullopt) {
-			return std::nullopt;
+		if (!foundIntersection) {
+			return false;
 		}
 
 		//相交并且击中光源
 		if (light_ptr.get()) {
-			hitRecord->hitLight = true;
-			hitRecord->light = this->getAreaLight();
+			record.hitLight = true;
+			record.light = this->getAreaLight();
 		}
 		else {
-			hitRecord->hitLight = false;
+			record.hitLight = false;
 		}
 
 		//计算材质
 		if (mate_ptr.get())
-			mate_ptr->computeScarttingFunctions(*hitRecord);
-		return *hitRecord;
+			mate_ptr->computeScarttingFunctions(record);
+		return true;
 	}
 
 	Bound3f Primitive::worldBounds()const {
@@ -50,21 +50,17 @@ namespace Raven {
 		return prim->hit(r_in, tMax);
 	}
 
-	std::optional<SurfaceInteraction> TransformedPrimitive::intersect(const Ray& r_in, double tMax)const {
+	bool TransformedPrimitive::intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const {
 		if (!primToWorld || !worldToPrim || !prim)
-			return std::nullopt;
+			return false;
 
 		//将光线变换到Prim坐标系下并求交
 		Ray transformedRay = (*worldToPrim)(r_in);
-		std::optional<SurfaceInteraction> record = prim->intersect(transformedRay, tMax);
-
-		//未相交
-		if (record == std::nullopt) {
-			return std::nullopt;
-		}
+		if (!prim->intersect(transformedRay, record, tMax))
+			return false;
 		else {
-			*record = (*primToWorld)(*record);
-			return *record;
+			record = (*primToWorld)(record);
+			return true;
 		}
 	}
 

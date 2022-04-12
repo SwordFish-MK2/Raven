@@ -2,7 +2,7 @@
 #include"../core/distribution.h"
 namespace Raven {
 
-	bool Sphere::hit(const Ray& r_in, double tMax = FLT_MAX)const {
+	bool Sphere::hit(const Ray& r_in, double tMax)const {
 		//将光线从世界坐标系变换到圆的Local坐标系内
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -41,7 +41,7 @@ namespace Raven {
 		return localBox;
 	}
 
-	std::optional<SurfaceInteraction> Sphere::intersect(const Ray& r_in, double tMax)const {
+	bool Sphere::intersect(const Ray& r_in, SurfaceInteraction& inter, double tMax)const {
 		//将光线变换到局部坐标系下
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -54,16 +54,16 @@ namespace Raven {
 		double c = Dot(Vector3f(ori), Vector3f(ori)) - radius * radius;
 		double t0, t1, tHit;
 		if (!Quadratic(a, b, c, t0, t1))
-			return std::nullopt;
+			return false;
 
 		if (t0 >= tMax || t1 <= 0.0)
-			return std::nullopt;
+			return false;
 		tHit = t0;
 		if (tHit < 0.0) {
-			return std::nullopt;
+			return false;
 			tHit = t1;
 			if (tHit > tMax)
-				return std::nullopt;
+				return false;
 		}
 
 		//计算交点信息，pHit,uvHit,nHit
@@ -119,7 +119,8 @@ namespace Raven {
 		record.dndu = dndu;
 		record.dndv = dndv;
 		record = (*localToWorld)(record);
-		return record;
+		inter = record;
+		return true;
 	}
 
 	//在圆上均匀采样一个点

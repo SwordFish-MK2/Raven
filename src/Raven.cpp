@@ -18,9 +18,9 @@ using namespace std;
 int main()
 {
 	auto start = std::chrono::system_clock::now();
-	Raven::Scene box = Raven::Scene::buildCornellBox();
+	//Raven::Scene box = Raven::Scene::buildCornellBox();
 	//Raven::Scene box = Raven::Scene::buildTestScene();
-	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
+	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 
 	Raven::Film f(500, 500);
@@ -29,9 +29,9 @@ int main()
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 150.f,
 		10.0f, 1000.0f, 40.f, f.aspect_ratio);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::PathTracingRenderer renderer(cam, f, 100, 10, 0.1);
+	Raven::PathTracingRenderer renderer(cam, f, 20, 10, 0.1);
 	//Raven::NormalRenderer nRenderer(cam, f, 10, 1, 0.00001);
-	renderer.render(box);
+	renderer.render(sphere);
 	//nRenderer.render(sphere);
 	delete cam;
 

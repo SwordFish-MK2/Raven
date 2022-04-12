@@ -153,7 +153,7 @@ namespace Raven {
 		prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
 
 	}
 
@@ -337,7 +337,7 @@ namespace Raven {
 
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
-		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.2);
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
 
 		std::shared_ptr<Material> plastic = Plastic::build(kdTex, ksTex, roughTex);
 
@@ -356,7 +356,7 @@ namespace Raven {
 		std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(lightTris[0], lightLam, aLight1);
 		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(lightTris[1], lightLam, aLight2);
 
-		std::shared_ptr<Primitive> p = Primitive::build(sphere, checkered, nullptr);
+		std::shared_ptr<Primitive> p = Primitive::build(sphere, plastic, nullptr);
 		std::vector<std::shared_ptr<Primitive>> ground = plane->generatePrimitive(whiteLam);
 
 		prim_ptrs.push_back(lightp1);

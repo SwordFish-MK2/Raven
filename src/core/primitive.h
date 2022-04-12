@@ -18,7 +18,7 @@ namespace Raven {
 
 		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual bool intersect(const Ray& r_in, SurfaceInteraction& inter, double tMax = FLT_MAX)const;
 
 		virtual Bound3f worldBounds()const;
 
@@ -46,7 +46,7 @@ namespace Raven {
 
 		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual bool intersect(const Ray& r_in, SurfaceInteraction& inter, double tMax = FLT_MAX)const;
 
 		virtual Bound3f worldBounds()const;
 
