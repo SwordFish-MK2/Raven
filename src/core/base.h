@@ -19,6 +19,8 @@ namespace Raven {
 	class AABB2;
 	template<class T>
 	class Texture;
+	template <typename T, int logBlockSize = 4>
+	class BlockedArray;
 	class Camera;
 	class Ray;
 	class RayDifferential;

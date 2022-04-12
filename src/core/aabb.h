@@ -118,6 +118,30 @@ namespace Raven {
 			else
 				return false;
 		}
+
+		bool hit(const Ray& ray, const Vector3f& invDir, const Vector3i& isDirNeg)const {
+			const Point3f& pMax = this->pMax;
+			const Point3f& pMin = this->pMin;
+
+			double tMinX = (pMin.x - ray.origin.x) * invDir.x;
+			double tMaxX = (pMax.x - ray.origin.x) * invDir.x;
+			if (isDirNeg[0])
+				Swap(tMinX, tMaxX);
+			double tMinY = (pMin.y - ray.origin.y) * invDir.y;
+			double tMaxY = (pMin.y - ray.origin.y) * invDir.y;
+			if (isDirNeg[1])
+				Swap(tMinY, tMaxY);
+			double tMinZ = (pMin.z - ray.origin.z) * invDir.z;
+			double tMaxZ = (pMax.z - ray.origin.z) * invDir.z;
+			if (isDirNeg[2])
+				Swap(tMinZ, tMaxZ);
+			double tMin = Max(tMinX, tMinY, tMinZ);
+			double tMax = Min(tMaxX, tMaxY, tMaxZ);
+
+			if (tMin <= tMax && tMin > 0.0)
+				return true;
+			return false;
+		}
 	};
 
 	/// <summary>

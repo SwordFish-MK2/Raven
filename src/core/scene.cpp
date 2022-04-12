@@ -73,6 +73,7 @@ namespace Raven {
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(greenTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
+
 		//Material
 		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.1, 0.97, 0.4));
 		std::shared_ptr<MatteMaterial> mate2 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5, 0.5, 0.5));
@@ -83,9 +84,6 @@ namespace Raven {
 		std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
 
 		//Shape
-		//std::shared_ptr<Sphere> s = std::make_shared<Sphere>(sphereLocToPrim.get(), spherePrimToLoc.get(), 80.0, 80.0, -80.0, 2 * M_PI);
-		//std::shared_ptr<Sphere> ground = std::make_shared<Sphere>(sphereLocToPrim.get(), spherePrimToLoc.get(), 16000., 16000., -16000., 2 * M_PI);
-
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
@@ -125,14 +123,7 @@ namespace Raven {
 		meshes.push_back(tBoxMesh);
 		meshes.push_back(lightMesh);
 
-
-		//Point3f sp0(-50.0, 500.0, 200.0);
-		//Point3f sp1(50.0, 500.0, 200.0);
-		//Point3f sp2(50.0, 500.0, 100.0);
-		//Point3f sp3(-50.0, 500.0, 100.0);
-
 		std::vector<std::shared_ptr<Triangle>> sTri = lightMesh->getTriangles();
-		//meshes.push_back(sqr);
 
 		//Light
 		Spectrum lightEmit = RGBSpectrum::fromRGB(8.0 * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f)
@@ -146,11 +137,6 @@ namespace Raven {
 		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(sTri[1], lightLam, aLight2);
 		lights.push_back(aLight1);
 		lights.push_back(aLight2);
-
-		//std::shared_ptr<TriangleMesh> square = std::make_shared<TriangleMesh>(CreatePlane(identity.get(), identity.get(),
-		//	p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0)));
-		//std::vector<std::shared_ptr<Primitive>> squareTri = square->generatePrimitive(mate2);
-		//meshes.push_back(square);
 
 		//Primitive
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
@@ -167,12 +153,6 @@ namespace Raven {
 		prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-		//prim_ptrs.push_back(squareTri[0]);
-		//prim_ptrs.push_back(squareTri[1]);
-		//prim_ptrs.push_back(sMiddle);
-
-		//prim_ptrs.push_back(sq);
-		//squareTri.push_back(sMiddle);
 		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
 
 	}

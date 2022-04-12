@@ -18,7 +18,7 @@ namespace Raven {
 			for (int i = 0; i < prims.size(); i++)
 				worldBound = Union(prims[i]->worldBounds(), worldBound);
 		}
-
+	
 		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const = 0;
 
 		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const = 0;

@@ -15,16 +15,26 @@ namespace Raven {
 
 		std::vector<std::shared_ptr<Primitive>> ordered;
 
+		size_t totalNodes = 0;
 		//递归构建BVH树
-		root = recursiveBuild(primInfo, 0, primInfo.size(), ordered);
+		std::shared_ptr<BVHNode>root = recursiveBuild(primInfo, 0, primInfo.size(), ordered, totalNodes);
 
 		//用排好序的prim数组替换原数组
 		prims.swap(ordered);
+
+		linearTree = std::vector<LinearBVHNode>(totalNodes);
+		int offset = 0;
+		flattenTree(root, &offset);
 	}
 
-	std::shared_ptr<BVHNode> BVHAccel::recursiveBuild(std::vector<PrimitiveInfo>& info, size_t start, size_t end,
-		std::vector<std::shared_ptr<Primitive>>& ordered) {
+	std::shared_ptr<BVHNode> BVHAccel::recursiveBuild(
+		std::vector<PrimitiveInfo>& info,
+		size_t start,
+		size_t end,
+		std::vector<std::shared_ptr<Primitive>>& ordered,
+		size_t& totalNodes) {
 		std::shared_ptr<BVHNode> currentNode = std::make_shared<BVHNode>();
+		totalNodes++;
 
 		//求当前node的boundingBox
 		Bound3f centroidBound;
@@ -46,17 +56,19 @@ namespace Raven {
 			std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 			return currentNode;
 		}
-		else if (nPrimitive == 2) {
-			size_t middle = start + 1;
-			std::shared_ptr<BVHNode> leftNode = recursiveBuild(info, start, middle, ordered);
-			std::shared_ptr<BVHNode> rightNode = recursiveBuild(info, middle, end, ordered);
-			currentNode->buildInterior(leftNode, rightNode);
-			return currentNode;
-		}
+
 		//选择划分轴
 		int axis = centroidBound.maxExtent();
 		bool split = false;
-		size_t middle;
+		size_t middle = start;
+		if (nPrimitive == 2) {
+			middle = start + 1;
+			std::shared_ptr<BVHNode> leftNode = recursiveBuild(info, start, middle, ordered, totalNodes);
+			std::shared_ptr<BVHNode> rightNode = recursiveBuild(info, middle, end, ordered, totalNodes);
+			currentNode->buildInterior(leftNode, rightNode, axis);
+			return currentNode;
+		}
+
 		for (int i = 0; i < 3; i++) {
 			//排序
 			switch (axis) {
@@ -118,9 +130,9 @@ namespace Raven {
 			}
 
 			//寻找最小开销的划分
-			double minCost = std::numeric_limits<double>::max();
+			double minCost = cost[0];
 			int minBucket = 0;
-			for (int i = 0; i < nBuckets - 1; i++) {
+			for (int i = 1; i < nBuckets - 1; i++) {
 				if (buckets[i].nPrimitives == 0)
 					continue;
 				if (cost[i] < minCost) {
@@ -151,9 +163,9 @@ namespace Raven {
 		//找到了开销更低的划分
 		if (split) {
 			//执行划分并递归求子节点
-			std::shared_ptr<BVHNode> leftNode = recursiveBuild(info, start, middle, ordered);
-			std::shared_ptr<BVHNode> rightNode = recursiveBuild(info, middle, end, ordered);
-			currentNode->buildInterior(leftNode, rightNode);
+			std::shared_ptr<BVHNode> leftNode = recursiveBuild(info, start, middle, ordered, totalNodes);
+			std::shared_ptr<BVHNode> rightNode = recursiveBuild(info, middle, end, ordered, totalNodes);
+			currentNode->buildInterior(leftNode, rightNode, axis);
 			return currentNode;
 		}
 		//未找到开销更低的划分
@@ -172,96 +184,129 @@ namespace Raven {
 		}
 	}
 
-	bool BVHAccel::hit(const Ray& r_in, double tMax)const {
-		const int maxSize = 64;
-		int size = 1;
-		std::shared_ptr<BVHNode> nodes[maxSize];
-		nodes[0] = root;
-		int head = -1;
-		int rear = 0;
-		//遍历队列直至处理完所有node或者光线与primitive相交
-		while (head != rear) {
-			head = (head + 1) % 64;//处理下一个Node
-			size--;
-			double t0, t1;//光线与boundingbox相交的距离参数
+	int BVHAccel::flattenTree(const std::shared_ptr<BVHNode>& node, int* offset) {
+		//取出要赋值的linearNode
+		LinearBVHNode* lnode = &linearTree[*offset];
 
-			//测试当前节点是否与光线相交
-			if (nodes[head]->box.hit(r_in, &t0, &t1)) {
+		lnode->box = node->box;
+		int currentOffset = (*offset)++;
 
-				//光线与该节点的包围盒相交
-				const std::shared_ptr<BVHNode>& node = nodes[head];
-				if (node->children[0] != nullptr || node->children[1] != nullptr) {
-					//该节点为中间节点,将子节点加入队列
-					rear = (rear + 1) % 64;
-					size++;
-					assert(size < maxSize);
-					nodes[rear] = node->children[0];
-					rear = (rear + 1) % 64;
-					size++;
-					assert(size < maxSize);
-					nodes[rear] = node->children[1];
+		//原节点为叶子节点
+		if (node->nPrims > 0) {
+			lnode->firstOffset = node->firstPrimOffset;
+			lnode->nPrims = node->nPrims;
+		}
+		else {
+			lnode->axis = node->splitAxis;
+			node->nPrims = 0;
+			flattenTree(node->children[0], offset);
+			lnode->rightChild = flattenTree(node->children[1], offset);
+		}
+		return currentOffset;
+	}
+
+	bool BVHAccel::hit(const Ray& ray, double tMax)const {
+		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
+		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
+		int nodesToVisite[64];
+		int currentIndex = 0;
+		int offset = 0;
+		while (1) {
+			const LinearBVHNode* node = &linearTree[currentIndex];
+			double t0, t1;
+			if (node->box.hit(ray, &t0, &t1)) {
+				//光线与包围盒相交
+
+				if (node->nPrims > 0) {
+					//该节点为叶子节点
+
+					for (size_t i = 0; i < node->nPrims; i++) {
+						//与节点内的Primitive求交
+						size_t index = node->firstOffset + i;
+						if (prims[index]->hit(ray, tMax))
+							return true;
+
+					}
+
+					if (offset == 0)break;
+					currentIndex = nodesToVisite[--offset];
 				}
 				else {
-					//该节点为叶子节点,遍历子节点中的primitve
-					for (size_t i = 0; i < node->nPrims; i++) {
-						size_t index = node->firstPrimOffset + i;
-						if (prims[index]->hit(r_in, tMax))
-							return true;
+					//该节点为中间节点
+					if (dirIsNeg[node->axis]) {
+						nodesToVisite[offset++] = currentIndex + 1;
+						currentIndex = node->rightChild;
+					}
+					else {
+						nodesToVisite[offset++] = node->rightChild;
+						currentIndex = currentIndex + 1;
 					}
 				}
 			}
+			else {
+				//光线未与当前节点的包围盒相交，访问下一个节点
+				if (offset == 0)break;	//没有需要访问的节点
+				currentIndex = nodesToVisite[--offset];//取得下一个需要访问的节点
+			}
 		}
-
 		return false;
 	}
 
+
 	std::optional<SurfaceInteraction> BVHAccel::intersect(const Ray& ray, double tMax)const {
-		const int maxSize = 64;
-		int size = 1;
-		std::shared_ptr<BVHNode> nodes[maxSize];
-		nodes[0] = root;
-		int head = -1;
-		int rear = 0;
-		double closet = tMax;
-		std::optional<SurfaceInteraction> record;
-	
-		//遍历队列直至处理完所有node
-		while (head != rear) {
-			head = (head + 1) % 64;
-			size--;
-			//测试当前节点是否与光线相交
+		bool hit = false;
+		double closest = tMax;
+		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
+		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
+		int nodesToVisite[64];
+		int currentIndex = 0;
+		int offset = 0;
+		SurfaceInteraction r;
+		while (1) {
+			const LinearBVHNode* node = &linearTree[currentIndex];
 			double t0, t1;
-			if (nodes[head]->box.hit(ray, &t0, &t1)) {
-				//当前节点的包围盒与光线相交
-	
-				const std::shared_ptr<BVHNode>& node = nodes[head];
-				if (node->children[0] != nullptr || node->children[1] != nullptr) {
-					//该节点为中间节点
-					rear = (rear + 1) % 64;
-					size++;
-					assert(size < maxSize);
-					nodes[rear] = node->children[0];
-					rear = (rear + 1) % 64;
-					size++;
-					assert(size < maxSize);
-					nodes[rear] = node->children[1];
+			if (node->box.hit(ray, &t0, &t1)) {
+				//光线与包围盒相交
+
+				if (node->nPrims > 0) {
+					//该节点为叶子节点
+
+					for (size_t i = 0; i < node->nPrims; i++) {
+						//与节点内的Primitive求交
+						size_t index = node->firstOffset + i;
+						std::optional<SurfaceInteraction> record =
+							prims[index]->intersect(ray, closest);
+						if (record.has_value()) {
+							r = *record;
+							hit = true;
+							closest = record->t;
+						}
+					}
+
+					if (offset == 0)break;
+					currentIndex = nodesToVisite[--offset];
 				}
 				else {
-					//该节点为叶子节点
-					for (size_t i = 0; i < node->nPrims; i++) {
-						//判断节点中的每一个primitive是否与光线相交
-						size_t index = node->firstPrimOffset + i;
-						std::optional<SurfaceInteraction> hitRecord = prims[index]->intersect(ray, closet);
-						if (hitRecord.has_value()) {
-							//该primitive与光线相交
-							closet = hitRecord->t;
-							record = hitRecord;
-						}
+					//该节点为中间节点
+					if (dirIsNeg[node->axis]) {
+						nodesToVisite[offset++] = currentIndex + 1;
+						currentIndex = node->rightChild;
+					}
+					else {
+						nodesToVisite[offset++] = node->rightChild;
+						currentIndex = currentIndex + 1;
 					}
 				}
 			}
+			else {
+				//光线未与当前节点的包围盒相交，访问下一个节点
+				if (offset == 0)break;	//没有需要访问的节点
+				currentIndex = nodesToVisite[--offset];//取得下一个需要访问的节点
+			}
 		}
-	
-		return record;
+		if (hit)
+			return std::optional<SurfaceInteraction>(r);
+		else
+			return std::nullopt;
 	}
 }
