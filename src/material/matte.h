@@ -21,7 +21,7 @@ namespace Raven {
 			const std::shared_ptr<Texture<Spectrum>>& Kd,
 			const std::shared_ptr<Texture<double>>& bump = NULL)
 			:sigma(sigma), kd(Kd), bump(bump) {}
-		//MatteMaterial(double Kd) :Kd(Kd) {}
+
 		void computeScarttingFunctions(SurfaceInteraction& its) const;
 
 

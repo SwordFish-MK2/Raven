@@ -10,6 +10,7 @@
 #include"texture.h"
 #include"accelerate.h"
 #include"../shape/mesh.h"
+#include<string>
 
 
 namespace Raven {
@@ -47,7 +48,7 @@ namespace Raven {
 			return objs->worldBounds();
 		}
 
-	//	static Scene buildTestScene();
+		static Scene buildTestScene();
 
 		static Scene buildCornellBox();
 

@@ -85,6 +85,10 @@ namespace Raven {
 
 		void getUVs(Point2f uv[3])const;
 
+		Point3f getVertex(int num)const {
+			return mesh->vertices[index(i)];
+		}
+
 		inline int index(int num)const {
 			//TODO::¼ì²énumµÄÖµ
 			return mesh->indices[i + num];
@@ -95,6 +99,13 @@ namespace Raven {
 		double pdf()const { return 1 / area(); }
 	};
 
+	inline std::ostream& operator<<(std::ostream& os, const Triangle& t) {
+		const Point3f& p0 = t.getVertex(0);
+		const Point3f& p1 = t.getVertex(1);
+		const Point3f& p2 = t.getVertex(2);
+		os << "[ " << p0 << ", " << p1 << ", " << p2 << " ]";
+		return os;
+	}
 
 	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
 		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal);

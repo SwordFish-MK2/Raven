@@ -9,6 +9,8 @@
 #include"../core/Spectrum.h"
 #include"../texture/mapping.h"
 #include"../accelerate/bvh.h"
+#include"../texture/imageTexture.h"
+#include"../material/mirror.h"
 
 namespace Raven {
 
@@ -25,7 +27,7 @@ namespace Raven {
 			objs = std::make_shared<PrimitiveList>(prims);
 			break;
 		case AccelType::KdTree:
-			objs = std::make_shared<KdTreeAccel>(prims,10, 80, 1, 0.5, 5);
+			objs = std::make_shared<KdTreeAccel>(prims, 10, 80, 1, 0.5, 5);
 			break;
 		case AccelType::BVH:
 			objs = std::make_shared<BVHAccel>(prims, 1);
@@ -157,129 +159,120 @@ namespace Raven {
 
 	}
 
-	//Scene Scene::buildTestScene() {
-	//	std::vector<std::shared_ptr<TriangleMesh>> meshes;
-	//	std::vector<std::shared_ptr<Transform>> usedTransform;
-	//	std::vector<std::shared_ptr<Light>> lights;
-	//	std::vector<std::shared_ptr<Primitive>> prim_ptrs;
+	Scene Scene::buildTestScene() {
+		std::vector<std::shared_ptr<TriangleMesh>> meshes;
+		std::vector<std::shared_ptr<Transform>> usedTransform;
+		std::vector<std::shared_ptr<Light>> lights;
+		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
 
-	//	//transform
-	//	Eigen::Matrix4f spherePrimitive;
-	//	spherePrimitive <<
-	//		1.f, 0.f, 0.f, 0.f,
-	//		0.f, 0.f, 1.f, 0.f,
-	//		0.f, -1.f, 0.f, 0.f,
-	//		0.f, 0.f, 0.f, 1.f;
+		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
+		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(150, 110, 300)));
+		std::shared_ptr<Transform> invSphereWorld = std::make_shared<Transform>(sphereWorld->inverse());
 
-	//	std::shared_ptr<Transform> sphereLocal = std::make_shared<Transform>(spherePrimitive);
-	//	std::shared_ptr<Transform> invSphereLocal = std::make_shared<Transform>(spherePrimitive.inverse());
-	//	std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
-	//	std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(150, 110, 300)));
-	//	std::shared_ptr<Transform> invSphereWorld = std::make_shared<Transform>(sphereWorld->inverse());
+		usedTransform.push_back(identity);
+		usedTransform.push_back(sphereWorld);
+		usedTransform.push_back(invSphereWorld);
 
-	//	usedTransform.push_back(sphereLocal);
-	//	usedTransform.push_back(invSphereLocal);
-	//	usedTransform.push_back(identity);
-	//	usedTransform.push_back(sphereWorld);
-	//	usedTransform.push_back(invSphereWorld);
+		std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 100);
 
-	//	std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 100);
+		Loader loader;
+		std::optional<TriangleInfo> leftInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
+		std::optional<TriangleInfo> rightInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
+		std::optional<TriangleInfo> floorInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
+				std::optional<TriangleInfo> sBoxInfo =
+					loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+		std::optional<TriangleInfo> tBoxInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
+		std::optional<TriangleInfo> lightInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/light.obj");
 
-	//	Loader loader;
-	//	std::optional<TriangleInfo> leftInfo =
-	//		loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
-	//	std::optional<TriangleInfo> rightInfo =
-	//		loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
-	//	std::optional<TriangleInfo> floorInfo =
-	//		loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
-	//	//		std::optional<TriangleInfo> sBoxInfo =
-	//	//			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
-	//	std::optional<TriangleInfo> tBoxInfo =
-	//		loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
-	//	std::optional<TriangleInfo> lightInfo =
-	//		loader.loadObj("D:/MyWorks/Raven/models/cornellbox/light.obj");
+		std::shared_ptr<TriangleMesh> leftMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
 
-	//	std::shared_ptr<TriangleMesh> leftMesh =
-	//		TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
+		std::shared_ptr<TriangleMesh> rightMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *rightInfo);
 
-	//	std::shared_ptr<TriangleMesh> rightMesh =
-	//		TriangleMesh::build(identity.get(), identity.get(), *rightInfo);
+		std::shared_ptr<TriangleMesh> floorMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *floorInfo);
 
-	//	std::shared_ptr<TriangleMesh> floorMesh =
-	//		TriangleMesh::build(identity.get(), identity.get(), *floorInfo);
+		std::shared_ptr<TriangleMesh> sBoxMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *sBoxInfo);
 
-	//	//std::shared_ptr<TriangleMesh> sBoxMesh =
-	//	//	TriangleMesh::build(identity.get(), identity.get(), *sBoxInfo);
+		std::shared_ptr<TriangleMesh> tBoxMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *tBoxInfo);
 
-	//	std::shared_ptr<TriangleMesh> tBoxMesh =
-	//		TriangleMesh::build(identity.get(), identity.get(), *tBoxInfo);
+		std::shared_ptr<TriangleMesh> lightMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *lightInfo);
 
-	//	std::shared_ptr<TriangleMesh> lightMesh =
-	//		TriangleMesh::build(identity.get(), identity.get(), *lightInfo);
+		meshes.push_back(leftMesh);
+		meshes.push_back(rightMesh);
+		meshes.push_back(floorMesh);
+		meshes.push_back(sBoxMesh);
+		meshes.push_back(tBoxMesh);
+		meshes.push_back(lightMesh);
 
-	//	meshes.push_back(leftMesh);
-	//	meshes.push_back(rightMesh);
-	//	meshes.push_back(floorMesh);
-	//	//meshes.push_back(sBoxMesh);
-	//	meshes.push_back(tBoxMesh);
-	//	meshes.push_back(lightMesh);
+		//Texture
+		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build();
+		std::shared_ptr<Texture<Spectrum>> mirrorR = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.85, 0.85, 0.85));
+		std::shared_ptr<Texture<Spectrum>> greenTexture = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.843137, 0.843137, 0.091f));
+		std::shared_ptr<Texture<Spectrum>> blackTexture = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
+		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(greenTexture, blackTexture,mapping);
+		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
 
-	//	//Texture
-	//	std::shared_ptr<Texture<Vector3f>> greenTexture = ConstTexture<Vector3f>::build(Vector3f(0.843137, 0.843137, 0.091f));
-	//	std::shared_ptr<Texture<Vector3f>> blackTexture = ConstTexture<Vector3f>::build(Vector3f(0.235294, 0.67451, 0.843137));
-	//	std::shared_ptr<Texture<Vector3f>> cheTex = CheckeredTexture<Vector3f>::build(greenTexture, blackTexture);
-	//	std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
+		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.2f, 0.3f, 0.25f));
+		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.1);
 
-	//	std::shared_ptr<Texture<Vector3f>> kdTex = ConstTexture<Vector3f>::build(Vector3f(0.2f, 0.3f, 0.25f));
-	//	std::shared_ptr<Texture<Vector3f>> ksTex = ConstTexture<Vector3f>::build(Vector3f(0.7f, 0.7f, 0.7f));
-	//	std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.45);
+		//Material
+		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.1, 0.97, 0.4));
+		std::shared_ptr<MatteMaterial> mate2 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5, 0.5, 0.5));
+		std::shared_ptr<MatteMaterial> redLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.63f, 0.065f, 0.05f));
+		std::shared_ptr<MatteMaterial> greenLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.14f, 0.45f, 0.091f));
+		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.725f, 0.71f, 0.68f));
+		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.65f));
+		std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
 
-	//	//Material
-	//	std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, Vector3f(0.1, 0.97, 0.4));
-	//	std::shared_ptr<MatteMaterial> mate2 = MatteMaterial::buildConst(0.0, Vector3f(0.5, 0.5, 0.5));
-	//	std::shared_ptr<MatteMaterial> redLam = MatteMaterial::buildConst(0.0, Vector3f(0.63f, 0.065f, 0.05f));
-	//	std::shared_ptr<MatteMaterial> greenLam = MatteMaterial::buildConst(0.0, Vector3f(0.14f, 0.45f, 0.091f));
-	//	std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, Vector3f(0.725f, 0.71f, 0.68f));
-	//	std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, Vector3f(0.65f));
-	//	std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
+		std::shared_ptr<Material> mirror = Mirror::build(mirrorR);
 
-	//	std::shared_ptr<Plastic> plastic = Plastic::build(kdTex, ksTex, roughTex);
+		std::shared_ptr<Plastic> plastic = Plastic::build(kdTex, ksTex, roughTex);
 
-	//	//Light
-	//	std::vector<std::shared_ptr<Triangle>> sTri = lightMesh->getTriangles();
-	//	Vector3f lightEmit = (8.0 * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f)
-	//		+ 15.6 * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4 *
-	//		Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
-	//	std::shared_ptr<DiffuseAreaLight> aLight1 =
-	//		std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, sTri[0].get(), lightEmit);
-	//	std::shared_ptr<DiffuseAreaLight> aLight2 =
-	//		std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, sTri[1].get(), lightEmit);
-	//	std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(sTri[0], lightLam, aLight1);
-	//	std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(sTri[1], lightLam, aLight2);
-	//	lights.push_back(aLight1);
-	//	lights.push_back(aLight2);
+		//Light
+		std::vector<std::shared_ptr<Triangle>> sTri = lightMesh->getTriangles();
+		Spectrum lightEmit = RGBSpectrum::fromRGB(8.0 * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f)
+			+ 15.6 * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4 *
+			Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
+		std::shared_ptr<DiffuseAreaLight> aLight1 =
+			std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, sTri[0].get(), lightEmit);
+		std::shared_ptr<DiffuseAreaLight> aLight2 =
+			std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, sTri[1].get(), lightEmit);
+		std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(sTri[0], lightLam, aLight1);
+		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(sTri[1], lightLam, aLight2);
+		lights.push_back(aLight1);
+		lights.push_back(aLight2);
 
-	//	//Primitives
-	//	std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, plastic, nullptr);
-	//	//std::shared_ptr<Primitive>sworldPrim = TransformedPrimitive::build(sphereWorld.get(), invSphereWorld.get(), sLocalPrim);
-	//	std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
-	//	std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
-	//	std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
-	//	//std::vector<std::shared_ptr<Primitive>>  sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
-	//	std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(whiteLam);
+		//Primitives
+		std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, plastic, nullptr);
+		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
+		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
+		std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>>  sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(mirror);
 
-	//	prim_ptrs.push_back(lightp1);
-	//	prim_ptrs.push_back(lightp2);
-	//	prim_ptrs.push_back(spherePrim);
-	//	prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
-	//	prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
-	//	prim_ptrs.insert(prim_ptrs.end(), floorPrim.begin(), floorPrim.end());
-	//	//prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
-	//	prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
+		prim_ptrs.push_back(lightp1);
+		prim_ptrs.push_back(lightp2);
+		//prim_ptrs.push_back(spherePrim);
+		prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), floorPrim.begin(), floorPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-	//	return Scene(usedTransform, lights, meshes, prim_ptrs);
+		return Scene(usedTransform, lights, meshes, prim_ptrs,AccelType::BVH);
 
-	//}
+	}
 
 	Scene Scene::buildTestSphere() {
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
@@ -321,15 +314,22 @@ namespace Raven {
 
 		std::shared_ptr<MatteMaterial> kd = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
 
+		//texture
+		std::string picturePath = std::string("C:/Users/HJW/Desktop/earthmap.jpg");
+
 		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build(3, 3);
+		std::shared_ptr<TextureMapping2D> unSacaledUV = UVMapping2D::build();
 		std::shared_ptr<Texture<Spectrum>>whiteTexture =
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.80, 0.80, 0.080));
 		std::shared_ptr<Texture<Spectrum>> blackTexture =
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(whiteTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
+		Spectrum* spec = new Spectrum(0.0);
+		//std::shared_ptr<Texture<Spectrum>> image =
+		//	ImageTexture<Spectrum>::build(picturePath, unSacaledUV, true, ImageWrap::ImClamp, 1, true);
 
-
+			//material
 		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.65f));
 
@@ -337,7 +337,7 @@ namespace Raven {
 
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
-		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.1);
 
 		std::shared_ptr<Material> plastic = Plastic::build(kdTex, ksTex, roughTex);
 

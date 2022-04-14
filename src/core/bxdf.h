@@ -47,6 +47,16 @@ namespace Raven {
 		virtual double evaluate(double cosTheta)const {
 			return FDielectric(cosTheta, etaI, etaT);
 		}
+
+	};
+
+	/// <summary>
+	/// 理想模型，对于所有入射方向都完美反射，多用于镜面材质
+	/// </summary>
+	class FresnelNoOp final :public Fresnel {
+	public:
+		FresnelNoOp() {}
+		double evaluate(double cosTheta)const { return 1.0; }
 	};
 
 	enum BxDFType {

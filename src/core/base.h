@@ -54,6 +54,7 @@ namespace Raven {
 		T t3 = t0 < t1 ? t0 : t1;
 		return t3 < t2 ? t3 : t2;
 	}
+	
 	inline double Lerp(double t, double x1, double x2) { return (1 - t) * x1 + t * x2; }
 	inline double Clamp(double v, double min, double max) {
 		if (v > max)

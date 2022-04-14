@@ -23,7 +23,7 @@ namespace Raven {
 
 		//glossy
 		if (ksValue != Spectrum(0.0)) {
-			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.85f, 1.f);
+			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.0f, 1.85f);
 			double alpha = GGX::RoughnessToAlpha(roughValue);
 			std::shared_ptr<MicrofacetDistribution> distribute =
 				std::make_shared<GGX>(roughValue, roughValue,true);

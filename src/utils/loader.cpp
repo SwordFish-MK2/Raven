@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include"loader.h"
 #include<filesystem>
 #include<fstream>
@@ -72,5 +74,42 @@ namespace Raven {
 		}
 		TriangleInfo info(number, vertices, normals, uvs, tangants, indices);
 		return std::optional<TriangleInfo>(info);
+	}
+
+	Vector3f toVector(const unsigned char* data) {
+		return Vector3f(data[0] / 256.0, data[1] / 256.0, data[2] / 256.0);
+	}
+
+	Spectrum toSpectrum(const unsigned char* data) {
+		double value[3] = { double(data[0]) / 256.0,double(data[1]) / 256.0,double(data[2]) / 256.0 };
+		return RGBSpectrum::fromRGB(&value[0]);
+	}
+
+	std::unique_ptr<Vector3f[]> ReadImageVector(const std::string& path, Point2i* resolution) {
+		const char* filename = (char*)path.c_str();
+		int w, h, c;
+		unsigned char* data = stbi_load(filename, &w, &h, &c, 0);
+		*resolution = Point2i(w, h);
+		std::unique_ptr<Vector3f[]> convertedData = std::make_unique<Vector3f[]>(w * h);
+		//TODO::未读取到图片
+		//TODO::判断图片的通道数
+		//如果图片为三通道
+		for (int i = 0; i < w * h; i++) {
+			convertedData[i] = toVector(&data[i * 3]);
+
+		}
+		stbi_image_free(data);
+		return convertedData;
+	}
+
+	std::unique_ptr<Spectrum[]>ReadImageSpectrum(const std::string& path, Point2i* resolution) {
+		const char* filename = (char*)path.c_str();
+		int w, h, c;
+		unsigned char* data = stbi_load(filename, &w, &h, &c, 0);
+		*resolution = Point2i(w, h);
+		std::unique_ptr<Spectrum[]> convertedData = std::make_unique<Spectrum[]>(w * h);
+		for (int i = 0; i < w * h; i++)
+			convertedData[i] = toSpectrum(&data[i * 3]);
+		return convertedData;
 	}
 }

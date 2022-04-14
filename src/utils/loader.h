@@ -5,6 +5,12 @@
 #include"../core/base.h"
 #include"../shape/mesh.h"
 #include<optional>
+#include"../core/spectrum.h"
+
+
+
+
+#include<stb_image.h>
 
 namespace Raven {
 
@@ -12,5 +18,14 @@ namespace Raven {
 	public:
 		std::optional<TriangleInfo> loadObj(const std::string_view& path);
 	};
+
+
+	Vector3f toVector(const unsigned char* data);
+
+	Spectrum toSpectrum(const unsigned char* data);
+
+	std::unique_ptr<Vector3f[]> ReadImageVector(const std::string& path, Point2i* resolution);
+
+	std::unique_ptr<Spectrum[]>ReadImageSpectrum(const std::string& path, Point2i* resolution);
 }
 #endif
