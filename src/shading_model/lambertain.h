@@ -7,23 +7,9 @@
 #include"../core/bxdf.h"
 
 namespace Raven {
-	//class LambertainReflection :public BxDF {
-	//public:
-	//	LambertainReflection(Spectrum albedo) :BxDF(BxDFType(Reflection | Diffuse)), albedo(albedo) {}
-
-	//	virtual Spectrum f(const vectorf3& wo, const vectorf3& wi)const;
-
-	//	virtual Spectrum sampled_f(const vectorf3& wo, vectorf3& wi, const pointf2& sample, double* pdf)const;
-
-	//	double pdf(const vectorf3& wo, const vectorf3& wi)const;
-
-	//	Spectrum hdf(const vectorf3& wo, int nSamples, pointf2* samples) { return  albedo; }
-
-	//	Spectrum hhf(int nSamples, pointf2* outSamples, pointf2* inSamples) { return albedo; }
-	//private:
-	//	Spectrum albedo;
-	//};
-
+	/// <summary>
+	/// 理想漫反射模型
+	/// </summary>
 	class LambertainReflection :public BxDF {
 	public:
 		LambertainReflection(Spectrum albedo) :BxDF(BxDFType(Reflection | Diffuse)), albedo(albedo) {}

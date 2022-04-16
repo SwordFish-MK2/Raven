@@ -28,6 +28,9 @@ namespace Raven {
 		const std::shared_ptr<Fresnel> fresnel;
 	};
 
+	/// <summary>
+	/// ∏ﬂπ‚Õ∏…‰
+	/// </summary>
 	class SpecularTransmission final :public BxDF {
 	public:
 		SpecularTransmission(const Spectrum& t, double etaI, double etaT) :
@@ -42,6 +45,7 @@ namespace Raven {
 		double pdf(const Vector3f& wo, const Vector3f& wi)const {
 			return 1.0;
 		}
+
 	private:
 		double etaA, etaB;
 		const Spectrum t;
