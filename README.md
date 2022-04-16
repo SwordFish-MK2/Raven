@@ -8,7 +8,8 @@ Raven only supports reflective materials by now, transmissive materials and volu
 
 ## News
 
-Microfacet shading models is now available! Raven is now supporting  smith GGX and Beckmann microfacet distributions, it also adds a new class to compute fresnel value for dielectrics and conductors.  
+- 2022/4/16 Glass and Mirror material is  supported.  Raven has added two classes that handle specular reflection and specular transmission respectively.
+- 2022/4/2	Microfacet shading models is now available! Raven is now supporting  smith GGX and Beckmann microfacet distributions, it also adds a new class to compute fresnel value for dielectrics and conductors.  																																					
 
 ## Key modules
 
@@ -54,6 +55,15 @@ Microfacet shading models is now available! Raven is now supporting  smith GGX a
 - Lambertain
 - Smith GGX
 - Beckmann-Spizzichino
+- Fresnel reflection(Specular reflection)
+- Fresnel transmission(Specular transmission)
+
+### Materials
+
+- Mirror(Undebuged)
+- Glass 
+- Matte
+- Plastic(Undebuged)
 
 ### Textures
 
