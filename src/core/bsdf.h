@@ -8,6 +8,7 @@
 #include"bxdf.h"
 #include"math.h"
 #include"spectrum.h"
+#include<tuple>
 
 namespace Raven {
 
@@ -15,13 +16,14 @@ namespace Raven {
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	public:
 
-		BSDF(const SurfaceInteraction& sits, double eta, int maxN = 1);
+		BSDF(const SurfaceInteraction& sits);
 
 		void addBxDF(std::shared_ptr<BxDF> bxdf);
 
 		Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
 
-		Spectrum sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf, BxDFType type = All)const;
+		std::tuple<Spectrum, Vector3f, double, BxDFType> sample_f(const Vector3f& wo,
+			const Point2f& sample, BxDFType type = All)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi)const;
 	private:
@@ -29,8 +31,8 @@ namespace Raven {
 		Normal3f n, ns;		//surface normal and surface shading normal
 		std::vector<std::shared_ptr<BxDF>> bxdfs;
 		int bxdfNumber;
-		double eta;
-		const int maxNumber;
+
+		int nMatchComponents(BxDFType type)const;
 
 		Vector3f localToWorld(const Vector3f& v) const;
 

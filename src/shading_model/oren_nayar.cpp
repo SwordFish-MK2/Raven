@@ -55,11 +55,11 @@ namespace Raven {
 		return fr;
 	}
 
-	Spectrum OrenNayar::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double* pdf)const {
+	Spectrum OrenNayar::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double& pdf)const {
 		if (wo.z < 0)return Spectrum(0.0);
 		wi = CosWeightedSampleHemisphere(uv);
 		double cosTheta = CosTheta(wi);
-		*pdf = CosWeightedHemispherePdf(cosTheta);
+		pdf = CosWeightedHemispherePdf(cosTheta);
 		return f(wo, wi);
 	}
 

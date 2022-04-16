@@ -5,19 +5,53 @@
 #include"base.h"
 #include"math.h"
 #include"spectrum.h"
-
+#include<optional>
 namespace Raven {
 
 	double FDielectric(double cosThetaI, double etaI, double etaT);
 
 	double FConductor(double cosThetaI, double etaI, double etaT, double k);
 
-	//inline Vector3f Reflect(const Vector3f& wo, const Normal3f& n) {
-	//	return -wo + n * Dot(wo, n) * 2.0;
-	//}
-
-	inline Vector3f Reflect(const Vector3f& wo, const Vector3f& n) {
+	inline Vector3f reflect(const Vector3f& wo, const Normal3f& n = Normal3f(0, 0, 1)) {
 		return -wo + n * Dot(wo, n) * 2.0;
+	}
+
+	inline Vector3f Reflect(const Vector3f& wo, const Vector3f& n = Vector3f(0, 0, 1)) {
+		return -wo + n * Dot(wo, n) * 2.0;
+	}
+
+	inline Vector3f Reflect(const Vector3f& wo) {
+			return Vector3f(-wo.x, -wo.y, wo.z);
+	}
+
+	//计算折射光方向，eta = etaI/etaT
+	inline std::optional<Vector3f> Refract(const Vector3f& wo, const Vector3f& n, double eta) {
+
+		double cosThetaI = Dot(wo, n);
+		double sinThetaI2 = Max(0.0, 1 - cosThetaI * cosThetaI);
+		double sinThetaT2 = eta * eta * sinThetaI2;
+
+		if (sinThetaT2 >= 1)//全反射
+			return std::nullopt;
+
+		double cosThetaT = sqrt(1 - sinThetaT2);
+
+		Vector3f wt = -eta * wo + (eta * cosThetaI - cosThetaT) * n;
+		return wt;
+	}
+
+	inline std::optional<Vector3f> Refract(const Vector3f& wo, const Normal3f& n, double eta) {
+		double cosThetaI = Dot(wo, n);
+		double sinThetaI2 = Max(0.0, 1 - cosThetaI * cosThetaI);
+		double sinThetaT2 = eta * eta * sinThetaI2;
+
+		if (sinThetaT2 >= 1)//全反射
+			return std::nullopt;
+
+		double cosThetaT = sqrt(1 - sinThetaT2);
+
+		Vector3f wt = -eta * wo + (eta * cosThetaI - cosThetaT) * n;
+		return wt;
 	}
 
 	//fresnel class只用于计算反射的辐射度
@@ -77,7 +111,7 @@ namespace Raven {
 		//compute brdf value
 		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const = 0;
 		//sample wi,compute pdf and brdf values
-		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const = 0;
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double& pdf)const = 0;
 		virtual Spectrum hdf(const Vector3f& wo, int nSamples, Point2f* samples) { return Spectrum(0.0); }
 		virtual Spectrum hhf(int nSamples, Point2f* outSamples, Point2f* inSamples) { return Spectrum(0.0); }
 

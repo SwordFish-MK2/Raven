@@ -4,7 +4,7 @@ namespace Raven {
 	//determing bump effect and generate BSDF
 	void MatteMaterial::computeScarttingFunctions(SurfaceInteraction& its)const {
 
-		its.bsdf = std::make_shared <BSDF>(its, its.eta);
+		its.bsdf = std::make_shared <BSDF>(its);
 		//calculate values of textures 
 		double sigValue = sigma->evaluate(its);
 		Spectrum kdValue = kd->evaluate(its);

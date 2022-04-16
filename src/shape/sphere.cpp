@@ -60,7 +60,6 @@ namespace Raven {
 			return false;
 		tHit = t0;
 		if (tHit < 0.0) {
-			return false;
 			tHit = t1;
 			if (tHit > tMax)
 				return false;

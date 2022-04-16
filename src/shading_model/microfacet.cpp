@@ -226,6 +226,7 @@ namespace Raven {
 
 	Vector3f GGX::sample_wh(const Vector3f& wo, const Point2f& uv)const {
 		if (!sampleVNDF) {
+
 			//Sample whole hemisphere
 			if (alphaX == alphaY) {
 				//各项异性
@@ -320,9 +321,12 @@ namespace Raven {
 		return albedo * F * G * D / (4 * cosThetaO * cosThetaI);
 	}
 
-	//sample wi from microfacet distribution, compute corresponding pdf value, conpute and return brdf value 
-	Spectrum MicrofacetReflection::sampled_f(const Vector3f& wo, Vector3f& wi,
-		const Point2f& uv, double* pdf)const {
+	//采样wi，并计算brdf
+	Spectrum MicrofacetReflection::sampled_f(
+		const Vector3f& wo,
+		Vector3f& wi,
+		const Point2f& uv,
+		double& pdf)const {
 		//generate wh sample with respect to ndf and given random numbers
 		Vector3f wh = microfacet->sample_wh(wo, uv);
 		wi = Reflect(wo, wh);
@@ -331,7 +335,7 @@ namespace Raven {
 		if (!SameHemisphere(wi, wo))
 			return Spectrum(0.0);
 
-		*pdf = microfacet->pdf(wo, wi) / (4 * Dot(wo, wh));
+		pdf = microfacet->pdf(wo, wi) / (4 * Dot(wo, wh));
 		Spectrum v = f(wo, wi);
 		return v;
 	}

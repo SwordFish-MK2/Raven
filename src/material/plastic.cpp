@@ -6,7 +6,7 @@ namespace Raven {
 
 	void Plastic::computeScarttingFunctions(SurfaceInteraction& hitRecord)const {
 
-		std::shared_ptr<BSDF> bsdf = std::make_shared <BSDF>(hitRecord, hitRecord.eta);
+		std::shared_ptr<BSDF> bsdf = std::make_shared <BSDF>(hitRecord);
 
 		//evaluate texture
 		Spectrum kdValue = kd->evaluate(hitRecord);

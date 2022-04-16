@@ -6,17 +6,18 @@ namespace Raven {
 		cosThetaI = Clamp(cosThetaI, -1.0, 1.0);
 
 		//如果cosTheta小于0，则说明此时光线为出射，因此交换etaI与etaT
-		if (cosThetaI < 0.f) {
+		if (cosThetaI <= 0.f) {
 			std::swap(etaI, etaT);
 			cosThetaI = abs(cosThetaI);
 		}
 
 		double sinThetaI = sqrt(Max(0.0, 1.0 - cosThetaI * cosThetaI));
 		double sinThetaT = sinThetaI * etaI / etaT;
-		double cosThetaT = sqrt(Max(0.0, 1.0 - sinThetaT * sinThetaT));
 
 		//全反射
 		if (sinThetaT >= 1) return 1;
+
+		double cosThetaT = sqrt(Max(0.0, 1.0 - sinThetaT * sinThetaT));
 
 		double frePara = (etaT * cosThetaI - etaI * cosThetaT) /
 			(etaT * cosThetaI + etaI * cosThetaT);

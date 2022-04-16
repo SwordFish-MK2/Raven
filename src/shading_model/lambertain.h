@@ -30,7 +30,7 @@ namespace Raven {
 
 		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
 
-		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const;
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double& pdf)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi)const;
 

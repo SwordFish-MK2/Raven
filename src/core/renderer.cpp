@@ -37,9 +37,7 @@ namespace Raven {
 		//从brdf的分布上采样
 
 		//采样brdf
-		Vector3f wi;
-		double scarttingPdf;
-		Spectrum f = record.bsdf->sample_f(record.wo, wi, Point2f(GetRand(), GetRand()), &scarttingPdf);
+		auto [f,wi,scarttingPdf,sampledType] = record.bsdf->sample_f(record.wo, Point2f(GetRand(), GetRand()));
 
 		double lightPdf = 1.0;
 		if (f != Spectrum(0.0) && scarttingPdf > 0) {

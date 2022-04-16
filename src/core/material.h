@@ -3,8 +3,9 @@
 
 #include"base.h"
 #include"bsdf.h"
-namespace Raven {
+#include"texture.h"
 
+namespace Raven {
 
 	class Material {
 	public:

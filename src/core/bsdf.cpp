@@ -1,8 +1,8 @@
 #include"bsdf.h"
 
 namespace Raven {
-	BSDF::BSDF(const SurfaceInteraction& sits, double eta, int maxN)
-		:eta(eta), maxNumber(maxN), n(sits.n), ns(sits.n) {
+	BSDF::BSDF(const SurfaceInteraction& sits)
+		:n(sits.n), ns(sits.n) {
 		//generate coordinate space
 		double maxLength = 0;
 		int maxIndex = 0;
@@ -17,7 +17,7 @@ namespace Raven {
 		sx = x;
 		sy = y;
 		ns = n;
-	} 
+	}
 
 	void BSDF::addBxDF(std::shared_ptr<BxDF> bxdf) {
 		bxdfs.push_back(bxdf);
@@ -29,48 +29,76 @@ namespace Raven {
 		Vector3f woLocal = worldToLocal(wo);//将入射光变换到BSDF坐标系下并使入射光朝向平面外侧
 		Vector3f wiLocal = worldToLocal(wi);
 		Spectrum result = Spectrum(0.0);
+		bool reflect = Dot(wi, n) * Dot(wo, n) > 0;
 		for (int i = 0; i < bxdfs.size(); i++) {
-			result += bxdfs[i]->f(woLocal, wiLocal);
+			if (reflect && bxdfs[i]->type & BxDFType::Reflection ||
+				!reflect && bxdfs[i]->type & BxDFType::Transmission)
+				result += bxdfs[i]->f(woLocal, wiLocal);
 		}
 
 		return result /= (double)bxdfs.size();
 	}
 
 	//给定入射方向，根据BRDF分布采样出射方向并计算brdf的值
-	Spectrum BSDF::sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample,
-		double* pdf, BxDFType type)const {
-		//choose a bxdf to sample
-		int bxdfIndex = Min((unsigned int)(bxdfs.size() - 1), (unsigned int)std::floor(bxdfs.size() * sample[0]));
+	std::tuple<Spectrum, Vector3f, double, BxDFType> BSDF::sample_f(
+		const Vector3f& wo,
+		const Point2f& sample,
+		BxDFType type)const {
 
-		//sample choosen BxDF
+		int nMatch = nMatchComponents(type);//n个符合条件的BxDF
+		if (nMatch == 0) {
+			//没有符合条件的Bxdf
+			return std::tuple<Spectrum, Vector3f, double, BxDFType>(Spectrum(0.0), Vector3f(0.0), 0.0, BxDFType(0));
+		}
+
+		//从符合条件的BxDF中采样一个BxDF
+		int compIndex = Min(nMatch - 1, (int)std::floor(nMatch * sample[0]));
+
+		//获取用于采样的BxDF的Index
+		int sampleIndex = 0;
+		for (size_t i = 0; i < bxdfs.size(); i++) {
+			if (bxdfs[i]->matchType(type) && compIndex-- == 0);
+			sampleIndex = i;
+			break;
+		}
+
+		BxDFType sampledType = bxdfs[sampleIndex]->type;
+
+		//采样选中的BxDF
 		Vector3f woLocal = Normalize(worldToLocal(wo));
-		Vector3f wiLocal;
+		Vector3f wiLocal = Vector3f(0.0);
 
-		*pdf = 0.0;
-		Spectrum f = bxdfs[bxdfIndex]->sampled_f(woLocal, wiLocal, sample, pdf);
-		if (*pdf == 0)
-			return Spectrum(0.0);
+		double pdf = 0.0;
+		Spectrum f = bxdfs[sampleIndex]->sampled_f(woLocal, wiLocal, sample, pdf);
+		if (pdf == 0)
+			return std::tuple<Spectrum, Vector3f, double, BxDFType>(Spectrum(0.0), Vector3f(0.0), pdf, BxDFType(0));
 
-		wi = Normalize(localToWorld(wiLocal));
+		Vector3f wi = Normalize(localToWorld(wiLocal));
+
+		bool reflect = bxdfs[sampleIndex]->type & BxDFType::Reflection;
 
 		//compute overall pdf of sampled wi
-		int bxdfNum = 1;
 		for (int i = 0; i < bxdfs.size(); ++i) {
-			if (i != bxdfIndex) {
-				*pdf += bxdfs[i]->pdf(woLocal, wiLocal);
-				bxdfNum++;
-			}
-		}
-		*pdf /= (double)bxdfs.size();
+			if (i != sampleIndex) {
+				if (reflect && bxdfs[i]->type & BxDFType::Reflection ||
+					!reflect && bxdfs[i]->type & BxDFType::Transmission) {
+					pdf += bxdfs[i]->pdf(woLocal, wiLocal);
 
-		//compute value of sampled direction
-		for (int i = 0; i < bxdfs.size(); ++i) {
-			if (i != bxdfIndex) {
-				f += bxdfs[i]->f(woLocal, wiLocal);
+				}
 			}
 		}
-		f /= (double)(double)bxdfs.size();
-		return f;
+		pdf /= (int)nMatch;//根据Monte Carlo积分除以抽取采样BxDF的概率
+
+		//根据采样的方向计算所有的BxDF的值
+		for (int i = 0; i < bxdfs.size(); ++i) {
+			if (i != sampleIndex) {
+				if (reflect && bxdfs[i]->type & BxDFType::Reflection ||
+					!reflect && bxdfs[i]->type & BxDFType::Transmission) {
+					f += bxdfs[i]->f(woLocal, wiLocal);
+				}
+			}
+		}
+		return std::tuple<Spectrum, Vector3f, double, BxDFType>(f, wi, pdf, sampledType);
 	}
 
 	double BSDF::pdf(const Vector3f& wo, const Vector3f& wi)const {
@@ -83,6 +111,15 @@ namespace Raven {
 			pdf += bxdfs[i]->pdf(woLocal, wiLocal);
 		}
 		return bxdfNumber == 0 ? 0.0 : pdf / bxdfNumber;
+	}
+
+	int BSDF::nMatchComponents(BxDFType type)const {
+		int num = 0;
+		for (std::shared_ptr<BxDF> bxdf : bxdfs) {
+			if (bxdf->matchType(type))
+				num++;
+		}
+		return num;
 	}
 
 

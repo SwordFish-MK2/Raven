@@ -118,9 +118,9 @@ namespace Raven {
 		Point2f uvHit = b0 * uv0 + b1 * uv1 + b2 * uv2;
 		auto nHit = b0 * n0 + b1 * n1 + b2 * n2;
 
-		//只计算从正面入射
-		if (Dot(nHit, r_in.dir) > 0)
-			return false;
+		////如果从背面入射，调整法线方向
+		//if (Dot(nHit, r_in.dir) >= 0.0)
+		//	nHit = -nHit;
 
 		////计算dpdu与dpdv以便在网格表面求出的切线向量为连续的值
 		Vector3f dpdu, dpdv;

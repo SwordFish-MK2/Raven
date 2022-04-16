@@ -4,7 +4,7 @@
 namespace Raven {
 
 	void Mirror::computeScarttingFunctions(SurfaceInteraction& record)const {
-		record.bsdf = std::make_shared <BSDF>(record, record.eta);
+		record.bsdf = std::make_shared <BSDF>(record);
 
 
 		std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelNoOp>();

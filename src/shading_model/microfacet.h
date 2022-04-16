@@ -73,7 +73,7 @@ namespace Raven {
 		MicrofacetReflection(std::shared_ptr<Fresnel> fresnel,
 			std::shared_ptr<MicrofacetDistribution> mircrofacet, Spectrum albedo);
 		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi)const;
-		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double* pdf)const;
+		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& uv, double& pdf)const;
 		virtual double pdf(const Vector3f& wo, const Vector3f& wh)const;
 	};
 

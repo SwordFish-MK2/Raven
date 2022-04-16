@@ -7,6 +7,9 @@
 
 
 namespace Raven {
+	/// <summary>
+	/// æµ√Ê∑¥…‰
+	/// </summary>
 	class SpecularReflection final :public BxDF {
 
 	public:
@@ -15,10 +18,10 @@ namespace Raven {
 		virtual Spectrum f(const Vector3f& wo, const Vector3f& wi) const {
 			return Spectrum(0.f);
 		}
-		virtual Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double* pdf)const;
+		Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double& pdf)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi) const {
-			return 0;
+			return 1.0;
 		}
 	private:
 		const Spectrum r;
@@ -27,8 +30,20 @@ namespace Raven {
 
 	class SpecularTransmission final :public BxDF {
 	public:
-		SpecularTransmission(const Spectrum& t, double etaI, double etaT);
+		SpecularTransmission(const Spectrum& t, double etaI, double etaT) :
+			BxDF(BxDFType(Specular | Transmission)), t(t), fresnel(etaI, etaT), etaA(etaI), etaB(etaT) {}
+
+		Spectrum f(const Vector3f& wo, const Vector3f& wi)const {
+			return Spectrum(0.0);
+		}
+
+		Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double& pdf)const;
+
+		double pdf(const Vector3f& wo, const Vector3f& wi)const {
+			return 1.0;
+		}
 	private:
+		double etaA, etaB;
 		const Spectrum t;
 		FresnelDielectric fresnel;
 	};

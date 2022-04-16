@@ -11,6 +11,7 @@
 #include"../accelerate/bvh.h"
 #include"../texture/imageTexture.h"
 #include"../material/mirror.h"
+#include"../material/glass.h"
 
 namespace Raven {
 
@@ -166,14 +167,14 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
 
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
-		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(150, 110, 300)));
+		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(190, 100, 190)));
 		std::shared_ptr<Transform> invSphereWorld = std::make_shared<Transform>(sphereWorld->inverse());
 
 		usedTransform.push_back(identity);
 		usedTransform.push_back(sphereWorld);
 		usedTransform.push_back(invSphereWorld);
 
-		std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 100);
+		std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 90);
 
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
@@ -182,8 +183,8 @@ namespace Raven {
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
 		std::optional<TriangleInfo> floorInfo =
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
-				std::optional<TriangleInfo> sBoxInfo =
-					loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+		std::optional<TriangleInfo> sBoxInfo =
+			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
 			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
@@ -213,13 +214,14 @@ namespace Raven {
 		meshes.push_back(sBoxMesh);
 		meshes.push_back(tBoxMesh);
 		meshes.push_back(lightMesh);
-
+		
 		//Texture
 		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build();
+		std::shared_ptr<Texture<Spectrum>> whiteTexture = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.80, 0.80, 0.80));
 		std::shared_ptr<Texture<Spectrum>> mirrorR = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.85, 0.85, 0.85));
 		std::shared_ptr<Texture<Spectrum>> greenTexture = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.843137, 0.843137, 0.091f));
 		std::shared_ptr<Texture<Spectrum>> blackTexture = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
-		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(greenTexture, blackTexture,mapping);
+		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(greenTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
 
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.2f, 0.3f, 0.25f));
@@ -234,9 +236,9 @@ namespace Raven {
 		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.725f, 0.71f, 0.68f));
 		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.65f));
 		std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
-
+		
 		std::shared_ptr<Material> mirror = Mirror::build(mirrorR);
-
+		std::shared_ptr<Material> glass = Glass::build(whiteTexture, whiteTexture, sigma, sigma, nullptr, 1.5);
 		std::shared_ptr<Plastic> plastic = Plastic::build(kdTex, ksTex, roughTex);
 
 		//Light
@@ -254,23 +256,23 @@ namespace Raven {
 		lights.push_back(aLight2);
 
 		//Primitives
-		std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, plastic, nullptr);
+		std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, glass, nullptr);
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
 		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
 		std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
 		std::vector<std::shared_ptr<Primitive>>  sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
-		std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(mirror);
+		std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(whiteLam);
 
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
-		//prim_ptrs.push_back(spherePrim);
+		prim_ptrs.push_back(spherePrim);
 		prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), floorPrim.begin(), floorPrim.end());
-		prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
+		//prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-		return Scene(usedTransform, lights, meshes, prim_ptrs,AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
 
 	}
 
@@ -325,11 +327,12 @@ namespace Raven {
 			ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(whiteTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
+
 		Spectrum* spec = new Spectrum(0.0);
 		//std::shared_ptr<Texture<Spectrum>> image =
 		//	ImageTexture<Spectrum>::build(picturePath, unSacaledUV, true, ImageWrap::ImClamp, 1, true);
 
-			//material
+		//material
 		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<MatteMaterial> lightLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.65f));
 
