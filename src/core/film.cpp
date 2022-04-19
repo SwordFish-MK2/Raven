@@ -1,6 +1,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include<stb_image_write.h>
+#include<stb_image/stb_image_write.h>
 #include"film.h"
 #include"../filter/gaussian.h"
 #include"math.h"

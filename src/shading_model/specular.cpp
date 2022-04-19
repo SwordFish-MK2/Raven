@@ -9,7 +9,7 @@ namespace Raven {
 	}
 
 	Spectrum SpecularTransmission::sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double& pdf)const {
-		//如果光线入射介质
+		//判断光线为入射还是出射
 		bool enter = wo.z > 0;
 
 		//如果光线为出射，交换介质两边的折射率与法线
@@ -23,9 +23,9 @@ namespace Raven {
 
 		wi = *wt;
 		pdf = 1.0;
-		double tau = 1 - fresnel.evaluate(CosTheta(*wt));//折射进入介质的能量
+		Spectrum tau = t * (1 - fresnel.evaluate(CosTheta(*wt)));//折射进入介质的能量
 
-		return eta * eta * tau / AbsCosTheta(wo);
+		return eta * eta * tau / AbsCosTheta(*wt);
 	}
 
 }

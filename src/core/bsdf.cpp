@@ -1,8 +1,8 @@
 #include"bsdf.h"
 
 namespace Raven {
-	BSDF::BSDF(const SurfaceInteraction& sits)
-		:n(sits.n), ns(sits.n) {
+	BSDF::BSDF(const SurfaceInteraction& sits, double eta)
+		:n(sits.n), ns(sits.n), eta(eta) {
 		//generate coordinate space
 		double maxLength = 0;
 		int maxIndex = 0;
@@ -46,6 +46,7 @@ namespace Raven {
 		BxDFType type)const {
 
 		int nMatch = nMatchComponents(type);//n个符合条件的BxDF
+
 		if (nMatch == 0) {
 			//没有符合条件的Bxdf
 			return std::tuple<Spectrum, Vector3f, double, BxDFType>(Spectrum(0.0), Vector3f(0.0), 0.0, BxDFType(0));
@@ -57,9 +58,10 @@ namespace Raven {
 		//获取用于采样的BxDF的Index
 		int sampleIndex = 0;
 		for (size_t i = 0; i < bxdfs.size(); i++) {
-			if (bxdfs[i]->matchType(type) && compIndex-- == 0);
-			sampleIndex = i;
-			break;
+			if (bxdfs[i]->matchType(type) && compIndex-- == 0) {
+				sampleIndex = i;
+				break;
+			}
 		}
 
 		BxDFType sampledType = bxdfs[sampleIndex]->type;
@@ -77,13 +79,12 @@ namespace Raven {
 
 		bool reflect = bxdfs[sampleIndex]->type & BxDFType::Reflection;
 
-		//compute overall pdf of sampled wi
+		//计算混合采样的pdf
 		for (int i = 0; i < bxdfs.size(); ++i) {
 			if (i != sampleIndex) {
 				if (reflect && bxdfs[i]->type & BxDFType::Reflection ||
 					!reflect && bxdfs[i]->type & BxDFType::Transmission) {
 					pdf += bxdfs[i]->pdf(woLocal, wiLocal);
-
 				}
 			}
 		}
@@ -98,6 +99,7 @@ namespace Raven {
 				}
 			}
 		}
+
 		return std::tuple<Spectrum, Vector3f, double, BxDFType>(f, wi, pdf, sampledType);
 	}
 

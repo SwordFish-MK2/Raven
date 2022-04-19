@@ -8,15 +8,13 @@
 #include"../core/spectrum.h"
 
 
-
-
-#include<stb_image.h>
-
 namespace Raven {
 
 	class Loader {
 	public:
 		std::optional<TriangleInfo> loadObj(const std::string_view& path);
+
+		std::optional<TriangleInfo> load(const std::string& fileName, const std::string& mtlBasePath);
 	};
 
 

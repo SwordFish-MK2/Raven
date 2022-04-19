@@ -3,7 +3,7 @@
 namespace Raven {
 	void Glass::computeScarttingFunctions(SurfaceInteraction& record)const {
 		//生成新的bsdf
-		record.bsdf = std::make_shared<BSDF>(record);
+		record.bsdf = std::make_shared<BSDF>(record, eta);
 
 		//求纹理的值
 		Spectrum kd = kdTex->evaluate(record);
@@ -21,7 +21,7 @@ namespace Raven {
 			record.bsdf->addBxDF(std::make_shared<SpecularReflection>(kd, fresnel));
 		}
 		if (!kt.isBlack()) {
-			record.bsdf->addBxDF(std::make_shared<SpecularTransmission>(kt, 1.0, eta));
+			//record.bsdf->addBxDF(std::make_shared<SpecularTransmission>(kt, 1.0, eta));
 		}
 	}
 }

@@ -1,9 +1,13 @@
 #include"path.h"
+#include<omp.h>
 #include"../core/light.h"
 namespace Raven {
 	void PathTracingRenderer::render(const Scene& scene) {
+		int finishedLine = 0;
+
+#pragma omp parallel for
 		for (int i = 0; i < film.height; ++i) {
-			std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
+			//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
 			for (int j = 0; j < film.width; ++j) {
 				Spectrum pixelColor(0.0);
 				for (int s = 0; s < spp; s++) {
@@ -23,10 +27,14 @@ namespace Raven {
 				double scaler = 1.0 / spp;
 				pixelColor *= scaler;
 
-				film.in(pixelColor);
+				film.setColor(pixelColor, j, i);
+				//film.in(pixelColor);
 			}
+			finishedLine++;
+			double process = (double)finishedLine / film.height;
+			UpdateProgress(process);
 		}
-		std::cerr << "\nDone.\n";
+		std::cout << "\nDone.\n";
 		film.write();
 		film.writeTxt();
 	}
@@ -39,7 +47,7 @@ namespace Raven {
 		Ray ray = rayIn;
 
 		bool specularBounce = false;
-
+		double etaScale = 1;
 		for (; bounce < maxDepth; bounce++) {
 
 			//获取场景与光线的相交信息
@@ -60,7 +68,8 @@ namespace Raven {
 
 					//从相机出发的光线直接击中光源
 					if (record->hitLight) {
-						Li += record->light->Li(*record, wo);
+						Spectrum emittion = record->light->Li(*record, wo);
+						Li += beta * emittion;
 						return Li;
 					}
 				}
@@ -90,14 +99,15 @@ namespace Raven {
 				//Vector3f L_dir = SampleAllLights(*record, scene);
 				//Li += beta * L_dir;
 
+
 				//采样brdf，计算出射方向,更新beta
 				auto [f, wi, pdf, sampledType] = record->bsdf->sample_f(wo, Point2f(GetRand(), GetRand()));
 				if (f == Spectrum(0.0) || pdf == 0.0)
 					break;
+
 				//计算衰减
 				double cosTheta = abs(Dot(wi, n));
 				beta *= f * cosTheta / pdf;
-
 				specularBounce = (sampledType & BxDFType::Specular) != 0;
 				ray = record->scartterRay(wi);
 

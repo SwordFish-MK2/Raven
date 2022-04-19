@@ -25,6 +25,7 @@ namespace Raven {
 		linearTree = std::vector<LinearBVHNode>(totalNodes);
 		int offset = 0;
 		flattenTree(root, &offset);
+		std::cout << "BVH generation complete, total node number:" << totalNodes << std::endl;
 	}
 
 	std::shared_ptr<BVHNode> BVHAccel::recursiveBuild(
@@ -53,7 +54,7 @@ namespace Raven {
 			}
 
 			currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-			std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+			//std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 			return currentNode;
 		}
 
@@ -179,7 +180,7 @@ namespace Raven {
 			}
 
 			currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-			std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+		//	std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 			return currentNode;
 		}
 	}

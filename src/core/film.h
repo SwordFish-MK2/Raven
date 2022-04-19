@@ -28,7 +28,7 @@ namespace Raven {
 		const int height, width;
 		const double aspect_ratio;
 
-		Film(int w, int h) :height(h), width(w), aspect_ratio(w/h), index(0) {
+		Film(int w, int h) :height(h), width(w), aspect_ratio(w / h), index(0) {
 			data = (unsigned char*)malloc(sizeof(unsigned char) * h * w * 3);
 		}
 		Film(const Film& f) :height(f.height), width(f.width), aspect_ratio(f.aspect_ratio), index(0)
@@ -42,10 +42,14 @@ namespace Raven {
 		void writeTxt()const;
 		void write()const;
 		//	void writeColor();
+		void in(int value, int ind) {
+			data[ind] = value;
+		}
 		void in(int value) {
 			data[index++] = value;
 		}
-		void in(const Spectrum& color) {
+		void setColor(const Spectrum& color, int x, int y) {
+			int offset = (y * width + x) * 3;
 			double invGamma = 1.0 / 2.2;
 			for (int i = 0; i < 3; i++)
 			{
@@ -53,10 +57,16 @@ namespace Raven {
 
 				//double c = pow(color[i], invGamma);//gamma correct
 				int intC = static_cast<int>(255 * Clamp(c, 0.0, 0.999));
+				in(intC, offset + i);
+			}
+		}
+		void in(const Spectrum& color) {
+			for (int i = 0; i < 3; i++) {
+				double c = GammaCorrect(color[i]);
+				int intC = static_cast<int>(255 * Clamp(c, 0.0, 0.999));
 				in(intC);
 			}
 		}
-
 		//void setColor(const Vector3f& c, int x, int y) {
 		//	int index = x + y * width;
 		//	buffer[index].color = c;
