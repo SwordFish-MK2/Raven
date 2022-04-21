@@ -6,7 +6,6 @@
 
 namespace Raven {
 
-
 	class ProjectiveCamera :public Camera {
 	public:
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const = 0;
@@ -57,12 +56,13 @@ namespace Raven {
 		OrthographicCamera(const Transform& CTW, const Transform& STR, double lensRadius, double focalDistance,
 			double top, double bottom, double left, double right, double near, double far) :
 			ProjectiveCamera(CTW, STR, lensRadius, focalDistance) {
-			CameraToScreen = Orthographic(top, bottom, left, right, near, far);
+			CameraToScreen = Orthographic( near, far);
 			RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
 		}
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
 	};
+
 }
 
 #endif

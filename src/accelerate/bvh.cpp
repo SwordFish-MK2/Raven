@@ -54,7 +54,7 @@ namespace Raven {
 			}
 
 			currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-			//std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+			std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 			return currentNode;
 		}
 
@@ -62,13 +62,6 @@ namespace Raven {
 		int axis = centroidBound.maxExtent();
 		bool split = false;
 		size_t middle = start;
-		if (nPrimitive == 2) {
-			middle = start + 1;
-			std::shared_ptr<BVHNode> leftNode = recursiveBuild(info, start, middle, ordered, totalNodes);
-			std::shared_ptr<BVHNode> rightNode = recursiveBuild(info, middle, end, ordered, totalNodes);
-			currentNode->buildInterior(leftNode, rightNode, axis);
-			return currentNode;
-		}
 
 		for (int i = 0; i < 3; i++) {
 			//排序
@@ -106,6 +99,8 @@ namespace Raven {
 				buckets[b].box = Union(buckets[b].box, box);
 			}
 
+			double leafCost = nPrimitive;
+
 			//计算在每个bucket划分的开销
 			double cost[nBuckets - 1];
 			for (int i = 0; i < nBuckets - 1; i++) {
@@ -142,23 +137,23 @@ namespace Raven {
 				}
 			}
 
-			//统计划分后左侧有多少primitive
-			size_t leftPrimitives = 0;
-			for (int i = 0; i <= minBucket; i++)
-				leftPrimitives += buckets[i].nPrimitives;
-			assert(leftPrimitives + start <= end);
-			assert(leftPrimitives >= 0);
+			if (minCost < leafCost) {
 
-			//若需要进行划分(最小开销未出现在两边)
-			if (leftPrimitives != 0 && leftPrimitives + start < end) {
-				middle = start + leftPrimitives;
-				split = true;
-				break;
+				//如果划分后的开销小于不划分的开销，统计划分后左侧有多少primitive
+				size_t leftPrimitives = 0;
+				for (int i = 0; i <= minBucket; i++)
+					leftPrimitives += buckets[i].nPrimitives;
+				assert(leftPrimitives + start <= end);
+				assert(leftPrimitives >= 0);
+
+				if (leftPrimitives != 0 && leftPrimitives + start < end) {
+					middle = start + leftPrimitives;
+					split = true;
+					break;
+				}
 			}
-
 			//沿着该坐标轴未找到合适的划分，尝试下一个坐标轴
 			axis = (axis + 1) % 3;
-
 		}
 
 		//找到了开销更低的划分
@@ -170,19 +165,18 @@ namespace Raven {
 			return currentNode;
 		}
 		//未找到开销更低的划分
-		else {
-			//生成叶子节点
-			size_t firstOffset = ordered.size();
+		//生成叶子节点
+		size_t firstOffset = ordered.size();
 
-			for (int i = 0; i < nPrimitive; i++) {
-				size_t primNum = info[i + start].primitiveIndex;
-				ordered.push_back(prims[primNum]);
-			}
-
-			currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-		//	std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
-			return currentNode;
+		for (int i = 0; i < nPrimitive; i++) {
+			size_t primNum = info[i + start].primitiveIndex;
+			ordered.push_back(prims[primNum]);
 		}
+
+		currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
+		std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+		return currentNode;
+
 	}
 
 	int BVHAccel::flattenTree(const std::shared_ptr<BVHNode>& node, int* offset) {

@@ -59,7 +59,7 @@ namespace Raven {
 	Transform Scale(const Vector3f& s);
 	Transform Inverse(const Transform& T);
 	Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up);
-	Transform Orthographic(double top, double bottom, double left, double right, double znear, double zfar);
+	Transform Orthographic(double znear, double zfar);
 	Transform Perspective(double fov, double aspect_ratio, double znear, double zfar);
 	Transform Raster(int h, int w);
 }

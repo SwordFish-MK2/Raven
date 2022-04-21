@@ -1,6 +1,7 @@
 #include"projectiveCamera.h"
 
 namespace Raven {
+
 	int OrthographicCamera::GenerateRay(const CameraSample& sample, Ray& ray)const {
 		Point3f ori(0.0f, 0.0f, 0.0f);
 		Point3f pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
@@ -82,4 +83,5 @@ namespace Raven {
 		rayDifferential = CameraToWorld(sampleRay);
 		return 1;
 	}
+
 }

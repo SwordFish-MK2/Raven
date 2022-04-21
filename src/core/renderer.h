@@ -32,5 +32,5 @@ namespace Raven {
 
 	Spectrum SampleAllLights(const SurfaceInteraction& record, const Scene& scene);
 }
-
+	
 #endif

@@ -90,17 +90,17 @@ namespace Raven {
 		//Shape
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/left.obj");
 		std::optional<TriangleInfo> rightInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/right.obj");
 		std::optional<TriangleInfo> floorInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/floor.obj");
 		std::optional<TriangleInfo> sBoxInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/light.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/light.obj");
 
 		std::shared_ptr<TriangleMesh> leftMesh =
 			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
@@ -179,17 +179,17 @@ namespace Raven {
 
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/left.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/left.obj");
 		std::optional<TriangleInfo> rightInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/right.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/right.obj");
 		std::optional<TriangleInfo> floorInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/floor.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/floor.obj");
 		std::optional<TriangleInfo> sBoxInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
-			loader.loadObj("D:/MyWorks/Raven/models/cornellbox/light.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/light.obj");
 
 		std::shared_ptr<TriangleMesh> leftMesh =
 			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
@@ -287,11 +287,18 @@ namespace Raven {
 
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
 		usedTransform.push_back(identity);
+		std::shared_ptr<Transform> s1 = std::make_shared<Transform>(Scale(Vector3f(100, 100, 100)));
+		std::shared_ptr<Transform> t1 = std::make_shared<Transform>(Translate(Vector3f(278, 200, 400)));
+		std::shared_ptr<Transform> m = std::make_shared<Transform>((*s1) * (*t1));
+		std::shared_ptr<Transform>invm = std::make_shared<Transform>(m->inverse());
 
-		Point3f p0(-10000.0, -2.0, 10000.0);
-		Point3f p1(10000.0, -2.0, 10000.0);
-		Point3f p2(10000.0, -2.0, -10000.0);
-		Point3f p3(-10000.0, -2.0, -10000.0);
+		usedTransform.push_back(m);
+		usedTransform.push_back(invm);
+
+		Point3f p0(-100.0, -2.0, 100.0);
+		Point3f p1(100.0, -2.0, 100.0);
+		Point3f p2(100.0, -2.0, -100.0);
+		Point3f p3(-100.0, -2.0, -100.0);
 
 		std::shared_ptr<TriangleMesh> plane = std::make_shared<TriangleMesh>(CreatePlane(identity.get(), identity.get(),
 			p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0)));
@@ -313,16 +320,30 @@ namespace Raven {
 			loader.load("D:/MyWorks/Raven/models/material-testball/material-testball/models/Mesh002.obj", "");
 		std::shared_ptr<TriangleMesh> teapotMesh = TriangleMesh::build(identity.get(), identity.get(), *textInfo);
 
+		meshes.push_back(teapotMesh);
 		meshes.push_back(plane);
 		meshes.push_back(light);
 
-		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(278, 200, 400)));
+		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(0, -100.5, 0)));
 		std::shared_ptr<Transform> invSphereWorld = std::make_shared<Transform>(sphereWorld->inverse());
+		std::shared_ptr<Transform> sphereMidle = std::make_shared<Transform>(Translate(Vector3f(0, 0, -1)));
+		std::shared_ptr<Transform> middleInv = std::make_shared<Transform>(sphereMidle->inverse());
+
+		std::shared_ptr<Transform> sphereLeft = std::make_shared<Transform>(Translate(Vector3f(-1, 0, -1)));
+		std::shared_ptr<Transform> leftInv = std::make_shared<Transform>(sphereLeft->inverse());
+		std::shared_ptr<Transform> sphereRight = std::make_shared<Transform>(Translate(Vector3f(1, 0, -1)));
+		std::shared_ptr<Transform> rightInv = std::make_shared<Transform>(sphereRight->inverse());
+
+		std::shared_ptr<Sphere> sphereGround = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 100);
+		std::shared_ptr<Sphere> sphereMid = Sphere::build(sphereMidle.get(), middleInv.get(), 0.5);
+		std::shared_ptr<Sphere> sphereL = Sphere::build(sphereLeft.get(), leftInv.get(), 0.5);
+		std::shared_ptr<Sphere> sphereR = Sphere::build(sphereRight.get(), rightInv.get(), 0.5);
+		
 
 		usedTransform.push_back(sphereWorld);
 		usedTransform.push_back(invSphereWorld);
 
-		std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 200);
+		std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 3);
 
 		std::shared_ptr<MatteMaterial> kd = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
 
@@ -368,38 +389,24 @@ namespace Raven {
 		std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(lightTris[0], lightLam, aLight1);
 		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(lightTris[1], lightLam, aLight2);
 		std::vector<std::shared_ptr<Primitive>> teapot = teapotMesh->generatePrimitive(whiteLam);
-		std::shared_ptr<Primitive> p = Primitive::build(sphere, plastic, nullptr);
+		std::shared_ptr<Primitive> g = Primitive::build(sphereGround, whiteLam, nullptr);
+		std::shared_ptr<Primitive> l = Primitive::build(sphereL, whiteLam, nullptr);
+		std::shared_ptr<Primitive> r = Primitive::build(sphereR, whiteLam, nullptr);
+		std::shared_ptr<Primitive> mi = Primitive::build(sphereMid, whiteLam, nullptr);
 		std::vector<std::shared_ptr<Primitive>> ground = plane->generatePrimitive(whiteLam);
 
-		prim_ptrs.insert(prim_ptrs.end(), teapot.begin(), teapot.end());
+	
+
+		//prim_ptrs.insert(prim_ptrs.end(), teapot.begin(), teapot.end());
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
-		//	prim_ptrs.push_back(p);
-		prim_ptrs.insert(prim_ptrs.end(), ground.begin(), ground.end());
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
+		prim_ptrs.push_back(g);
+		prim_ptrs.push_back(l);
+		prim_ptrs.push_back(r);
+		prim_ptrs.push_back(mi);
+	//	prim_ptrs.insert(prim_ptrs.end(), ground.begin(), ground.end());
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
 	}
 
-	Spectrum Scene::sampleLight(const SurfaceInteraction& record, double s,
-		const Point2f& uv, LightSample* sample)const {
-		Spectrum totalPower(0.0);
-		const Light* light;
-		for (int i = 0; i < lights.size(); i++) {
-			totalPower += lights[i]->power();
-		}
-		Spectrum power(0.0);
-		double p = 1.0;
-		for (int i = 0; i < lights.size(); i++) {
-			power += lights[i]->power();
-			p = power.y() / totalPower.y();
-			if (p >= s || i == lights.size() - 1) {
-				light = lights[i].get();
-				break;
-			}
-		}
-		if (light)
-			return light->sampleLi(record, uv, sample) / p;
-		else
-			return Spectrum(0.0);
-	}
 
 }

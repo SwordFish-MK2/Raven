@@ -80,9 +80,9 @@ namespace Raven {
 
 	Normal3f Transform::operator()(const Normal3f& n)const {
 		double x = n.x, y = n.y, z = n.z;
-		return Normal3f(invm(0,0) * x + invm(1,0) * y + invm(2,0) * z,
-			invm(0,1) * x + invm(1,1) * y + invm(2,1) * z,
-			invm(0,2) * x +invm(1,2) * y + invm(2,2) * z);
+		return Normal3f(invm(0, 0) * x + invm(1, 0) * y + invm(2, 0) * z,
+			invm(0, 1) * x + invm(1, 1) * y + invm(2, 1) * z,
+			invm(0, 2) * x + invm(1, 2) * y + invm(2, 2) * z);
 	}
 
 	SurfaceInteraction Transform::operator()(const SurfaceInteraction& its)const {
@@ -156,16 +156,16 @@ namespace Raven {
 	}
 	//define the transform from the world to camera space
 	Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up) {
-		Vector3f viewDir = look - pos;
-		Vector3f z = -viewDir;
-		Vector3f right = Cross(up, z);
-		Vector3f newUp = Cross(z, right);
+		Vector3f viewDir = Normalize(look - pos);
+		Vector3f z = viewDir;
+		Vector3f right = Normalize(Cross(up, z));
+		Vector3f newUp = Normalize(Cross(z, right));
 		Eigen::Matrix4f CameraToWorld;
 		CameraToWorld << right[0], newUp[0], z[0], pos[0],
 			right[1], newUp[1], z[1], pos[1],
 			right[2], newUp[2], z[2], pos[2],
 			0.0f, 0.0f, 0.0f, 1.0f;
-		return Transform(CameraToWorld.inverse(), CameraToWorld);
+		return Transform(CameraToWorld, CameraToWorld.inverse());
 	}
 
 	Transform Perspective(double fov, double aspect_ratio, double znear, double zfar) {
@@ -180,17 +180,21 @@ namespace Raven {
 		return Scale(Vector3f(InvTanX, InvTanY, 1)) * Transform(projection);
 	}
 
-	Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
-		Eigen::Matrix4f projection;
-		double halfWidth = right - left;
-		double halfHeight = top - bottom;
-		double halfDepth = abs(far - near);
-		Point3f center(halfWidth, halfHeight, halfDepth);
-		projection << halfWidth, 0.f, 0.f, -halfWidth,
-			0.f, halfWidth, 0.f, -halfHeight,
-			0.f, 0.f, halfDepth, 0.f,
-			0.f, 0.f, 0.f, 1.f;
-		return projection;
+	//Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
+	//	Eigen::Matrix4f projection;
+	//	double halfWidth = right - left;
+	//	double halfHeight = top - bottom;
+	//	double halfDepth = abs(far - near);
+	//	Point3f center(halfWidth, halfHeight, halfDepth);
+	//	projection << halfWidth, 0.f, 0.f, -halfWidth,
+	//		0.f, halfWidth, 0.f, -halfHeight,
+	//		0.f, 0.f, halfDepth, 0.f,
+	//		0.f, 0.f, 0.f, 1.f;
+	//	return projection;
+	//}
+
+	Transform Orthographic(double near, double far) {
+		return Scale(Vector3f(1, 1, 1 / (far - near))) * Translate(Vector3f(0, 0, -near));
 	}
 
 	Transform Raster(int h, int w) {

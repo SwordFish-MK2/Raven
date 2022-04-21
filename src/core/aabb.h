@@ -26,12 +26,16 @@ namespace Raven {
 			pMin = Point3<T>(1, 1, 1);
 			pMax = Point3<T>(-1, -1, -1);
 		}
+
 		AABB3<T>(const AABB3<T>& box) { this->pMax = box.pMax; this->pMin = box.pMin; }
+
 		AABB3<T>(const Point3<T>& p) { pMax = p; pMin = p; }
+
 		AABB3<T>(const Point3<T>& p1, const Point3<T> p2) {
 			pMin = Point3<T>(Min(p1.x, p2.x), Min(p1.y, p2.y), Min(p1.z, p2.z));
 			pMax = Point3<T>(Max(p1.x, p2.x), Max(p1.y, p2.y), Max(p1.z, p2.z));
 		}
+
 		const Point3<T> operator[](int i)const {
 			if (i == 0)return pMin;
 			return pMax;
@@ -145,7 +149,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// Two dimensional axis aligned bounding box
+	/// 2ЮЌАќЮЇКа
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	template<class T>
@@ -192,6 +196,7 @@ namespace Raven {
 				box1[1].y > box2[1].y ? box1[1].y : box2[1].y,
 				box1[1].z > box2[1].z ? box1[1].z : box2[1].z));
 	}
+
 	template<class T>
 	inline AABB3<T> Union(const AABB3<T>& box, const Point3<T>& p) {
 		return AABB3<T>(
@@ -199,6 +204,7 @@ namespace Raven {
 			Point3<T>(Max(box.pMax.x, p.x), Max(box.pMax.y, p.y), Max(box.pMax.z, p.z))
 			);
 	}
+
 	template<class T>
 	inline AABB3<T> Intersection(const AABB3<T>& box1, const AABB3<T>& box2) {
 		return AABB3<T>(
@@ -210,6 +216,7 @@ namespace Raven {
 				box1[1].z < box2[1].z ? box1[1].z : box2[1].z)
 			);
 	}
+
 	template<class T>
 	inline bool Overlaps(const AABB3<T>& box1, const AABB3<T>& box2) {
 		bool x = (box1[1].x >= box2[0].x) && (box1[0].x <= box2[1].x);
@@ -217,6 +224,7 @@ namespace Raven {
 		bool z = (box1[1].z >= box2[0].z) && (box1[0].z <= box2[1].z);
 		return x && y && z;
 	}
+
 	template<class T>
 	inline bool Inside(const Point3<T>& p, const AABB3<T>& box) {
 		bool x = p.x > box[0].x && p.x < box[1].x;
@@ -224,12 +232,12 @@ namespace Raven {
 		bool z = p.z > box[0].z && p.z < box[1].z;
 		return x && y && z;
 	}
+
 	template<class T, class U>
 	inline AABB3<T> Expand(const AABB3<T>& box, U delta) {
 		return AABB3<T>(box.pMin - Vector3<T>(delta, delta, delta),
 			box.pMax + Vector3<T>(delta, delta, delta));
 	}
-
 
 }
 

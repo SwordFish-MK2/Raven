@@ -133,12 +133,15 @@ namespace Raven {
 	inline double CosTheta(const Vector3f& w) {
 		return w.z;
 	}
+
 	inline double Cos2Theta(const Vector3f& w) {
 		return w.z * w.z;
 	}
+
 	inline double AbsCosTheta(const Vector3f& w) {
 		return abs(w.z);
 	}
+
 	inline double Sin2Theta(const Vector3f& w) {
 		return Max(0.0, 1. - Cos2Theta(w));
 	}

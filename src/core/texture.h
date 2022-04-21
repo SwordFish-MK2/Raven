@@ -59,7 +59,7 @@ namespace Raven {
 		ScaleTexture(const std::shared_ptr<Texture<T>>& t1, const std::shared_ptr<Texture<T>>& t2) :vTexture(t1), sTexture(t2) {}
 		static std::shared_ptr<ScaleTexture<T>> build(const std::shared_ptr<Texture<T>>& vT, const std::shared_ptr<Texture<T>>& sT);
 	private:
-		std::shared_ptr<Texture<T>> vTexuture;
+		std::shared_ptr<Texture<T>> vTexture;
 		std::shared_ptr<Texture<T>> sTexture;
 	};
 }

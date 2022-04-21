@@ -8,6 +8,8 @@ namespace Raven {
 #pragma omp parallel for
 		for (int i = 0; i < film.height; ++i) {
 			//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
+			double process = (double)finishedLine / film.height;
+		//	UpdateProgress(process);
 			for (int j = 0; j < film.width; ++j) {
 				Spectrum pixelColor(0.0);
 				for (int s = 0; s < spp; s++) {
@@ -21,6 +23,8 @@ namespace Raven {
 					Ray r;
 
 					if (camera->GenerateRay(sample, r)) {
+						if (i == film.height / 2 && j == film.width / 2)
+							std::cout <<r.origin<< r.dir<<"\n";
 						pixelColor += integrate(scene, r);
 					}
 				}
@@ -31,8 +35,7 @@ namespace Raven {
 				//film.in(pixelColor);
 			}
 			finishedLine++;
-			double process = (double)finishedLine / film.height;
-			UpdateProgress(process);
+
 		}
 		std::cout << "\nDone.\n";
 		film.write();

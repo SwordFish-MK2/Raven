@@ -9,14 +9,16 @@
 
 
 namespace Raven {
+	//class SceneReader {
+	//public:
+	//	void parseXML(const std::string_view& xmlPath);
+	//	static std::map<std::string, std::string> dataMap;
+	//};
 
 	class Loader {
 	public:
-		std::optional<TriangleInfo> loadObj(const std::string_view& path);
-
-		std::optional<TriangleInfo> load(const std::string& fileName, const std::string& mtlBasePath);
+		std::optional<TriangleInfo> load(const std::string& fileName, const std::string& mtlBasePath=std::string(""));
 	};
-
 
 	Vector3f toVector(const unsigned char* data);
 
