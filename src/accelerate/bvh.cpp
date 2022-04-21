@@ -54,7 +54,7 @@ namespace Raven {
 			}
 
 			currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-			std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+	//		std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 			return currentNode;
 		}
 
@@ -174,7 +174,7 @@ namespace Raven {
 		}
 
 		currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-		std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+	//	std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 		return currentNode;
 
 	}

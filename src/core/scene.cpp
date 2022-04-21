@@ -90,17 +90,17 @@ namespace Raven {
 		//Shape
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/left.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/","left.obj");
 		std::optional<TriangleInfo> rightInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/right.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "right.obj");
 		std::optional<TriangleInfo> floorInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/floor.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "floor.obj");
 		std::optional<TriangleInfo> sBoxInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/light.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "light.obj");
 
 		std::shared_ptr<TriangleMesh> leftMesh =
 			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
@@ -179,17 +179,17 @@ namespace Raven {
 
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/left.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "left.obj");
 		std::optional<TriangleInfo> rightInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/right.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "right.obj");
 		std::optional<TriangleInfo> floorInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/floor.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "floor.obj");
 		std::optional<TriangleInfo> sBoxInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/shortbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/tallbox.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/light.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "light.obj");
 
 		std::shared_ptr<TriangleMesh> leftMesh =
 			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);

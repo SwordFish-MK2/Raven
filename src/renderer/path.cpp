@@ -1,47 +1,55 @@
 #include"path.h"
 #include<omp.h>
 #include"../core/light.h"
+static omp_lock_t lock;
 namespace Raven {
 	void PathTracingRenderer::render(const Scene& scene) {
 		int finishedLine = 0;
 
-#pragma omp parallel for
-		for (int i = 0; i < film.height; ++i) {
-			//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
-			double process = (double)finishedLine / film.height;
-		//	UpdateProgress(process);
-			for (int j = 0; j < film.width; ++j) {
-				Spectrum pixelColor(0.0);
-				for (int s = 0; s < spp; s++) {
-					//camera sample
-					auto cu = double(j) + GetRand();
-					auto cv = double(i) + GetRand();
-					auto fu = GetRand();
-					auto fv = GetRand();
-					auto t = GetRand();
-					CameraSample sample(cu, cv, t, fu, fv);
-					Ray r;
+		omp_init_lock(&lock);
 
-					if (camera->GenerateRay(sample, r)) {
-						if (i == film.height / 2 && j == film.width / 2)
-							std::cout <<r.origin<< r.dir<<"\n";
-						pixelColor += integrate(scene, r);
+#pragma omp parallel
+		{
+#pragma omp  for
+			for (int i = 0; i < film.height; ++i) {
+				//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
+				double process = (double)finishedLine / film.height;	
+				omp_set_lock(&lock);
+				UpdateProgress(process);
+				omp_unset_lock(&lock);
+				for (int j = 0; j < film.width; ++j) {
+					Spectrum pixelColor(0.0);
+					for (int s = 0; s < spp; s++) {
+						//camera sample
+						auto cu = double(j) + GetRand();
+						auto cv = double(i) + GetRand();
+						auto fu = GetRand();
+						auto fv = GetRand();
+						auto t = GetRand();
+						CameraSample sample(cu, cv, t, fu, fv);
+						Ray r;
+
+						if (camera->GenerateRay(sample, r)) {
+							//if (i == film.height / 2 && j == film.width / 2)
+							//	std::cout << r.origin << r.dir << "\n";
+							pixelColor += integrate(scene, r);
+						}
 					}
+					double scaler = 1.0 / spp;
+					pixelColor *= scaler;
+
+					film.setColor(pixelColor, j, i);
+					//film.in(pixelColor);
 				}
-				double scaler = 1.0 / spp;
-				pixelColor *= scaler;
+				finishedLine++;
 
-				film.setColor(pixelColor, j, i);
-				//film.in(pixelColor);
 			}
-			finishedLine++;
-
 		}
+		omp_destroy_lock(&lock);
 		std::cout << "\nDone.\n";
 		film.write();
 		film.writeTxt();
 	}
-
 	//路径追踪算法，暂时只考虑了lambertain
 	Spectrum PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn, int bounce)const {
 		//	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451, 0.843137));

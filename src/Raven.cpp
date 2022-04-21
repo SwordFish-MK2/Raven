@@ -34,7 +34,7 @@ int main()
 		0.1f, 10.0f, 40.f, f.aspect_ratio);
 	Raven::Camera* ocam = new Raven::OrthographicCamera(cameraToWorld, screenToRaster, 0, 10, 0, 500, 0, 500, 0.1, 500);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::PathTracingRenderer renderer(ocam, f, 5, 5, 0.001);
+	Raven::PathTracingRenderer renderer(cam, f, 5, 5, 0.001);
 	//Raven::NormalRenderer nRenderer(cam, f, 10, 1, 0.00001);
 	renderer.render(box);
 	//nRenderer.render(sphere);
