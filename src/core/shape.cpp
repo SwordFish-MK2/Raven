@@ -27,9 +27,10 @@ namespace Raven {
 		//intersect sample ray to light geometry
 		Point3f origin = inter.p;
 		Ray r = inter.scartterRay(wi);
-		SurfaceInteraction lightInter;
-		if (!intersect(r, lightInter, std::numeric_limits<double>::max()))
+		HitInfo hitInfo;
+		if (!intersect(r, hitInfo, std::numeric_limits<double>::max()))
 			return 0;
+		SurfaceInteraction lightInter = getGeoInfo(hitInfo.pHit);
 		//convert the pdf from integral of light surface to integral of the solid angle of sample point
 		double pdf = DistanceSquared(lightInter.p, inter.p) / (std::abs(Dot(lightInter.n, -wi)) * area());
 		return pdf;

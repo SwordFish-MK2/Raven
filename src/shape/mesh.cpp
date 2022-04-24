@@ -65,7 +65,7 @@ namespace Raven {
 		return true;
 	}
 
-	bool Triangle::intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const {
+	bool Triangle::intersect(const Ray& r_in, HitInfo& info, double tMax)const {
 		//取从网格中取出三角形的三个顶点p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
@@ -89,17 +89,26 @@ namespace Raven {
 		double b0 = 1 - b1 - b2;
 
 		//光线必须沿正向传播
-		if (t <= 0)
+		if (t <= 0 || t >= tMax)
 			return false;
 
 		//重心坐标都大于0时，交点在三角形内，光线与三角形相交	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
 			return false;
 
-		//TODO::检查相交时间
-		if (t >= tMax)
-			return false;
-		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
+		info.setInfo(Point3f(b0, b1, b2), t, -r_in.dir);
+		return true;
+	}
+
+	SurfaceInteraction Triangle::getGeoInfo(const Point3f& b)const {
+		const Point3f p0 = mesh->vertices[index(0)];
+		const Point3f p1 = mesh->vertices[index(1)];
+		const Point3f p2 = mesh->vertices[index(2)];
+
+		const double alpha = b[0];
+		const double beta = b[1];
+		const double gamma = b[2];
+
 		Point2f uv[3];
 		getUVs(uv);
 
@@ -110,12 +119,12 @@ namespace Raven {
 		const Normal3f& n0 = mesh->normals[index(0)];
 		const Normal3f& n1 = mesh->normals[index(1)];
 		const Normal3f& n2 = mesh->normals[index(2)];
-		Point3f pHit = b0 * p0 + b1 * p1 + b2 * p2;
-		Point3f pb1 = b0 * p0;
-		Point3f pb2 = b1 * p1;
-		Point3f pb3 = b2 * p2;
-		Point2f uvHit = b0 * uv0 + b1 * uv1 + b2 * uv2;
-		auto nHit = b0 * n0 + b1 * n1 + b2 * n2;
+		Point3f pHit = alpha * p0 + beta * p1 + gamma * p2;
+		Point3f pb1 = alpha * p0;
+		Point3f pb2 = beta * p1;
+		Point3f pb3 = gamma * p2;
+		Point2f uvHit = alpha * uv0 + beta * uv1 + gamma * uv2;
+		auto nHit = alpha * n0 + beta * n1 + gamma * n2;
 
 		////如果从背面入射，调整法线方向
 		//if (Dot(nHit, r_in.dir) >= 0.0)
@@ -147,10 +156,7 @@ namespace Raven {
 		its.n = nHit;
 		its.p = pHit;
 		its.uv = uvHit;
-		its.t = t;
-		its.wo = -r_in.dir;
-		record = its;
-		return true;
+		return its;
 	}
 
 	Bound3f Triangle::localBound()const {

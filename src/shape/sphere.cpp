@@ -41,7 +41,7 @@ namespace Raven {
 		return localBox;
 	}
 
-	bool Sphere::intersect(const Ray& r_in, SurfaceInteraction& inter, double tMax)const {
+	bool Sphere::intersect(const Ray& r_in, HitInfo& info, double tMax)const {
 		//将光线变换到局部坐标系下
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -65,9 +65,13 @@ namespace Raven {
 				return false;
 		}
 
-		//计算交点信息，pHit,uvHit,nHit
+		//计算交点信息
 		Point3f pHit = localRay.position(tHit);
+		info.setInfo(pHit, tHit, -r_in.dir);
+		return true;
+	}
 
+	SurfaceInteraction Sphere::getGeoInfo(const Point3f& pHit)const {
 		double phi = -atan(pHit.z / pHit.x);
 		if (phi < 0)phi += 2 * M_PI;
 		double theta = acos(Clamp(pHit.y / radius, -1, 1));
@@ -108,17 +112,15 @@ namespace Raven {
 		//记录相交信息并变换到世界坐标系
 		SurfaceInteraction record;
 		record.p = pHit;
-		record.t = tHit;
 		record.n = nHit;
-		record.wo = -localRay.dir;
 		record.uv = Point2f(u, v);
 		record.dpdu = dpdu;
 		record.dpdv = dpdv;
 		record.dndu = dndu;
 		record.dndv = dndv;
 		record = (*localToWorld)(record);
-		inter = record;
-		return true;
+		return record;
+
 	}
 
 	//在圆上均匀采样一个点

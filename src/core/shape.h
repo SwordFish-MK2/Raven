@@ -9,6 +9,24 @@
 #include"ray.h"
 #include<optional>
 namespace Raven {
+	enum PrimType {
+		PTriangle, PSphere
+	};
+
+	struct HitInfo {
+		double hitTime;
+		Vector3f wo;
+		Point3f pHit;
+
+		HitInfo() {}
+
+		void setInfo(const Point3f& p,double t,const Vector3f dir) {
+			pHit = p;
+			hitTime = t;
+			wo = dir;
+		}
+	};
+
 	/// <summary>
 	/// Shape interface, all geometrics must inherit this class
 	/// </summary>
@@ -24,7 +42,9 @@ namespace Raven {
 		virtual bool hit(const Ray& r_in, double tMax)const = 0;
 
 		//intersect incident ray with shape and compute surfaceIntersection 
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const = 0;
+		virtual bool intersect(const Ray& r_in, HitInfo& hitInfo, double tMax)const = 0;
+
+		virtual SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const = 0;
 
 		//return the bounding box of shape in local space
 		virtual Bound3f localBound()const = 0;

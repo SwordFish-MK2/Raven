@@ -14,7 +14,9 @@ namespace Raven {
 			Shape(LTW, WTL), radius(radius) {}
 		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& record, double tMax = FLT_MAX)const;
+		virtual bool intersect(const Ray& r_in, HitInfo& info, double tMax = FLT_MAX)const;
+
+		virtual SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const;
 
 		virtual Bound3f localBound()const;
 

@@ -9,6 +9,7 @@
 #include"../core/accelerate.h"
 #include"../accelerate/kdTree.h"
 namespace Raven {
+
 	struct TriangleInfo {
 		int numbers;
 		std::vector<Point3f> vertices;
@@ -82,8 +83,9 @@ namespace Raven {
 
 		virtual bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const;
 
-		virtual bool intersect(const Ray& r_in, SurfaceInteraction& record,
-			double tMax = std::numeric_limits<double>::max())const;
+		virtual bool intersect(const Ray& r_in, HitInfo& info, double tMax = std::numeric_limits<double>::max())const;
+
+		virtual SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const;
 
 		Bound3f localBound()const;
 

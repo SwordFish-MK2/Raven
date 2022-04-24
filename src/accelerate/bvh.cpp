@@ -54,7 +54,7 @@ namespace Raven {
 			}
 
 			currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-	//		std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+			//		std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 			return currentNode;
 		}
 
@@ -174,7 +174,7 @@ namespace Raven {
 		}
 
 		currentNode->buildLeaf(centroidBound, firstOffset, nPrimitive);
-	//	std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
+		//	std::cout << "Leaf node generated, primitive count = " << nPrimitive << std::endl;
 		return currentNode;
 
 	}
@@ -255,7 +255,8 @@ namespace Raven {
 		int nodesToVisite[4000];
 		int currentIndex = 0;
 		int offset = 0;
-		SurfaceInteraction record;
+		int primHited = 0;
+		HitInfo record;
 		while (1) {
 			const LinearBVHNode* node = &linearTree[currentIndex];
 			double t0, t1;
@@ -272,7 +273,8 @@ namespace Raven {
 							prims[index]->intersect(ray, record, closest);
 						if (foundIntersection) {
 							hit = true;
-							closest = record.t;
+							closest = record.hitTime;
+							primHited = index;
 						}
 					}
 
@@ -297,8 +299,11 @@ namespace Raven {
 				currentIndex = nodesToVisite[--offset];//取得下一个需要访问的节点
 			}
 		}
-		if (hit)
-			return std::optional<SurfaceInteraction>(record);
+		if (hit) {
+			SurfaceInteraction hitRecord = prims[primHited]->setInteractionProperty(record);
+			return std::optional<SurfaceInteraction>(hitRecord);
+		}
+
 		else
 			return std::nullopt;
 	}

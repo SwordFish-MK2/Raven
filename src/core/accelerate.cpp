@@ -12,17 +12,26 @@ namespace Raven {
 
 	std::optional<SurfaceInteraction> PrimitiveList::intersect(const Ray& r_in, double tMax)const {
 		bool flag = false;
-		double closest = tMax;
-		SurfaceInteraction record;
+		double closest = tMax;	
+		HitInfo hitInfo;
+		int index;
+		//求最近的交点
 		for (int i = 0; i < prims.size(); i++) {
-			bool foundIntersection = prims[i]->intersect(r_in, record, closest);
+			bool foundIntersection = prims[i]->intersect(r_in, hitInfo, closest);
 			if (foundIntersection) {
-				closest = record.t;
+				closest = hitInfo.hitTime;
 				flag = true;
+				index = i;
 			}
 		}
-		if (flag)
-			return record;
+
+		//如果相交
+		if (flag) {
+			//生成最近交点的SurfaceInteraction
+			SurfaceInteraction hitRecord = prims[index]->setInteractionProperty(hitInfo);
+			return hitRecord;
+		}
+			
 		else
 			return std::nullopt;
 	}
