@@ -2,9 +2,7 @@
 .vs/
 build/
 doc/
-models/bathroom2/
-models/material-testball/
-models/teapot/
+models/
 #files
 CMakeSettings.json
 notation.md
