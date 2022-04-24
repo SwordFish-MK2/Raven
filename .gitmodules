@@ -1,6 +1,0 @@
-[submodule "resources/stb_image"]
-	path = resources/stb_image
-	url = git@github.com:nothings/stb.git
-[submodule "resources/tinyobjloader"]
-	path = resources/tinyobjloader
-	url = git@github.com:tinyobjloader/tinyobjloader.git
