@@ -1,0 +1,1 @@
+The linear algebra lib Eigen is from https://gitlab.com/libeigen/eigen
