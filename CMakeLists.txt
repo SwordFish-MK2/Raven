@@ -19,8 +19,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FALGS} ${OpenMP_EXE_LINKER_FLAGS}
 ENDIF()
 
 #配置include路径
-INCLUDE_DIRECTORIES("C:/Program Files (x86)/Eigen3/include/eigen3" )
-INCLUDE_DIRECTORIES("resources")
+INCLUDE_DIRECTORIES("vender")
 
 # 包含子项目。
 ADD_SUBDIRECTORY(src bin)

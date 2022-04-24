@@ -3,7 +3,7 @@
 
 #define _USE_MATH_DEFINES
 #include<math.h>
-#include<Eigen/Eigen>
+#include<eigen/Eigen/Dense>
 #include"math.h"
 #include"base.h"
 #include"ray.h"

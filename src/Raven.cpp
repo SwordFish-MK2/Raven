@@ -3,7 +3,6 @@
 
 #include "Raven.h"
 #include"core/math.h"
-#include<Eigen/Eigen>
 #include"core/transform.h"
 #include"camera/projectiveCamera.h"
 #include"core/scene.h"
@@ -22,8 +21,8 @@ using namespace Raven;
 int main()
 {
 	auto start = std::chrono::system_clock::now();
-	//Raven::Scene box = Raven::Scene::buildCornellBox();	
-	Raven::Scene box = Raven::Scene::buildTestScene();
+	Raven::Scene box = Raven::Scene::buildCornellBox();	
+	//Raven::Scene box = Raven::Scene::buildTestScene();
 	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 	Raven::Film f(500, 500);
