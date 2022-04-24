@@ -13,6 +13,7 @@ namespace Raven {
 		for (int i = 0; i < film.height; ++i) {
 			//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
 			double process = (double)finishedLine / film.height;
+
 			omp_set_lock(&lock);
 			UpdateProgress(process);
 			omp_unset_lock(&lock);
@@ -30,8 +31,6 @@ namespace Raven {
 					Ray r;
 
 					if (camera->GenerateRay(sample, r)) {
-						//if (i == film.height / 2 && j == film.width / 2)
-						//	std::cout<<"ori:" << r.origin<<" dir: " << r.dir << "\n";
 						pixelColor += integrate(scene, r);
 					}
 				}
@@ -100,10 +99,8 @@ namespace Raven {
 					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
 
 					Ray shadowRay(p, lightSample.wi);
-					std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, length - 1e-6);
-					if (test == std::nullopt)
+					if (!scene.hit(shadowRay, length - epsilon))
 						Li += dirLi * beta;
-
 				}
 
 				//Vector3f L_dir = SampleAllLights(*record, scene);

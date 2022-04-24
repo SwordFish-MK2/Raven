@@ -220,7 +220,6 @@ namespace Raven {
 						size_t index = node->firstOffset + i;
 						if (prims[index]->hit(ray, tMax))
 							return true;
-
 					}
 
 					if (offset == 0)break;

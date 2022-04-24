@@ -41,25 +41,27 @@ namespace Raven {
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
 		const Point3f& p2 = mesh->vertices[index(2)];
+
 		//利用克莱姆法则求解三角型的重心坐标与光线的传播时间t
 		Vector3f e1 = p1 - p0;
 		Vector3f e2 = p2 - p0;
 		Vector3f s = r_in.origin - p0;
 		Vector3f s1 = Cross(r_in.dir, e2);
 		Vector3f s2 = Cross(s, e1);
+
 		auto det = Dot(s1, e1); //行列式必须不为零且重心坐标的值必须大于0
 		if (det <= 0)return false;
+
 		double invDet = 1.0 / det;
-		double t = invDet * Dot(s2, e2); if (t < 0 || t >= tMax) return false;
-		double b1 = invDet * Dot(s1, s); if (b1 < 0 || b1>1) return false;
-		double b2 = invDet * Dot(s2, r_in.dir); if (b2 < 0 || (b2 + b1)>1)return false;
+		double t = invDet * Dot(s2, e2);
+		double b1 = invDet * Dot(s1, s);
+		double b2 = invDet * Dot(s2, r_in.dir);
 		double b0 = 1 - b1 - b2;
-		const Normal3f& n0 = mesh->normals[index(0)];
-		const Normal3f& n1 = mesh->normals[index(1)];
-		const Normal3f& n2 = mesh->normals[index(2)];
-		Normal3f nHit = n0 * b0 + n1 * b1 + n2 * b2;
-		if (Dot(nHit, r_in.dir) > 0)
-			return false;
+
+		if (t < 0 || t >= tMax) return false;
+
+		if (b0 <= 0 || b1 <= 0 || b2 <= 0)return false;
+
 		return true;
 	}
 
@@ -86,10 +88,6 @@ namespace Raven {
 		double b2 = invDet * Dot(s2, r_in.dir);
 		double b0 = 1 - b1 - b2;
 
-		//交点不在三角形内
-		if (b0 < 0)
-			return false;
-
 		//光线必须沿正向传播
 		if (t <= 0)
 			return false;
@@ -97,6 +95,7 @@ namespace Raven {
 		//重心坐标都大于0时，交点在三角形内，光线与三角形相交	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
 			return false;
+
 		//TODO::检查相交时间
 		if (t >= tMax)
 			return false;

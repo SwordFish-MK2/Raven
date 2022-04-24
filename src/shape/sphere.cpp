@@ -77,7 +77,6 @@ namespace Raven {
 
 		Normal3f nHit = (Normal3f)(pHit - Point3f(0.0)).normalized();
 
-
 		//¼ÆËãÆ«µ¼dpdu£¬dpdv
 		double invR = 1. / radius;
 		double cosPhi = pHit.x * invR;

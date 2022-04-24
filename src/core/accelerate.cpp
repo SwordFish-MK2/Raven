@@ -4,7 +4,6 @@ namespace Raven {
 
 	bool PrimitiveList::hit(const Ray& r_in, double tMax)const {
 		for (size_t i = 0; i < prims.size(); i++) {
-			SurfaceInteraction inter;
 			if (prims[i]->hit(r_in, tMax))
 				return true;
 		}
