@@ -17,11 +17,11 @@ namespace Raven {
 		bool isSpecular = uRoughValue == 0 && vRoughValue == 0;
 
 		if (!kd.isBlack()) {
-			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.0, eta);
-			record.bsdf->addBxDF(std::make_shared<SpecularReflection>(kd, fresnel));
+			//std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.0, eta);
+			//record.bsdf->addBxDF(std::make_shared<SpecularReflection>(kd, fresnel));
 		}
 		if (!kt.isBlack()) {
-			//record.bsdf->addBxDF(std::make_shared<SpecularTransmission>(kt, 1.0, eta));
+			record.bsdf->addBxDF(std::make_shared<SpecularTransmission>(kt, 1.0, eta));
 		}
 	}
 }

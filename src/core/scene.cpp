@@ -90,11 +90,11 @@ namespace Raven {
 		//Shape
 		Loader loader;
 		std::optional<TriangleInfo> leftInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/","left.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "left.obj");
 		std::optional<TriangleInfo> rightInfo =
 			loader.load("D:/MyWorks/Raven/models/cornellbox/", "right.obj");
 		std::optional<TriangleInfo> floorInfo =
-			loader.load("D:/MyWorks/Raven/models/cornellbox/", "floor.obj");
+			loader.load("D:/MyWorks/Raven/models/cornellbox/", "floorOriginal.obj");
 		std::optional<TriangleInfo> sBoxInfo =
 			loader.load("D:/MyWorks/Raven/models/cornellbox/", "shortbox.obj");
 		std::optional<TriangleInfo> tBoxInfo =
@@ -157,7 +157,7 @@ namespace Raven {
 		prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
 
 	}
 
@@ -168,16 +168,23 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
 
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
-		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(190, 100, 190)));
+		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(250, 100, 190)));
 		std::shared_ptr<Transform> invSphereWorld = std::make_shared<Transform>(sphereWorld->inverse());
+		Transform bunnyScale = Scale(Vector3f(2000, 2000, 2000));
+		std::shared_ptr<Transform> bunnyWorld = std::make_shared<Transform>((*sphereWorld) * bunnyScale);
+		//std::cout << bunnyWorld->getMatrix();
+		std::shared_ptr<Transform> invBunnyWorld = std::make_shared<Transform>(bunnyWorld->inverse());
 
 		usedTransform.push_back(identity);
 		usedTransform.push_back(sphereWorld);
 		usedTransform.push_back(invSphereWorld);
+		usedTransform.push_back(bunnyWorld);
+		usedTransform.push_back(invBunnyWorld);
 
 		std::shared_ptr<Shape> sphere = Sphere::build(sphereWorld.get(), invSphereWorld.get(), 90);
 
 		Loader loader;
+		std::string path("D:/MyWorks/Raven/models/cornellbox/");
 		std::optional<TriangleInfo> leftInfo =
 			loader.load("D:/MyWorks/Raven/models/cornellbox/", "left.obj");
 		std::optional<TriangleInfo> rightInfo =
@@ -190,6 +197,15 @@ namespace Raven {
 			loader.load("D:/MyWorks/Raven/models/cornellbox/", "tallbox.obj");
 		std::optional<TriangleInfo> lightInfo =
 			loader.load("D:/MyWorks/Raven/models/cornellbox/", "light.obj");
+		std::optional<TriangleInfo> backInfo =
+			loader.load(path, "back.obj");
+		std::optional<TriangleInfo> topInfo =
+			loader.load(path, "top.obj");
+		std::optional<TriangleInfo> bunnyInfo =
+			loader.load("D:/MyWorks/Raven/models/bunny/", "bunny.obj");
+
+		std::shared_ptr<TriangleMesh> bunnyMesh = 
+			TriangleMesh::build(bunnyWorld.get(), invBunnyWorld.get(), *bunnyInfo);
 
 		std::shared_ptr<TriangleMesh> leftMesh =
 			TriangleMesh::build(identity.get(), identity.get(), *leftInfo);
@@ -209,12 +225,21 @@ namespace Raven {
 		std::shared_ptr<TriangleMesh> lightMesh =
 			TriangleMesh::build(identity.get(), identity.get(), *lightInfo);
 
+		std::shared_ptr<TriangleMesh> backMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *backInfo);
+
+		std::shared_ptr<TriangleMesh> topMesh =
+			TriangleMesh::build(identity.get(), identity.get(), *topInfo);
+
 		meshes.push_back(leftMesh);
 		meshes.push_back(rightMesh);
 		meshes.push_back(floorMesh);
 		meshes.push_back(sBoxMesh);
 		meshes.push_back(tBoxMesh);
 		meshes.push_back(lightMesh);
+		meshes.push_back(backMesh);
+		meshes.push_back(topMesh);
+		meshes.push_back(bunnyMesh);
 
 		//Texture
 		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build();
@@ -225,9 +250,9 @@ namespace Raven {
 		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(whiteTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
 
-		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.2f, 0.3f, 0.25f));
-		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
-		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.1);
+		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725, 0.71f, 0.68f));
+		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.4f, 0.4f, 0.4f));
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
 
 		//Material
 		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.1, 0.97, 0.4));
@@ -256,26 +281,35 @@ namespace Raven {
 		lights.push_back(aLight1);
 		lights.push_back(aLight2);
 
-
-
 		//Primitives
 		std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, glass, nullptr);
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
-		std::vector<std::shared_ptr<Primitive>>  rightPrim = rightMesh->generatePrimitive(greenLam);
-		std::vector<std::shared_ptr<Primitive>>  floorPrim = floorMesh->generatePrimitive(whiteLam);
-		std::vector<std::shared_ptr<Primitive>>  sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>> rightPrim = rightMesh->generatePrimitive(greenLam);
+		std::vector<std::shared_ptr<Primitive>> floorPrim = floorMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>> sBoxPrim = sBoxMesh->generatePrimitive(whiteLam);
 		std::vector<std::shared_ptr<Primitive>> tBoxPrim = tBoxMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>> backPrim = backMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>> topPrim = topMesh->generatePrimitive(whiteLam);
+		std::vector<std::shared_ptr<Primitive>> bunnyPrim = bunnyMesh->generatePrimitive(whiteLam);
+
+
+		//tBoxPrim[8]->setMaterial(mirror);
+		//tBoxPrim[9]->setMaterial(mirror);
 
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
-		prim_ptrs.push_back(spherePrim);
+		//prim_ptrs.push_back(spherePrim);
+		
 		prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), bunnyPrim.begin(), bunnyPrim.end());//ÍÃ×ÓÄ£ÐÍ
 		prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), floorPrim.begin(), floorPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), backPrim.begin(), backPrim.end());
+		prim_ptrs.insert(prim_ptrs.end(), topPrim.begin(), topPrim.end());
 		//prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
-		prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
+		//prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
 
 	}
 
@@ -291,14 +325,21 @@ namespace Raven {
 		std::shared_ptr<Transform> t1 = std::make_shared<Transform>(Translate(Vector3f(278, 200, 400)));
 		std::shared_ptr<Transform> m = std::make_shared<Transform>((*s1) * (*t1));
 		std::shared_ptr<Transform>invm = std::make_shared<Transform>(m->inverse());
-
+		usedTransform.push_back(t1);
 		usedTransform.push_back(m);
 		usedTransform.push_back(invm);
+		std::shared_ptr<Transform> trans = std::make_shared<Transform>(Translate(Vector3f(278, 200, 400)));
+		std::shared_ptr<Transform> invTrans = std::make_shared<Transform>(trans->inverse());
 
-		Point3f p0(-100.0, -2.0, 100.0);
-		Point3f p1(100.0, -2.0, 100.0);
-		Point3f p2(100.0, -2.0, -100.0);
-		Point3f p3(-100.0, -2.0, -100.0);
+		usedTransform.push_back(trans);
+		usedTransform.push_back(invTrans);
+		std::shared_ptr<Sphere> testSphere = Sphere::build(trans.get(), invTrans.get(), 190);
+
+		
+		Point3f p0(-10000.0, -2.0, 10000.0);
+		Point3f p1(10000.0, -2.0, 10000.0);
+		Point3f p2(10000.0, -2.0, -10000.0);
+		Point3f p3(-10000.0, -2.0, -10000.0);
 
 		std::shared_ptr<TriangleMesh> plane = std::make_shared<TriangleMesh>(CreatePlane(identity.get(), identity.get(),
 			p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0)));
@@ -338,7 +379,7 @@ namespace Raven {
 		std::shared_ptr<Sphere> sphereMid = Sphere::build(sphereMidle.get(), middleInv.get(), 0.5);
 		std::shared_ptr<Sphere> sphereL = Sphere::build(sphereLeft.get(), leftInv.get(), 0.5);
 		std::shared_ptr<Sphere> sphereR = Sphere::build(sphereRight.get(), rightInv.get(), 0.5);
-		
+
 
 		usedTransform.push_back(sphereWorld);
 		usedTransform.push_back(invSphereWorld);
@@ -370,7 +411,7 @@ namespace Raven {
 		std::shared_ptr<MatteMaterial> checkered = MatteMaterial::build(sigma, cheTex);
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
-		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.1);
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
 
 		std::shared_ptr<Material> plastic = Plastic::build(kdTex, ksTex, roughTex);
 
@@ -388,24 +429,25 @@ namespace Raven {
 
 		std::shared_ptr<Primitive> lightp1 = std::make_shared<Primitive>(lightTris[0], lightLam, aLight1);
 		std::shared_ptr<Primitive> lightp2 = std::make_shared<Primitive>(lightTris[1], lightLam, aLight2);
-		std::vector<std::shared_ptr<Primitive>> teapot = teapotMesh->generatePrimitive(whiteLam);
+		//std::vector<std::shared_ptr<Primitive>> teapot = teapotMesh->generatePrimitive(whiteLam);
 		std::shared_ptr<Primitive> g = Primitive::build(sphereGround, whiteLam, nullptr);
 		std::shared_ptr<Primitive> l = Primitive::build(sphereL, whiteLam, nullptr);
 		std::shared_ptr<Primitive> r = Primitive::build(sphereR, whiteLam, nullptr);
 		std::shared_ptr<Primitive> mi = Primitive::build(sphereMid, whiteLam, nullptr);
 		std::vector<std::shared_ptr<Primitive>> ground = plane->generatePrimitive(whiteLam);
+		std::shared_ptr<Primitive> che = Primitive::build(testSphere, checkered, nullptr);
 
-	
 
 		//prim_ptrs.insert(prim_ptrs.end(), teapot.begin(), teapot.end());
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
-		prim_ptrs.push_back(g);
-		prim_ptrs.push_back(l);
-		prim_ptrs.push_back(r);
-		prim_ptrs.push_back(mi);
-	//	prim_ptrs.insert(prim_ptrs.end(), ground.begin(), ground.end());
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
+		//prim_ptrs.push_back(g);
+		//prim_ptrs.push_back(l);
+		//prim_ptrs.push_back(r);
+		//prim_ptrs.push_back(mi);
+		prim_ptrs.push_back(che);
+		prim_ptrs.insert(prim_ptrs.end(), ground.begin(), ground.end());
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
 	}
 
 

@@ -253,7 +253,7 @@ namespace Raven {
 		double closest = tMax;
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
 		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
-		int nodesToVisite[64];
+		int nodesToVisite[4000];
 		int currentIndex = 0;
 		int offset = 0;
 		SurfaceInteraction record;

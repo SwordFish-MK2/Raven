@@ -23,15 +23,15 @@ namespace Raven {
 
 		//glossy
 		if (ksValue != Spectrum(0.0)) {
-			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.0f, 1.85f);
+			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.5f, 1.f);
 			double alpha = GGX::RoughnessToAlpha(roughValue);
 			std::shared_ptr<MicrofacetDistribution> distribute =
-				std::make_shared<GGX>(roughValue, roughValue,true);
+				std::make_shared<GGX>(alpha, alpha, true);
 
-			std::shared_ptr<BxDF> spec = 
+			std::shared_ptr<BxDF> spec =
 				std::make_shared<MicrofacetReflection>(fresnel, distribute, ksValue);
 
-			bsdf->addBxDF(spec);
+			bsdf->addBxDF(spec);	
 		}
 		hitRecord.bsdf = bsdf;
 	}

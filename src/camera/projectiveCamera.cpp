@@ -8,7 +8,7 @@ namespace Raven {
 		Point3f pCamera = RasterToCamera(pRaster);
 		Vector3f dir(pCamera[0], pCamera[1], pCamera[2]);
 		RayDifferential sampleRay(ori, dir.normalized());
-		ray = sampleRay;
+		ray = CameraToWorld(sampleRay);
 		return 1;
 	}
 

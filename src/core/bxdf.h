@@ -145,32 +145,41 @@ namespace Raven {
 	inline double Sin2Theta(const Vector3f& w) {
 		return Max(0.0, 1. - Cos2Theta(w));
 	}
+
 	inline double SinTheta(const Vector3f& w) {
 		return sqrt(Sin2Theta(w));
 	}
+
 	inline double TanTheta(const Vector3f& w) {
 		return SinTheta(w) / CosTheta(w);
 	}
+
 	inline double AbsTanTheta(const Vector3f& w) {
 		return abs(SinTheta(w) / CosTheta(w));
 	}
+
 	inline double Tan2Theta(const Vector3f& w) {
 		return TanTheta(w) * TanTheta(w);
 	}
+
 	inline double CosPhi(const Vector3f& w) {
 		double sinTheta = SinTheta(w);
 		return sinTheta == 0 ? 1 : Clamp(w.x / sinTheta, -1.f, 1.f);
 	}
+
 	inline double SinPhi(const Vector3f& w) {
 		double sin = SinTheta(w);
 		return sin == 0 ? 0 : Clamp(w.y / sin, -1.f, 1.f);
 	}
+
 	inline double Cos2Phi(const Vector3f& w) {
 		return CosPhi(w) * CosPhi(w);
 	}
+
 	inline double Sin2Phi(const Vector3f& w) {
 		return SinPhi(w) * SinPhi(w);
 	}
+
 }
 
-#endif
+#endif	

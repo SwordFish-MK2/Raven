@@ -15,7 +15,6 @@ namespace Raven {
 		Spectrum integrate(const Scene& scene, const Ray& r_in,int depth=0)const;
 	//	GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
 
-
 		const int maxDepth;
 	};
 }

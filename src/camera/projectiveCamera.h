@@ -12,7 +12,7 @@ namespace Raven {
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const = 0;
 		ProjectiveCamera(const Transform& CTW, const Transform& STR, double lensRadius, double focalDistance) :
 			Camera(CTW), ScreenToRaster(STR), RasterToScreen(STR.getInverseMatrix()), RasterToCamera(Identity()),
-			CameraToScreen(	Identity()),
+			CameraToScreen(Identity()),
 			lensRadius(lensRadius), focalDistance(focalDistance) {
 			//	RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
 		}
@@ -56,7 +56,7 @@ namespace Raven {
 		OrthographicCamera(const Transform& CTW, const Transform& STR, double lensRadius, double focalDistance,
 			double top, double bottom, double left, double right, double near, double far) :
 			ProjectiveCamera(CTW, STR, lensRadius, focalDistance) {
-			CameraToScreen = Orthographic( near, far);
+			CameraToScreen = Orthographic(top, bottom, left, right, near, far);
 			RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
 		}
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;

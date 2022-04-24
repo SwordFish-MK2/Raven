@@ -22,23 +22,23 @@ using namespace Raven;
 int main()
 {
 	auto start = std::chrono::system_clock::now();
-	Raven::Scene box = Raven::Scene::buildCornellBox();
-	//Raven::Scene box = Raven::Scene::buildTestScene();
+	//Raven::Scene box = Raven::Scene::buildCornellBox();	
+	Raven::Scene box = Raven::Scene::buildTestScene();
 	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
-
-	Raven::Film f(400, 400);
-	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278,273,-800),Point3f(278, 273, 0), Vector3f(0, 1, 0));
+	Raven::Film f(500, 500);
+	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, 0), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f.height, f.width);
-	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0f, 10.0,
+	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0, 865.0,
 		0.1f, 10.0f, 40.f, f.aspect_ratio);
-	Raven::Camera* ocam = new Raven::OrthographicCamera(cameraToWorld, screenToRaster, 0, 10, 0, 500, 0, 500, 0.1, 500);
+	Raven::Camera* ocam = new Raven::OrthographicCamera(cameraToWorld, screenToRaster, 0, 10, 278, -278, -278, 278, 2, 100);
 	//Sampler* sampler = new StratifiedSampler(10, 10, 15, true);
-	Raven::PathTracingRenderer renderer(cam, f, 5, 5, 0.001);
+	Raven::PathTracingRenderer renderer(cam, f, 40, 10, 0.001);
 	//Raven::NormalRenderer nRenderer(cam, f, 10, 1, 0.00001);
 	renderer.render(box);
 	//nRenderer.render(sphere);
 	delete cam;
+	delete ocam;
 
 	auto stop = std::chrono::system_clock::now();
 	std::cout << "Render complete:\n";

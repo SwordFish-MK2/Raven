@@ -229,7 +229,7 @@ namespace Raven {
 
 			//Sample whole hemisphere
 			if (alphaX == alphaY) {
-				//各项异性
+				//各项同性
 				double phi = 2 * M_PI * uv[1];
 
 				double tanTheta2 = uv[0] * alphaX * alphaX / (1.0 - uv[0]);
@@ -256,7 +256,7 @@ namespace Raven {
 				double tanTheta2 = uv[0] / (t * (1 - uv[0]));
 
 				double cosTheta = 1 / sqrt(1 + tanTheta2);
-				double sinTheta = Max(0.0, sqrt(1 - cosTheta * cosTheta));
+				double sinTheta = sqrt(Max(0.0, 1 - cosTheta * cosTheta));
 
 				Vector3f wh = Vector3f(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 				if (Dot(wh, wo) < 0)

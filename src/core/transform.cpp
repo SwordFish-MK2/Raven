@@ -180,25 +180,27 @@ namespace Raven {
 		return Scale(Vector3f(InvTanX, InvTanY, 1)) * Transform(projection);
 	}
 
-	//Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
-	//	Eigen::Matrix4f projection;
-	//	double halfWidth = right - left;
-	//	double halfHeight = top - bottom;
-	//	double halfDepth = abs(far - near);
-	//	Point3f center(halfWidth, halfHeight, halfDepth);
-	//	projection << halfWidth, 0.f, 0.f, -halfWidth,
-	//		0.f, halfWidth, 0.f, -halfHeight,
-	//		0.f, 0.f, halfDepth, 0.f,
-	//		0.f, 0.f, 0.f, 1.f;
-	//	return projection;
-	//}
+	Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
+		double centerX = (right + left) * 0.5;
+		double centerY = (top + bottom) * 0.5;
 
-	Transform Orthographic(double near, double far) {
-		return Scale(Vector3f(1, 1, 1 / (far - near))) * Translate(Vector3f(0, 0, -near));
+		Transform T = Translate(Vector3f(-centerX, -centerY, -near));
+		double scaleX = 2 / abs(right - left);
+		double scaleY = 2 / abs(top - bottom);
+		double scaleZ = 1 / abs(far - near);
+		Transform S = Scale(Vector3f(scaleX, scaleY, scaleZ));
+
+		return S * T;
 	}
 
+	//Transform Orthographic(double znear, double zfar) {
+
+	//	return Scale(Vector3f(1, 1, 1 / (zfar - znear))) * Translate(Vector3f(0, 0, -znear));
+	//}
+
+	//负责从Screen space到Raster space之间的变换
 	Transform Raster(int h, int w) {
-		//scale the points from screen space to Raster
+		//先将所有的点拉伸分辨率的一般，反转y轴，再将图像左上角平移到原点
 		Eigen::Matrix4f screenToRaster;
 		int half_height = h / 2;
 		int half_width = w / 2;

@@ -49,7 +49,6 @@ namespace Raven {
 		T value;
 	};
 
-
 	template<class T>
 	class ScaleTexture :public Texture<T> {
 	public:

@@ -1,49 +1,49 @@
 #include"path.h"
 #include<omp.h>
 #include"../core/light.h"
+
 static omp_lock_t lock;
 namespace Raven {
 	void PathTracingRenderer::render(const Scene& scene) {
-		int finishedLine = 0;
+		int finishedLine = 1;
 
 		omp_init_lock(&lock);
 
-#pragma omp parallel
-		{
-#pragma omp  for
-			for (int i = 0; i < film.height; ++i) {
-				//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
-				double process = (double)finishedLine / film.height;	
-				omp_set_lock(&lock);
-				UpdateProgress(process);
-				omp_unset_lock(&lock);
-				for (int j = 0; j < film.width; ++j) {
-					Spectrum pixelColor(0.0);
-					for (int s = 0; s < spp; s++) {
-						//camera sample
-						auto cu = double(j) + GetRand();
-						auto cv = double(i) + GetRand();
-						auto fu = GetRand();
-						auto fv = GetRand();
-						auto t = GetRand();
-						CameraSample sample(cu, cv, t, fu, fv);
-						Ray r;
+#pragma omp parallel for
+		for (int i = 0; i < film.height; ++i) {
+			//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
+			double process = (double)finishedLine / film.height;
+			omp_set_lock(&lock);
+			UpdateProgress(process);
+			omp_unset_lock(&lock);
 
-						if (camera->GenerateRay(sample, r)) {
-							//if (i == film.height / 2 && j == film.width / 2)
-							//	std::cout << r.origin << r.dir << "\n";
-							pixelColor += integrate(scene, r);
-						}
+			for (int j = 0; j < film.width; ++j) {
+				Spectrum pixelColor(0.0);
+				for (int s = 0; s < spp; s++) {
+					//camera sample
+					auto cu = double(j) + GetRand();
+					auto cv = double(i) + GetRand();
+					auto fu = GetRand();
+					auto fv = GetRand();
+					auto t = GetRand();
+					CameraSample sample(cu, cv, t, fu, fv);
+					Ray r;
+
+					if (camera->GenerateRay(sample, r)) {
+						//if (i == film.height / 2 && j == film.width / 2)
+						//	std::cout<<"ori:" << r.origin<<" dir: " << r.dir << "\n";
+						pixelColor += integrate(scene, r);
 					}
-					double scaler = 1.0 / spp;
-					pixelColor *= scaler;
-
-					film.setColor(pixelColor, j, i);
-					//film.in(pixelColor);
 				}
-				finishedLine++;
+				double scaler = 1.0 / spp;
+				pixelColor *= scaler;
 
+				film.setColor(pixelColor, j, i);
+				//film.in(pixelColor);
 			}
+			finishedLine++;
+
+
 		}
 		omp_destroy_lock(&lock);
 		std::cout << "\nDone.\n";
@@ -65,7 +65,6 @@ namespace Raven {
 			std::optional<SurfaceInteraction> record = scene.intersect(ray, std::numeric_limits<double>::max());
 			//光线未与场景相交
 			if (!record) {
-				//Li += backgroundColor * beta;
 				break;
 			}
 			else {

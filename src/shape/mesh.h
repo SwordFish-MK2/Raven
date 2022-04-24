@@ -40,9 +40,17 @@ namespace Raven {
 		bool hasUV;
 		bool hasTan;
 
-		TriangleMesh(const Transform* OTW, const Transform* WTO, int triNum, const std::vector<Point3f>& vs,
-			const std::vector<int>& ins, const std::vector<Normal3f>& ns, const std::vector<Vector3f>& ts,
-			const std::vector<Point2f> uvs, AccelType buildType = AccelType::KdTree) :OTW(OTW), WTO(WTO),
+		TriangleMesh(
+			const Transform* OTW, 
+			const Transform* WTO, 
+			int triNum, 
+			const std::vector<Point3f>& vs,
+			const std::vector<int>& ins, 
+			const std::vector<Normal3f>& ns, 
+			const std::vector<Vector3f>& ts,
+			const std::vector<Point2f> uvs,
+			AccelType buildType = AccelType::KdTree) 
+			:OTW(OTW), WTO(WTO),
 			nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
 			uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
 			//transform all vertices of triangle mesh to world space 

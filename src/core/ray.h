@@ -5,6 +5,7 @@
 #include"math.h"
 
 namespace Raven {
+
 	class Ray {
 	public:
 		Point3f origin;
