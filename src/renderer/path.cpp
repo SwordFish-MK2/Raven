@@ -6,18 +6,19 @@ static omp_lock_t lock;
 namespace Raven {
 	void PathTracingRenderer::render(const Scene& scene) {
 		int finishedLine = 1;
-
+		double process = 0.0;
 		omp_init_lock(&lock);
 
 #pragma omp parallel for
 		for (int i = 0; i < film.height; ++i) {
-			//		std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
-			double process = (double)finishedLine / film.height;
 
+			//计算渲染的进度，输出进度条
+			process = (double)finishedLine / film.height;
 			omp_set_lock(&lock);
 			UpdateProgress(process);
 			omp_unset_lock(&lock);
 
+			
 			for (int j = 0; j < film.width; ++j) {
 				Spectrum pixelColor(0.0);
 				for (int s = 0; s < spp; s++) {
@@ -40,14 +41,13 @@ namespace Raven {
 				film.setColor(pixelColor, j, i);
 				//film.in(pixelColor);
 			}
+
 			finishedLine++;
-
-
 		}
+
+		UpdateProgress(process);
 		omp_destroy_lock(&lock);
-		std::cout << "\nDone.\n";
 		film.write();
-		film.writeTxt();
 	}
 	//路径追踪算法，暂时只考虑了lambertain
 	Spectrum PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn, int bounce)const {

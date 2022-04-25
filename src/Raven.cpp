@@ -18,8 +18,8 @@ using namespace Raven;
 int main(int agrc, char**argv)
 {
 	auto start = std::chrono::system_clock::now();
-	//Raven::Scene box = Raven::Scene::buildCornellBox();	
-	Raven::Scene box = Raven::Scene::buildTestScene();
+	Raven::Scene box = Raven::Scene::buildCornellBox();	
+	//Raven::Scene box = Raven::Scene::buildTestScene();
 	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 	Raven::Film f(500, 500);
@@ -28,7 +28,7 @@ int main(int agrc, char**argv)
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0, 865.0,
 		0.1f, 10.0f, 40.f, f.aspect_ratio);
 	Raven::Camera* ocam = new Raven::OrthographicCamera(cameraToWorld, screenToRaster, 0, 10, 278, -278, -278, 278, 2, 100);
-	Raven::PathTracingRenderer renderer(cam, f, 200, 10);
+	Raven::PathTracingRenderer renderer(cam, f, 40, 10);
 	renderer.render(box);
 	delete cam;
 	delete ocam;
