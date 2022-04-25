@@ -21,5 +21,8 @@ ENDIF()
 #配置include路径
 INCLUDE_DIRECTORIES("vender")
 
+#配置堆栈大小
+
+
 # 包含子项目。
 ADD_SUBDIRECTORY(src bin)

@@ -298,10 +298,10 @@ namespace Raven {
 
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
-		prim_ptrs.push_back(spherePrim);
+		//prim_ptrs.push_back(spherePrim);
 		
 		prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
-		//prim_ptrs.insert(prim_ptrs.end(), bunnyPrim.begin(), bunnyPrim.end());//兔子模型
+		prim_ptrs.insert(prim_ptrs.end(), bunnyPrim.begin(), bunnyPrim.end());//兔子模型
 		prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), floorPrim.begin(), floorPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), backPrim.begin(), backPrim.end());
@@ -309,7 +309,7 @@ namespace Raven {
 		//prim_ptrs.insert(prim_ptrs.end(), sBoxPrim.begin(), sBoxPrim.end());
 		//prim_ptrs.insert(prim_ptrs.end(), tBoxPrim.begin(), tBoxPrim.end());
 
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::List);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
 
 	}
 

@@ -72,11 +72,11 @@ namespace Raven {
 		//std::shared_ptr<BVHNode> root;
 		std::vector<LinearBVHNode> linearTree;
 		size_t maxPrimInNode;
-
+		int maxDepth;
 		std::shared_ptr<BVHNode> recursiveBuild(std::vector<PrimitiveInfo>& p, size_t start, size_t end,
-			std::vector<std::shared_ptr<Primitive>>& ordered, size_t& totalNodes);
+			std::vector<std::shared_ptr<Primitive>>& ordered, size_t& totalNodes, int depth = 0);
 
-		int flattenTree(const std::shared_ptr<BVHNode>& node, int* offset);
+		int flattenTree(const std::shared_ptr<BVHNode>& node, int* offset, int depth);
 	};
 }
 
