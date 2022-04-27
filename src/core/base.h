@@ -19,8 +19,10 @@ namespace Raven {
 	class AABB2;
 	template<class T>
 	class Texture;
-	template <typename T, int logBlockSize = 4>
-	class BlockedArray;
+	template<class T>
+	class Mipmap;
+	template<class T>
+	class Image;
 	class Camera;
 	class Ray;
 	class RayDifferential;
@@ -92,7 +94,7 @@ namespace Raven {
 		x |= x >> 4;
 		x |= x >> 8;
 		x |= x >> 16;
-		return x++;
+		return ++x;
 	}
 	//use Cramer's law to solve 2x2 linear equation system
 	inline bool solve2x2LinearSystem(const double* A, const double* b, double* x0, double* x1) {
@@ -155,6 +157,11 @@ namespace Raven {
 			p = 2.83297682f + p * w;
 		}
 		return p * x;
+	}
+
+	template<class T>
+	inline double Log2(T v) {
+		return std::log(v) / std::log(2);
 	}
 
 	inline void UpdateProgress(double progress)

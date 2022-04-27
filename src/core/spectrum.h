@@ -34,7 +34,7 @@ namespace Raven {
 		CoefficientSpectrum operator+(const CoefficientSpectrum& s)const {
 			CoefficientSpectrum temp;
 			for (int i = 0; i < sampleNumber; i++)
-				temp.c[i] = this.c[i] + s.c[i];
+				temp.c[i] = this->c[i] + s.c[i];
 			return temp;
 		}
 		CoefficientSpectrum& operator+=(const CoefficientSpectrum& s) {

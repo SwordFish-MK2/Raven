@@ -10,16 +10,16 @@ namespace Raven {
 		omp_init_lock(&lock);
 
 #pragma omp parallel for
-		for (int i = 0; i < film.height; ++i) {
+		for (int i = 0; i < film.yRes; ++i) {
 
 			//计算渲染的进度，输出进度条
-			process = (double)finishedLine / film.height;
+			process = (double)finishedLine / film.yRes;
 			omp_set_lock(&lock);
 			UpdateProgress(process);
 			omp_unset_lock(&lock);
 
-			
-			for (int j = 0; j < film.width; ++j) {
+
+			for (int j = 0; j < film.xRes; ++j) {
 				Spectrum pixelColor(0.0);
 				for (int s = 0; s < spp; s++) {
 					//camera sample
@@ -38,16 +38,18 @@ namespace Raven {
 				double scaler = 1.0 / spp;
 				pixelColor *= scaler;
 
-				film.setColor(pixelColor, j, i);
+				film(j, i) = pixelColor;
 				//film.in(pixelColor);
 			}
 
 			finishedLine++;
 		}
-
+		process = (double)finishedLine / film.yRes;
 		UpdateProgress(process);
 		omp_destroy_lock(&lock);
+
 		film.write();
+		film.testMipmap();
 	}
 	//路径追踪算法，暂时只考虑了lambertain
 	Spectrum PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn, int bounce)const {
@@ -88,7 +90,7 @@ namespace Raven {
 					LightSample lightSample;
 					Spectrum emit = light->sampleLi(*record, Point2f(GetRand(), GetRand()), &lightSample);
 					Spectrum fLight = record->bsdf->f(wo, lightSample.wi);
-					double length = (lightSample.p - p).length();
+					double distance = (lightSample.p - p).length() - 0.01;
 					//double dot1 = Max(0.0, Dot(lightSample.wi, n));
 					double dot2 = Max(0.0, Dot(-lightSample.wi, lightSample.n));
 
@@ -98,12 +100,13 @@ namespace Raven {
 					//判断有无遮挡
 					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
 
-					Ray shadowRay(p, lightSample.wi);
-					if (!scene.hit(shadowRay, length - epsilon))
+					//Ray shadowRay(p, lightSample.wi);
+					Ray shadowRay = record->scartterRay(lightSample.wi);
+					if (!scene.hit(shadowRay, distance))
 						Li += dirLi * beta;
 				}
 
-				//Vector3f L_dir = SampleAllLights(*record, scene);
+				//Spectrum L_dir = SampleAllLights(*record, scene);
 				//Li += beta * L_dir;
 
 

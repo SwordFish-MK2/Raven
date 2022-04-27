@@ -26,7 +26,7 @@ namespace Raven {
 			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.5f, 1.f);
 			double alpha = GGX::RoughnessToAlpha(roughValue);
 			std::shared_ptr<MicrofacetDistribution> distribute =
-				std::make_shared<GGX>(alpha, alpha, true);
+				std::make_shared<GGX>(alpha, alpha, false);
 
 			std::shared_ptr<BxDF> spec =
 				std::make_shared<MicrofacetReflection>(fresnel, distribute, ksValue);

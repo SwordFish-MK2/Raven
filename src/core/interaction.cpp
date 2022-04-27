@@ -65,7 +65,7 @@ namespace Raven {
 	}
 
 	Ray SurfaceInteraction::scartterRay(const Vector3f& dir)const {
-		Point3f ori = p + dir * 0.01;
+		Point3f ori = p + dir * 0.001;
 		return Ray(ori, dir);
 	}
 

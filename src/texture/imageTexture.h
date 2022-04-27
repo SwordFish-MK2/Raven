@@ -3,7 +3,7 @@
 //
 //#include"../core/base.h"
 //#include"../core/texture.h"
-//#include"../utils/mipmap.h"
+//#include"../core/mipmap.h"
 //#include<map>
 //#include<string>
 //

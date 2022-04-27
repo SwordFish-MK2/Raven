@@ -12,6 +12,7 @@
 #include"../texture/imageTexture.h"
 #include"../material/mirror.h"
 #include"../material/glass.h"
+#include"mipmap.h"
 #include<string>
 
 namespace Raven {
@@ -168,7 +169,7 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
 
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
-		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(250, 100, 190)));
+		std::shared_ptr<Transform> sphereWorld = std::make_shared<Transform>(Translate(Vector3f(110, 100, 190)));
 		std::shared_ptr<Transform> invSphereWorld = std::make_shared<Transform>(sphereWorld->inverse());
 		Transform bunnyScale = Scale(Vector3f(2000, 2000, 2000));
 		std::shared_ptr<Transform> bunnyWorld = std::make_shared<Transform>((*sphereWorld) * bunnyScale);
@@ -251,8 +252,8 @@ namespace Raven {
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
 
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725, 0.71f, 0.68f));
-		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.4f, 0.4f, 0.4f));
-		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
+		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.8f, 0.8f, 0.8f));
+		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.05);
 
 		//Material
 		std::shared_ptr<MatteMaterial> mate1 = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.1, 0.97, 0.4));
@@ -282,7 +283,7 @@ namespace Raven {
 		lights.push_back(aLight2);
 
 		//Primitives
-		std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, glass, nullptr);
+		std::shared_ptr<Primitive> spherePrim = Primitive::build(sphere, plastic, nullptr);
 		std::vector<std::shared_ptr<Primitive>> leftPrim = leftMesh->generatePrimitive(redLam);
 		std::vector<std::shared_ptr<Primitive>> rightPrim = rightMesh->generatePrimitive(greenLam);
 		std::vector<std::shared_ptr<Primitive>> floorPrim = floorMesh->generatePrimitive(whiteLam);
@@ -298,10 +299,10 @@ namespace Raven {
 
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
-		//prim_ptrs.push_back(spherePrim);
+		prim_ptrs.push_back(spherePrim);
 		
 		prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
-		prim_ptrs.insert(prim_ptrs.end(), bunnyPrim.begin(), bunnyPrim.end());//兔子模型
+		//prim_ptrs.insert(prim_ptrs.end(), bunnyPrim.begin(), bunnyPrim.end());//兔子模型
 		prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), floorPrim.begin(), floorPrim.end());
 		prim_ptrs.insert(prim_ptrs.end(), backPrim.begin(), backPrim.end());
@@ -390,7 +391,6 @@ namespace Raven {
 
 		//texture
 		std::string picturePath = std::string("C:/Users/HJW/Desktop/earthmap.jpg");
-
 		std::shared_ptr<TextureMapping2D> mapping = UVMapping2D::build(3, 3);
 		std::shared_ptr<TextureMapping2D> unSacaledUV = UVMapping2D::build();
 		std::shared_ptr<Texture<Spectrum>>whiteTexture =
@@ -435,8 +435,8 @@ namespace Raven {
 		std::shared_ptr<Primitive> r = Primitive::build(sphereR, whiteLam, nullptr);
 		std::shared_ptr<Primitive> mi = Primitive::build(sphereMid, whiteLam, nullptr);
 		std::vector<std::shared_ptr<Primitive>> ground = plane->generatePrimitive(whiteLam);
-		std::shared_ptr<Primitive> che = Primitive::build(testSphere, checkered, nullptr);
-
+		std::shared_ptr<Primitive> che = Primitive::build(testSphere, plastic, nullptr);
+		
 
 		//prim_ptrs.insert(prim_ptrs.end(), teapot.begin(), teapot.end());
 		prim_ptrs.push_back(lightp1);

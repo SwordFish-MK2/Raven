@@ -60,35 +60,8 @@ namespace Raven {
 		const int uRes, vRes, uBlocks;
 	};
 
-	template<class T>
-	class Image {
-	public:
-		Image(const Point2i resolution, const T* d = nullptr) {
-			data = (T*)malloc(resolution.x * resolution.y * sizeof(T));
-			if (d != nullptr)
-				std::memcpy(data, d, resolution.x * resolution.y);
-		}
-		~Image() {
-			free(data);
-		}
-		int uSize() const { return uRes; }
-		int vSize() const { return vRes; }
 
-		T& operator()(int u, int v) {
-			int index = v * resolution.x + u;
-			return data[index];
-		}
-
-		const T& operator()(int u, int v) const {
-			int index = v * resolution.x + u;
-			return data[index];
-		}
-	private:
-		Point2i resolution;
-		T* data;
-	};
 
 }
 
 #endif
-
