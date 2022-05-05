@@ -17,7 +17,7 @@ namespace Raven {
 	class CoefficientSpectrum {
 	public:
 		double c[nSpectrumSamples];
-		const int sampleNumber = nSpectrumSamples;
+		static const int sampleNumber = nSpectrumSamples;
 		CoefficientSpectrum() {
 			for (int i = 0; i < sampleNumber; i++) {
 				c[i] = 0.f;

@@ -15,11 +15,12 @@ namespace Raven {
 		return foundIntersection;
 	}
 
-	SurfaceInteraction Primitive::setInteractionProperty(const HitInfo& hitInfo)const {
+	SurfaceInteraction Primitive::setInteractionProperty(const HitInfo& hitInfo, const RayDifferential& ray)const {
 
 		//取得交点的几何信息
 		SurfaceInteraction record = shape_ptr->getGeoInfo(hitInfo.pHit);
 
+		record.computeDifferential(ray);
 		//配置材质信息
 		mate_ptr->computeScarttingFunctions(record);
 
@@ -53,8 +54,8 @@ namespace Raven {
 		return prim->hit(r_in, tMax);
 	}
 
-	SurfaceInteraction TransformedPrimitive::setInteractionProperty(const HitInfo& pHit)const {
-		SurfaceInteraction record = prim->setInteractionProperty(pHit);
+	SurfaceInteraction TransformedPrimitive::setInteractionProperty(const HitInfo& pHit, const RayDifferential& ray)const {
+		SurfaceInteraction record = prim->setInteractionProperty(pHit,ray);
 		return (*primToWorld)(record);
 	}
 

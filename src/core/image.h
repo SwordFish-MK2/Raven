@@ -7,7 +7,9 @@
 
 namespace Raven {
 	/// <summary>
-/// 储存2D图像，用于Mipmap、film
+/// 储存2D图像
+/// 三通道图像(T为RGBSpectrum)：用于储存颜色贴图、渲染结果等
+/// 单通道图像(T为double）：用于储存bump map等
 /// </summary>
 /// <typeparam name="T"></typeparam>
 	template<class T>
@@ -37,7 +39,6 @@ namespace Raven {
 			int index = y * xRes + x;
 			data[index] = value;
 		}
-
 		T getPixel(const T& value, int x, int y)const {
 			int index = y * xRes + x;
 			return data[index];
@@ -47,7 +48,6 @@ namespace Raven {
 			int index = y * xRes + x;
 			return data[index];
 		}
-
 		const T& operator()(int x, int y) const {
 			int index = y * xRes + x;
 			return data[index];
@@ -56,15 +56,18 @@ namespace Raven {
 		T& operator[](int i) {
 			return data[i];
 		}
-
-		const T& operator[](int i)const {
+		const T operator[](int i)const {
 			return data[i];
 		}
 
 	private:
 		int xRes, yRes;
-		std::vector<RGBSpectrum> data;
+		std::vector<T> data;
 	};
+
+	Spectrum toSpectrum(const unsigned char* data);
+
+	Image<RGBSpectrum> ReadImage(const std::string& path);
 }
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef _RAVEN_UTILS_MIPMAP_H_
-#define _RAVEN_UTILS_MIPMAP_H_
+#ifndef _RAVEN_CORE_MIPMAP_H_
+#define _RAVEN_CORE_MIPMAP_H_
 
 #include"../core/spectrum.h"
 #include"../core/base.h"

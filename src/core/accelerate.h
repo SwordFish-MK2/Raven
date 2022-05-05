@@ -19,9 +19,9 @@ namespace Raven {
 				worldBound = Union(prims[i]->worldBounds(), worldBound);
 		}
 	
-		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const = 0;
+		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const = 0;
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
 
 		virtual Bound3f worldBounds()const {
 			return worldBound;
@@ -37,9 +37,9 @@ namespace Raven {
 	public:
 		PrimitiveList(const std::vector<std::shared_ptr<Primitive>>& prims) :Accelerate(prims) {}
 
-		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 
 		virtual Bound3f worldBounds()const;
 	};

@@ -33,8 +33,8 @@ namespace Raven {
 		size_t nPrimitives;
 		Bound3f box;
 		SAHBucket() :nPrimitives(0), box() {}
-	};
-
+	};	
+		
 	struct PrimitiveInfo {
 		PrimitiveInfo(const Bound3f& b, size_t index) :box(b), primitiveIndex(index),
 			centroid(0.5 * box.pMin + 0.5 * box.pMax) {}
@@ -42,8 +42,8 @@ namespace Raven {
 		Bound3f box;
 		Point3f centroid;
 		size_t primitiveIndex;
-	};
-
+	};	
+		
 	struct LinearBVHNode {
 		Bound3f box;
 		union {
@@ -62,11 +62,9 @@ namespace Raven {
 	public:
 		BVHAccel(const std::vector<std::shared_ptr<Primitive>>& prims, size_t maxPrim);
 
-		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
-
-
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 	private:
 		//将所有的BVHNode储存在BVHAccel类中
 		//std::shared_ptr<BVHNode> root;
@@ -77,7 +75,7 @@ namespace Raven {
 			std::vector<std::shared_ptr<Primitive>>& ordered, size_t& totalNodes, int depth = 0);
 
 		int flattenTree(const std::shared_ptr<BVHNode>& node, int* offset, int depth);
-	};
-}
-
+	};	
+}		
+		
 #endif

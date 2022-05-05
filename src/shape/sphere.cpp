@@ -67,12 +67,13 @@ namespace Raven {
 
 		//计算交点信息
 		Point3f pHit = localRay.position(tHit);
+		pHit *= radius / Distance(pHit, Point3f(0, 0, 0));
 		info.setInfo(pHit, tHit, -r_in.dir);
 		return true;
 	}
 
 	SurfaceInteraction Sphere::getGeoInfo(const Point3f& pHit)const {
-		double phi = -atan(pHit.z / pHit.x);
+		double phi = atan2(-pHit.z, pHit.x);
 		if (phi < 0)phi += 2 * M_PI;
 		double theta = acos(Clamp(pHit.y / radius, -1, 1));
 
@@ -82,11 +83,12 @@ namespace Raven {
 		Normal3f nHit = (Normal3f)(pHit - Point3f(0.0)).normalized();
 
 		//计算偏导dpdu，dpdv
-		double invR = 1. / radius;
+		double zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
+		double invR = 1. / zRadius;
 		double cosPhi = pHit.x * invR;
 		double sinPhi = -pHit.z * invR;
-		Vector3f dpdu = (pHit.z * 2 * M_PI, 0.0, -pHit.x * 2 * M_PI);
-		Vector3f dpdv = M_PI * (pHit.y * cosPhi, -sin(theta) * radius, -pHit.y * M_PI * sinPhi);
+		Vector3f dpdu = Vector3f(pHit.z * 2 * M_PI, 0.0, -pHit.x * 2 * M_PI);
+		Vector3f dpdv = M_PI * Vector3f(pHit.y * cosPhi, -sin(theta) * zRadius, -pHit.y * M_PI * sinPhi);
 
 
 		//计算偏导dndu，dndv

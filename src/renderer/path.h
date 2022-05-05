@@ -12,7 +12,7 @@ namespace Raven {
 		virtual void render(const Scene& scene);
 
 	private:
-		Spectrum integrate(const Scene& scene, const Ray& r_in,int depth=0)const;
+		Spectrum integrate(const Scene& scene, const RayDifferential& r_in,int depth=0)const;
 	//	GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
 
 		const int maxDepth;

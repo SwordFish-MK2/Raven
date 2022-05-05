@@ -20,11 +20,13 @@ namespace Raven {
 		bool hitLight;
 		const Light* light;
 		Vector3f emit;
-		//partial derivatives of intersected plane
+
+		//交点所在平面的偏导数
 		Vector3f dpdu, dpdv;
 		Vector3f dndu, dndv;
 		Vector3f wo;
-		//properties to filter texture
+
+		//关于像素的偏导，用于计算ImageTexture filter的大小
 		Vector3f dpdx, dpdy;
 		double dudx, dudy, dvdx, dvdy;
 
@@ -38,7 +40,7 @@ namespace Raven {
 		void SetShadingGeometry(const Vector3f& dpdu, const Vector3f& dpdv,
 			const Normal3f& dndu, const Normal3f& dndv);
 
-		//compute dudx dudy dvdx dvdy
+		//计算dudx dudy dvdx dvdy
 		void computeDifferential(const RayDifferential& rd);
 
 		Ray scartterRay(const Vector3f& dir)const;

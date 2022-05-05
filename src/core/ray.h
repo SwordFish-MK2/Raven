@@ -18,7 +18,7 @@ namespace Raven {
 			hasDifferential = false;
 		}
 		Ray(const Ray& r) :origin(r.origin), dir(r.dir), t(r.t) {
-			hasDifferential = false;
+			hasDifferential = r.hasDifferential;
 		}
 		Point3f position(double t)const {//t here is a parameter discribe how long the ray travals through ray direction
 			return Point3f(origin + dir * t);
@@ -34,8 +34,9 @@ namespace Raven {
 			hasDifferential = false;
 		}
 		RayDifferential() {
-			hasDifferential = true;
+			hasDifferential = false;
 		}
+		RayDifferential(const Ray& ray) :Ray(ray) {}
 		void scaleRayDifferential(double s) {
 			originX = origin + (originX - origin) * s;
 			originY = origin + (originY - origin) * s;

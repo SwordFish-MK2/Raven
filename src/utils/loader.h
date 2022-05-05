@@ -25,10 +25,10 @@ namespace Raven {
 
 	Vector3f toVector(const unsigned char* data);
 
-	Spectrum toSpectrum(const unsigned char* data);
+
 
 	std::unique_ptr<Vector3f[]> ReadImageVector(const std::string& path, Point2i* resolution);
 
-	std::unique_ptr<Spectrum[]>ReadImageSpectrum(const std::string& path, Point2i* resolution);
+
 }
 #endif

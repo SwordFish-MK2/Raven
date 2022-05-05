@@ -29,9 +29,9 @@ namespace Raven {
 					auto fv = GetRand();
 					auto t = GetRand();
 					CameraSample sample(cu, cv, t, fu, fv);
-					Ray r;
+					RayDifferential r;
 
-					if (camera->GenerateRay(sample, r)) {
+					if (camera->GenerateRayDifferential(sample, r)) {
 						pixelColor += integrate(scene, r);
 					}
 				}
@@ -39,7 +39,6 @@ namespace Raven {
 				pixelColor *= scaler;
 
 				film(j, i) = pixelColor;
-				//film.in(pixelColor);
 			}
 
 			finishedLine++;
@@ -52,11 +51,11 @@ namespace Raven {
 		film.testMipmap();
 	}
 	//路径追踪算法，暂时只考虑了lambertain
-	Spectrum PathTracingRenderer::integrate(const Scene& scene, const Ray& rayIn, int bounce)const {
+	Spectrum PathTracingRenderer::integrate(const Scene& scene, const RayDifferential& rayIn, int bounce)const {
 		//	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		Spectrum Li(0.0);
 		Spectrum beta(1.0);//光线的衰减参数
-		Ray ray = rayIn;
+		RayDifferential ray = rayIn;
 
 		bool specularBounce = false;
 		double etaScale = 1;
@@ -101,7 +100,7 @@ namespace Raven {
 					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
 
 					//Ray shadowRay(p, lightSample.wi);
-					Ray shadowRay = record->scartterRay(lightSample.wi);
+					RayDifferential shadowRay = record->scartterRay(lightSample.wi);
 					if (!scene.hit(shadowRay, distance))
 						Li += dirLi * beta;
 				}

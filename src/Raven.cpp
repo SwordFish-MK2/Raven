@@ -11,6 +11,7 @@
 #include"texture/solidTexture.h"
 #include"shape/mesh.h"
 #include"core/math.h"
+#include<tinyxml/tinyxml2.h>
 
 using namespace std;
 using namespace Raven;
@@ -18,11 +19,11 @@ using namespace Raven;
 int main(int agrc, char**argv)
 {
 	auto start = std::chrono::system_clock::now();
-	//Raven::Scene box = Raven::Scene::buildCornellBox();	
-	Raven::Scene box = Raven::Scene::buildTestScene();
+	Raven::Scene box = Raven::Scene::buildCornellBox();	
+	//Raven::Scene box = Raven::Scene::buildTestScene();
 	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
-	Raven::Film f(512, 512);
+	Raven::Film f(1024, 1024);
 	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, 0), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f.yRes, f.xRes);
 	Raven::Camera* cam = new Raven::PerspectiveCamera(cameraToWorld, screenToRaster, 0.0, 865.0,

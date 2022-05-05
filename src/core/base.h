@@ -101,7 +101,7 @@ namespace Raven {
 		double det = A[0] * A[3] - A[1] * A[2];
 		if (det < 1e-8)
 			return false;
-		//use Cramer's rule to solve linear equation system
+		//use Cramer's law to solve linear equation system
 		double det0 = b[0] * A[3] - b[1] * A[1];
 		double det1 = A[0] * b[1] - A[2] * b[0];
 		*x0 = det0 / det;

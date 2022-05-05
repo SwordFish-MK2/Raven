@@ -127,7 +127,7 @@ namespace Raven {
 	template<class T>
 	T Mipmap<T>::lookup(const Point2f& st, double width)const {
 		//根据filter宽度计算一个浮点数表示的层数
-		double level = maxLevel - 1 + std::log2(Max(width, 1e-8));
+		double level = pyramid.size() - 1 + Log2(Max(width, 1e-8));
 
 		if (level < 0)
 			return triangle(0, st);//返回在原图像st纹理坐标下的值
@@ -148,6 +148,10 @@ namespace Raven {
 
 	template<class T>
 	T Mipmap<T>::lookup(const Point2f& st, const Vector2f& dstdx, const Vector2f& dstdy)const {
+
+		//double texelX = pyramid[0]->uSize() * st[0];
+		//double texelY = pyramid[1]->vSize() * st[1];
+		//return (*pyramid[0])(texelX, texelY);
 		double filterWidth = Max(Max(abs(dstdx.x), abs(dstdx.y)),
 			Max(abs(dstdy.x), abs(dstdy.y)));
 		return lookup(st, filterWidth);
@@ -202,4 +206,5 @@ namespace Raven {
 
 
 	template class Mipmap<RGBSpectrum>;
+	template class Mipmap<double>;
 }

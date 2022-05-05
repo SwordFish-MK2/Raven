@@ -21,7 +21,7 @@ namespace Raven {
 
 		virtual bool intersect(const Ray& r_in, HitInfo& inter, double tMax = std::numeric_limits<double>::max())const;
 
-		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p)const;
+		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray)const;
 
 		virtual Bound3f worldBounds()const;
 
@@ -50,12 +50,12 @@ namespace Raven {
 
 		bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p)const;
+		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p,const RayDifferential& ray) const override;
 
 		Bound3f worldBounds()const;
 
 		static std::shared_ptr<TransformedPrimitive> build(
-			const Transform* ptw, 
+			const Transform* ptw,
 			const Transform* wtp,
 			const std::shared_ptr<Primitive>& prim);
 

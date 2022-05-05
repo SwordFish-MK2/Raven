@@ -65,7 +65,6 @@ namespace Raven {
 			sampleRay.origin = lensSamplePoint;
 			sampleRay.dir = rayDirection;
 
-
 			//compute x differential ray
 			Vector3f xdir = Normalize(rayDirection + Vector3f(dxCamera, 0.f, 0.f));
 			double tx = focalDistance / xdir.z;

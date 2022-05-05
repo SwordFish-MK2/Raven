@@ -138,7 +138,7 @@ namespace Raven {
 								rightCount += buckets[j].nPrimitives;
 							}
 						}
-						
+
 						cost[i] = 1 +
 							(Max(0.0, left.surfaceArea()) * leftCount
 								+ Max(0.0, right.surfaceArea()) * rightCount)
@@ -229,7 +229,7 @@ namespace Raven {
 		return currentOffset;
 	}
 
-	bool BVHAccel::hit(const Ray& ray, double tMax)const {
+	bool BVHAccel::hit(const RayDifferential& ray, double tMax)const {
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
 		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
 		int nodesToVisite[64];
@@ -276,7 +276,7 @@ namespace Raven {
 	}
 
 
-	std::optional<SurfaceInteraction> BVHAccel::intersect(const Ray& ray, double tMax)const {
+	std::optional<SurfaceInteraction> BVHAccel::intersect(const RayDifferential& ray, double tMax)const {
 		bool hit = false;
 		double closest = tMax;
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
@@ -329,7 +329,8 @@ namespace Raven {
 			}
 		}
 		if (hit) {
-			SurfaceInteraction hitRecord = prims[primHited]->setInteractionProperty(record);
+			SurfaceInteraction hitRecord = prims[primHited]->setInteractionProperty(record, ray);
+
 			return std::optional<SurfaceInteraction>(hitRecord);
 		}
 

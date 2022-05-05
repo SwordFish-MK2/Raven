@@ -30,7 +30,7 @@ namespace Raven {
 
 	}
 
-	bool KdTreeAccel::hit(const Ray& r_in, double tMax)const {
+	bool KdTreeAccel::hit(const RayDifferential& r_in, double tMax)const {
 		double t0, t1;
 		if (worldBound.hit(r_in, &t0, &t1)) {
 			if (t0 > tMax)
@@ -40,7 +40,7 @@ namespace Raven {
 		return false;
 	}
 
-	std::optional<SurfaceInteraction> KdTreeAccel::intersect(const Ray& r_in, double tMax)const {
+	std::optional<SurfaceInteraction> KdTreeAccel::intersect(const RayDifferential& r_in, double tMax)const {
 		HitInfo hitInfo;
 		int closestIndex = 0;
 		double tMin;
@@ -127,7 +127,7 @@ namespace Raven {
 			}
 		}
 		if (flag == true) {
-			SurfaceInteraction hitRecord = prims[closestIndex]->setInteractionProperty(hitInfo);
+			SurfaceInteraction hitRecord = prims[closestIndex]->setInteractionProperty(hitInfo,r_in);
 			return std::optional<SurfaceInteraction>(hitRecord);
 		}
 			return std::nullopt;

@@ -32,11 +32,11 @@ namespace Raven {
 		Scene(const Scene& s);
 
 		//测试光线是否与场景相交
-		bool hit(const Ray& r, double tMax)const {
+		bool hit(const RayDifferential& r, double tMax)const {
 			return objs->hit(r, tMax);
 		}
 		//判断光线是否与场景相交，如果相交，计算交点信息
-		std::optional<SurfaceInteraction> intersect(const Ray& r, double tMax)const {
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r, double tMax)const {
 			return objs->intersect(r, tMax);
 		}
 

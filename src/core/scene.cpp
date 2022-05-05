@@ -205,7 +205,7 @@ namespace Raven {
 		std::optional<TriangleInfo> bunnyInfo =
 			loader.load("D:/MyWorks/Raven/models/bunny/", "bunny.obj");
 
-		std::shared_ptr<TriangleMesh> bunnyMesh = 
+		std::shared_ptr<TriangleMesh> bunnyMesh =
 			TriangleMesh::build(bunnyWorld.get(), invBunnyWorld.get(), *bunnyInfo);
 
 		std::shared_ptr<TriangleMesh> leftMesh =
@@ -300,7 +300,7 @@ namespace Raven {
 		prim_ptrs.push_back(lightp1);
 		prim_ptrs.push_back(lightp2);
 		prim_ptrs.push_back(spherePrim);
-		
+
 		prim_ptrs.insert(prim_ptrs.end(), leftPrim.begin(), leftPrim.end());
 		//prim_ptrs.insert(prim_ptrs.end(), bunnyPrim.begin(), bunnyPrim.end());//ÍÃ×ÓÄ£ÐÍ
 		prim_ptrs.insert(prim_ptrs.end(), rightPrim.begin(), rightPrim.end());
@@ -336,7 +336,7 @@ namespace Raven {
 		usedTransform.push_back(invTrans);
 		std::shared_ptr<Sphere> testSphere = Sphere::build(trans.get(), invTrans.get(), 190);
 
-		
+
 		Point3f p0(-10000.0, -2.0, 10000.0);
 		Point3f p1(10000.0, -2.0, 10000.0);
 		Point3f p2(10000.0, -2.0, -10000.0);
@@ -400,9 +400,8 @@ namespace Raven {
 		std::shared_ptr<Texture<Spectrum>> cheTex = CheckeredTexture<Spectrum>::build(whiteTexture, blackTexture, mapping);
 		std::shared_ptr<Texture<double>> sigma = ConstTexture<double>::build(0.0);
 
-		Spectrum* spec = new Spectrum(0.0);
-		//std::shared_ptr<Texture<Spectrum>> image =
-		//	ImageTexture<Spectrum>::build(picturePath, unSacaledUV, true, ImageWrap::ImClamp, 1, true);
+		std::shared_ptr<Texture<Spectrum>> image =
+			ImageTexture<RGBSpectrum, Spectrum>::build(picturePath, unSacaledUV, true, ImageWrap::ImClamp, true);
 
 		//material
 		std::shared_ptr<MatteMaterial> whiteLam = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
@@ -412,6 +411,7 @@ namespace Raven {
 		std::shared_ptr<Texture<Spectrum>> kdTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.725f, 0.725f, 0.725f));
 		std::shared_ptr<Texture<Spectrum>> ksTex = ConstTexture<Spectrum>::build(RGBSpectrum::fromRGB(0.7f, 0.7f, 0.7f));
 		std::shared_ptr<Texture<double>> roughTex = ConstTexture<double>::build(0.6);
+		std::shared_ptr<MatteMaterial> imageTex = MatteMaterial::build(sigma, image);
 
 		std::shared_ptr<Material> plastic = Plastic::build(kdTex, ksTex, roughTex);
 
@@ -435,7 +435,7 @@ namespace Raven {
 		std::shared_ptr<Primitive> r = Primitive::build(sphereR, whiteLam, nullptr);
 		std::shared_ptr<Primitive> mi = Primitive::build(sphereMid, whiteLam, nullptr);
 		std::vector<std::shared_ptr<Primitive>> ground = plane->generatePrimitive(whiteLam);
-		std::shared_ptr<Primitive> che = Primitive::build(testSphere, plastic, nullptr);
+		std::shared_ptr<Primitive> che = Primitive::build(testSphere, whiteLam, nullptr);
 		
 
 		//prim_ptrs.insert(prim_ptrs.end(), teapot.begin(), teapot.end());

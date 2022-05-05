@@ -11,8 +11,8 @@ namespace Raven {
 			dpdy = Vector3f(0.0);
 		}
 		else {
-			//compute coordinate of px, py
-			double d = -Dot(Vector3f(n), Vector3f(p));
+			//计算微分光线与场景的交点 px, py
+			double d = -Dot(Vector3f(n), Vector3f(p));	
 			double tx = (-Dot(n, Vector3f(rd.originX)) - d) / Dot(n, rd.directionX);
 			Point3f px = rd.originX + rd.directionX * tx;
 			double ty = (-Dot(n, Vector3f(rd.originY)) - d) / Dot(n, rd.directionY);
@@ -22,7 +22,7 @@ namespace Raven {
 			dpdx = px - p;
 			dpdy = py - p;
 
-			//choose two dimention to solve the linear equation system
+			//选择相关性较强的两个维度求解线性方程组
 			int dim[2];
 			if (n.x > n.y && n.x > n.z) {
 				dim[0] = 1;
@@ -40,7 +40,7 @@ namespace Raven {
 			double bx[] = { dpdx[dim[0]],dpdx[dim[1]] };
 			double by[] = { dpdy[dim[0]],dpdy[dim[1]] };
 
-			//solve linear system to get partial derivitive of uv over xy
+			//求解线性方程组解得dudx、dvdx、dudy、dvdy
 			if (!solve2x2LinearSystem(m, bx, &dudx, &dvdx)) {
 				dudx = 0;
 				dvdx = 0;
@@ -70,3 +70,5 @@ namespace Raven {
 	}
 
 }
+
+
