@@ -4,5 +4,11 @@
 #pragma once
 
 #include <iostream>
+#include"core/renderer.h"
+#include"core/camera.h"
+#include"core/scene.h"
+#include"core/film.h"
+namespace Raven {
 
+}
 // TODO: 在此处引用程序需要的其他标头。

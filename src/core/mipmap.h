@@ -28,8 +28,9 @@ namespace Raven {
 			return maxLevel;
 		}
 
+		//·µ»ØµÚi²ãµÄÍ¼Ïñ
 		Image<T>* getLevel(int i) {
-			i = Clamp(i, 0, maxLevel-1);
+			i = Clamp(i, 0, (int64_t)maxLevel - 1);
 			return pyramid[i].get();
 		}
 

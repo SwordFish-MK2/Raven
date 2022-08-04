@@ -8,18 +8,18 @@ namespace Raven {
 		int finishedLine = 1;
 		double process = 0.0;
 		omp_init_lock(&lock);
-
+		omp_set_num_threads(2);
 #pragma omp parallel for
-		for (int i = 0; i < film.yRes; ++i) {
+		for (int i = 0; i < film->yRes; ++i) {
 
 			//计算渲染的进度，输出进度条
-			process = (double)finishedLine / film.yRes;
+			process = (double)finishedLine / film->yRes;
 			omp_set_lock(&lock);
 			UpdateProgress(process);
 			omp_unset_lock(&lock);
 
 
-			for (int j = 0; j < film.xRes; ++j) {
+			for (int j = 0; j < film->xRes; ++j) {
 				Spectrum pixelColor(0.0);
 				for (int s = 0; s < spp; s++) {
 					//camera sample
@@ -38,19 +38,19 @@ namespace Raven {
 				double scaler = 1.0 / spp;
 				pixelColor *= scaler;
 
-				film(j, i) = pixelColor;
+				(*film)(j, i) = pixelColor;
 			}
 
 			finishedLine++;
 		}
-		process = (double)finishedLine / film.yRes;
+		process = (double)finishedLine / film->yRes;
 		UpdateProgress(process);
 		omp_destroy_lock(&lock);
 
-		film.write();
-		film.testMipmap();
+		film->write();
 	}
-	//路径追踪算法，暂时只考虑了lambertain
+
+	//路径追踪算法
 	Spectrum PathTracingRenderer::integrate(const Scene& scene, const RayDifferential& rayIn, int bounce)const {
 		//	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		Spectrum Li(0.0);
@@ -84,30 +84,9 @@ namespace Raven {
 					}
 				}
 
-				for (auto& light : scene.lights) {
-					//采样光源,计算以该交点为终点的路径的贡献
-					LightSample lightSample;
-					Spectrum emit = light->sampleLi(*record, Point2f(GetRand(), GetRand()), &lightSample);
-					Spectrum fLight = record->bsdf->f(wo, lightSample.wi);
-					double distance = (lightSample.p - p).length() - 0.01;
-					//double dot1 = Max(0.0, Dot(lightSample.wi, n));
-					double dot2 = Max(0.0, Dot(-lightSample.wi, lightSample.n));
-
-					double dot1 = Max(0.0, Dot(lightSample.wi, n));
-					//double dot2 = abs(Dot(-lightSample.wi, lightSample.n));
-					Spectrum dirLi = emit * fLight * dot1 * dot2 / lightSample.pdf;
-					//判断有无遮挡
-					//TODO::Debug scene->hit函数及其调用的hit函数，使用hit代替intersect
-
-					//Ray shadowRay(p, lightSample.wi);
-					RayDifferential shadowRay = record->scartterRay(lightSample.wi);
-					if (!scene.hit(shadowRay, distance))
-						Li += dirLi * beta;
-				}
-
-				//Spectrum L_dir = SampleAllLights(*record, scene);
-				//Li += beta * L_dir;
-
+				//采样光源
+				Spectrum L_dir = SampleAllLights(*record, scene);
+				Li += beta * L_dir;
 
 				//采样brdf，计算出射方向,更新beta
 				auto [f, wi, pdf, sampledType] = record->bsdf->sample_f(wo, Point2f(GetRand(), GetRand()));
@@ -146,4 +125,13 @@ namespace Raven {
 	//	return data;
 	//}
 
+	std::shared_ptr<Renderer>makePathTracingRenderer(
+		const std::shared_ptr<Film>& film,
+		const std::shared_ptr<Camera>& camera,
+		const PropertyList& param) {
+		int spp = param.getInteger("spp");
+		int maxDepth = param.getInteger("maxDepth");
+		double epsilon = param.getFloat("epsilon");
+		return std::make_shared<PathTracingRenderer>(camera, film, spp, maxDepth, epsilon);
+	}
 }

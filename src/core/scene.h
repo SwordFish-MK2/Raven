@@ -19,10 +19,11 @@ namespace Raven {
 	private:
 		std::vector<std::shared_ptr<Transform>> transforms;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
-		std::shared_ptr<Accelerate> objs;
+		std::shared_ptr<Accelerate> objs;//场景加速结构，包含所有的Primitive
 
 	public:
 		std::vector<std::shared_ptr<Light>> lights;
+
 		Scene() {}
 
 		Scene(const std::vector<std::shared_ptr<Transform>>& trans, const std::vector<std::shared_ptr<Light>>& lights,
@@ -35,18 +36,29 @@ namespace Raven {
 		bool hit(const RayDifferential& r, double tMax)const {
 			return objs->hit(r, tMax);
 		}
+
+		//void addPrimitive(const std::shared_ptr<Primitive>& pri_ptr);
+
+		void addMesh(const std::shared_ptr<TriangleMesh>& mesh_ptr);
+
+		void addTransform(const std::shared_ptr<Transform>& trans_ptr);
+
+		void addLight(const std::shared_ptr<Light>& light_ptr);
+
 		//判断光线是否与场景相交，如果相交，计算交点信息
 		std::optional<SurfaceInteraction> intersect(const RayDifferential& r, double tMax)const {
 			return objs->intersect(r, tMax);
 		}
 
-		const Light* chooseLight(double rand)const;
+		//const Light* chooseLight(double rand)const;
 
 		Bound3f worldBound()const {
 			return objs->worldBounds();
 		}
 
-		static Scene buildTestScene();
+		//static Scene cornellBox();
+
+//		static Scene buildTestScene();
 
 		static Scene buildCornellBox();
 

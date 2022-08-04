@@ -60,7 +60,12 @@ namespace Raven {
 		const int uRes, vRes, uBlocks;
 	};
 
-
+	//class TransformMemoryManager {
+	//public:
+	//	std::shared_ptr<Transform> find()
+	//private:
+	//	std::map<std::string, std::shared_ptr<Transform>> transforms;
+	//};
 
 }
 

@@ -3,6 +3,7 @@
 
 #include"../core/base.h"
 #include"../core/texture.h"
+#include"../utils/propertylist.h"
 
 namespace Raven {
 	template<class T>
@@ -34,6 +35,18 @@ namespace Raven {
 		std::shared_ptr<Texture<T>> tex2;
 		std::shared_ptr<TextureMapping2D> mapping;
 	};
+
+	std::shared_ptr<CheckeredTexture<double>> makeCheckeredFloat(
+		const std::shared_ptr<Texture<double>>& oddTexture,
+		const std::shared_ptr<Texture<double>>& evenTexture,
+		const std::shared_ptr<TextureMapping2D>& mapping,
+		const PropertyList& param);
+
+	std::shared_ptr<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(
+		const std::shared_ptr<Texture<Spectrum>>& oddTexture,
+		const std::shared_ptr<Texture<Spectrum>>& evenTexture,
+		const std::shared_ptr<TextureMapping2D>& mapping,
+		const PropertyList& param);
 }
 
 #endif

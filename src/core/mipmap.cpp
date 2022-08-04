@@ -31,7 +31,7 @@ namespace Raven {
 						if (wrapMode == ImRepeat)
 							xOffset = (xOffset + resolution.x) % resolution.x;
 						if (wrapMode == ImClamp)
-							xOffset = Clamp(xOffset, 0, resolution.x - 1);
+							xOffset = Clamp(xOffset, 0, (int64_t)resolution.x - 1);
 
 
 						if (xOffset >= 0 && xOffset < resolution.x)
@@ -55,7 +55,7 @@ namespace Raven {
 						if (wrapMode == ImageWrap::ImRepeat)
 							yOffset = (yOffset + resolution.y) % resolution.y;
 						if (wrapMode == ImageWrap::ImClamp)
-							yOffset = Clamp(yOffset, 0, resolution.y - 1);
+							yOffset = Clamp(yOffset, 0, (int64_t)resolution.y - 1);
 
 						if (yOffset >= 0 && yOffset < resolution.y)
 							resampledImage(s, t) += xResampled(s, yOffset) * w;
@@ -80,7 +80,7 @@ namespace Raven {
 
 		//生成第i层图像
 		for (int i = 1; i < maxLevel; i++) {
-			//第i层,分辨率为上一层的一半
+			//计算第i层图像的分辨率
 			sRes = Max(1, sRes / 2);
 			tRes = Max(1, tRes / 2);
 			pyramid[i].reset(new Image<T>(sRes, tRes));
@@ -89,8 +89,12 @@ namespace Raven {
 #pragma omp parallel for
 			for (int t = 0; t < tRes; t++) {
 				for (int s = 0; s < sRes; s++) {
-					(*pyramid[i])(s, t) = 0.25 * (texel(i - 1, s * 2, t * 2) + texel(i - 1, s * 2 + 1, t * 2)
-						+ texel(i - 1, s * 2, t * 2 + 1) + texel(i - 1, s * 2 + 1, t * 2 + 1));
+					(*pyramid[i])(s, t) = 0.25 * (
+						texel(i - 1, s * 2, t * 2) + 
+						texel(i - 1, s * 2 + 1, t * 2) + 
+						texel(i - 1, s * 2, t * 2 + 1) + 
+						texel(i - 1, s * 2 + 1, t * 2 + 1)
+						);
 				}
 			}
 		}
@@ -124,6 +128,7 @@ namespace Raven {
 		return weights;
 	}
 
+	//输入纹理坐标st与filter的宽度，从Mipmap中取一个值
 	template<class T>
 	T Mipmap<T>::lookup(const Point2f& st, double width)const {
 		//根据filter宽度计算一个浮点数表示的层数
@@ -132,7 +137,7 @@ namespace Raven {
 		if (level < 0)
 			return triangle(0, st);//返回在原图像st纹理坐标下的值
 
-		else if (level > maxLevel - 1)
+		else if (level > (int64_t)maxLevel - 1)
 			return texel(maxLevel - 1, 0, 0);//最大层的Mipmap只有一个固定值
 
 		else {
@@ -146,12 +151,11 @@ namespace Raven {
 		}
 	}
 
+	//输入纹理坐标st与偏导数，从Mipmap中取一个值
 	template<class T>
 	T Mipmap<T>::lookup(const Point2f& st, const Vector2f& dstdx, const Vector2f& dstdy)const {
 
-		//double texelX = pyramid[0]->uSize() * st[0];
-		//double texelY = pyramid[1]->vSize() * st[1];
-		//return (*pyramid[0])(texelX, texelY);
+		//纹理滤波的宽度为四个偏导数的最大值
 		double filterWidth = Max(Max(abs(dstdx.x), abs(dstdx.y)),
 			Max(abs(dstdy.x), abs(dstdy.y)));
 		return lookup(st, filterWidth);
@@ -160,7 +164,7 @@ namespace Raven {
 	// 双线性插值
 	template<class T>
 	T Mipmap<T>::triangle(int level, const Point2f& st)const {
-		level = Clamp(level, 0, maxLevel - 1);
+		level = Clamp(level, 0, (int64_t)maxLevel - 1);
 		//compute continous coordinate - 0.5 of sample point in order to compute distance
 		float s = st[0] * pyramid[level]->uSize() - 0.5f;
 		float t = st[1] * pyramid[level]->vSize() - 0.5f;

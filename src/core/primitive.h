@@ -50,7 +50,7 @@ namespace Raven {
 
 		bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p,const RayDifferential& ray) const override;
+		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray) const override;
 
 		Bound3f worldBounds()const;
 
@@ -66,6 +66,14 @@ namespace Raven {
 		const std::shared_ptr<Primitive> prim;
 	};
 
+	inline std::shared_ptr<Primitive> makePrimitive(
+		const std::shared_ptr<Shape>& s,
+		const std::shared_ptr<Material>& mate,
+		const std::shared_ptr<Light>& light,
+		const PropertyList& pList
+	) {
+		return std::make_shared<Primitive>(s, mate, light);
+	}
 }
 
 #endif

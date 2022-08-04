@@ -1,25 +1,15 @@
 #include"mesh.h"
 #include"../core/distribution.h"
+#include"../utils/loader.h"
+#include"../core/light.h"
 #include"../core/primitive.h"
+
 namespace Raven {
-	std::vector<std::shared_ptr<Triangle>> TriangleMesh::getTriangles() {
-		std::vector<std::shared_ptr<Triangle>> triangles;
+	void TriangleMesh::generateTriangles() {
 		for (size_t i = 0; i < nTriangles; i++) {
-			std::shared_ptr<Triangle> t = std::make_shared<Triangle>(OTW, WTO, this, i);
+			auto t = std::make_shared<Triangle>(OTW, WTO, this, i);
 			triangles.push_back(t);
 		}
-		return triangles;
-	}
-
-	std::vector<std::shared_ptr<Primitive>> TriangleMesh::generatePrimitive(const std::shared_ptr<Material>& mate,
-		const std::shared_ptr<Light>& light) {
-		std::vector<std::shared_ptr<Primitive>> primitives;
-		for (size_t i = 0; i < nTriangles; i++) {
-			std::shared_ptr<Triangle> t = std::make_shared<Triangle>(OTW, WTO, this, i);
-			std::shared_ptr<Primitive> p = std::make_shared<Primitive>(t, mate, light);
-			primitives.push_back(p);
-		}
-		return primitives;
 	}
 
 	void Triangle::getUVs(Point2f uv[3])const {
@@ -214,22 +204,38 @@ namespace Raven {
 		return std::tuple<SurfaceInteraction, double>(sisec, pdf);
 	}
 
-	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
-		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal) {
+	std::shared_ptr<TriangleMesh> CreatePlane(
+		const Transform* LTW, 
+		const Transform* WTL, 
+		const Point3f& v0,
+		const Point3f& v1, 
+		const Point3f& v2, 
+		const Point3f& v3, 
+		const Normal3f& normal) {
 		std::vector<Point3f> vertices = { v0,v1,v2,v3 };
 		std::vector<int> indices = { 0,1,3,1,2,3 };
 		std::vector<Point2f> uvs = { Point2f(0,1),Point2f(1,1),Point2f(1,0),Point2f(0,0) };
 		std::vector<Normal3f> normals = { normal,normal,normal, normal };
 		std::vector<Vector3f> tangants;
-		TriangleMesh mesh(LTW, WTL, 2, vertices, indices, normals, tangants, uvs, AccelType::List);
+		std::shared_ptr<TriangleMesh> mesh=std::make_shared<TriangleMesh>(LTW, WTL, 2, vertices, indices, normals, tangants, uvs);
 		return mesh;
 	}
 
-
 	std::shared_ptr<TriangleMesh> TriangleMesh::build(const Transform* LTW, const Transform* WTL,
-		const TriangleInfo& info, AccelType buildType) {
+		const TriangleInfo& info) {
 		return std::make_shared<TriangleMesh>(LTW, WTL, info.numbers, info.vertices,
-			info.indices, info.normals, info.tangants, info.uvs, buildType);
+			info.indices, info.normals, info.tangants, info.uvs);
+	}
+
+	std::shared_ptr<TriangleMesh> makeTriangleMesh(
+		const std::shared_ptr<Transform>& LTW,
+		const std::shared_ptr<Transform>& WTL,
+		const PropertyList& pList) {
+		std::string path = pList.getString("path");
+		std::string filename = pList.getString("filename");
+		Loader loader;
+		std::optional<TriangleInfo> info = loader.load(path, filename);
+		return TriangleMesh::build(LTW.get(), WTL.get(), *info);
 	}
 
 }

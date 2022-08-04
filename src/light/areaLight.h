@@ -57,11 +57,19 @@ namespace Raven {
 		virtual Spectrum power()const;
 
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const;
-
-
 	private:
 		const Spectrum emittedRadiance;
 	};
+
+	inline std::shared_ptr<DiffuseAreaLight> makeDiffuseAreaLight(
+		const std::shared_ptr<Transform>& LTW,
+		const std::shared_ptr<Transform>& WTL,
+		const std::shared_ptr<Shape>& shape,
+		const PropertyList& pList) {
+		int nSamples = pList.getInteger("nsamples");
+		Spectrum emit = pList.getSpectra("emit");
+		return std::make_shared<DiffuseAreaLight>(LTW.get(), WTL.get(), nSamples, shape.get(), emit);
+	}
 }
 
 

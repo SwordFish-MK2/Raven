@@ -2,6 +2,7 @@
 #define _RAVEN_CORE_BASE_H_
 #include<iostream>
 #include<random>
+#include<map>
 namespace Raven {
 	template<class T>
 	class Vector3;
@@ -56,7 +57,7 @@ namespace Raven {
 		T t3 = t0 < t1 ? t0 : t1;
 		return t3 < t2 ? t3 : t2;
 	}
-	
+
 	inline double Lerp(double t, double x1, double x2) { return (1 - t) * x1 + t * x2; }
 	inline double Clamp(double v, double min, double max) {
 		if (v > max)
@@ -128,6 +129,9 @@ namespace Raven {
 		return distribution(generator);
 
 	}
+	inline double rgbToFloat(int rgb_value) {
+		return rgb_value / 255.0;
+	}
 	inline double ErfInv(double x) {
 		double w, p;
 		x = Clamp(x, -.99999f, .99999f);
@@ -178,5 +182,23 @@ namespace Raven {
 		std::cout << "] " << int(progress * 100.0) << " %\r";
 		std::cout.flush();
 	};
+
+	template<class T>
+	class RavenParamSetItem {
+		RavenParamSetItem(
+			const std::string& name,
+			const std::unique_ptr<T[]>& value,
+			int nValues = 1) :
+			name(name), values(value), nValues(nValues) {}
+	private:
+		std::string name;
+		std::unique_ptr<T[]> values;
+		int nValues;
+	};
+
+	std::vector<std::string> tokenize(
+		const std::string& string,
+		const std::string& delim= ",",
+		bool includeEmpty = false);
 }
 #endif

@@ -4,7 +4,7 @@
 #include"../core/texture.h"
 #include"../core/base.h"
 #include"../core/transform.h"
-
+#include"../utils/propertylist.h"
 
 namespace Raven {
 
@@ -26,6 +26,7 @@ namespace Raven {
 		double du, dv;//UV坐标到偏移
 	};
 
+
 	/// <summary>
 	/// SphericalMapping,通过建立包围球，将点映射到球面上生成纹理坐标ST
 	/// </summary>
@@ -43,5 +44,10 @@ namespace Raven {
 
 		Point2f mapSphere(const Point3f& p)const;
 	};
+	
+	std::shared_ptr<UVMapping2D> makeUVMapping(const PropertyList& param);
+
+	std::shared_ptr<SphericalMapping2D> makeSphericalMapping2D(
+		const std::shared_ptr<Transform>& worldTexture, const PropertyList& param);
 }
 #endif

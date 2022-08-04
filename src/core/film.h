@@ -8,7 +8,7 @@
 #include"math.h"
 #include<vector>
 #include"spectrum.h"
-
+#include"../utils/propertylist.h"
 namespace Raven {
 	//struct GeometryData {
 
@@ -33,8 +33,8 @@ namespace Raven {
 		}
 		void write()const;
 
-		int uSize() const { return xRes; }
-		int vSize() const { return yRes; }
+		//int uSize() const { return xRes; }
+		//int vSize() const { return yRes; }
 
 		void testMipmap();
 
@@ -48,5 +48,12 @@ namespace Raven {
 	private:
 		Image<RGBSpectrum> frameBuffer;
 	};
+
+	inline std::shared_ptr<Film> makeFilm(const PropertyList& param) {
+		int u = param.getInteger("uSize");
+		int v = param.getInteger("vSize");
+		return std::make_shared<Film>(u, v);
+	}
+
 }
 #endif

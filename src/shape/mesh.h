@@ -22,21 +22,23 @@ namespace Raven {
 			const std::vector<Point2f>& uvs, const std::vector<Vector3f>& tans, const std::vector<int>& ins) :
 			numbers(num), vertices(vs), normals(ns), uvs(uvs), tangants(tans), indices(ins) {}
 
-
 	};
+
 	/// <summary>
-	/// Triangle mesh classes stores all infomation about triangles inside and hold the instances of cordinate triangle array
+	/// Triangle mesh classes stores all infomation about triangles inside and hold the instances of relative triangle array
 	/// </summary>
 	class TriangleMesh {
 	public:
-		int nTriangles;
-		int nVertices;
+		const int nTriangles;
+		const int nVertices;
 		std::vector<Point3f> vertices;//store all vertices in one array to save memory
 		std::vector<Normal3f> normals;
 		std::vector<Vector3f> tangants;//alternative
 		std::vector<Point2f> uvs;//alternative
 
 		std::vector<int> indices;//indices of triangle indices of ith triangle are indices[3*i] to indices[3*i+2]
+
+		std::vector<std::shared_ptr<Triangle>> triangles;
 
 		bool hasUV;
 		bool hasTan;
@@ -49,8 +51,7 @@ namespace Raven {
 			const std::vector<int>& ins, 
 			const std::vector<Normal3f>& ns, 
 			const std::vector<Vector3f>& ts,
-			const std::vector<Point2f> uvs,
-			AccelType buildType = AccelType::KdTree) 
+			const std::vector<Point2f> uvs) 
 			:OTW(OTW), WTO(WTO),
 			nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
 			uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
@@ -58,19 +59,19 @@ namespace Raven {
 			for (int i = 0; i < vertices.size(); i++) {
 				vertices[i] = (*OTW)(vertices[i]);
 			}
+			generateTriangles();
 		}
 
-		std::vector<std::shared_ptr<Triangle>> getTriangles();
-
-		std::vector<std::shared_ptr<Primitive>> generatePrimitive(const std::shared_ptr<Material>& mate,
-			const std::shared_ptr<Light>& light = nullptr);
-
-		static std::shared_ptr<TriangleMesh> build(const Transform* WTL,
-			const Transform* LTW, const TriangleInfo& info, AccelType buildType = AccelType::KdTree);
+		static std::shared_ptr<TriangleMesh> build(
+			const Transform* WTL,
+			const Transform* LTW,
+			const TriangleInfo& info);
 
 	private:
 		const Transform* OTW;
 		const Transform* WTO;
+
+		void generateTriangles();
 	};
 
 	class Triangle :public Shape {
@@ -117,9 +118,13 @@ namespace Raven {
 		return os;
 	}
 
-	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
+	std::shared_ptr<TriangleMesh> CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
 		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal);
 
+	std::shared_ptr<TriangleMesh> makeTriangleMesh(
+		const std::shared_ptr<Transform>& LTW,
+		const std::shared_ptr<Transform>& WTl,
+		const PropertyList& pList);
 }
 
 #endif

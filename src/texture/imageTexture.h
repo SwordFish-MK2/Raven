@@ -6,6 +6,7 @@
 #include<map>
 #include<string>
 #include"../core/mipmap.h"
+#include"../utils/propertylist.h"
 
 namespace Raven {
 
@@ -29,8 +30,8 @@ namespace Raven {
 
 	/// <summary>
 	/// 图像纹理
-	/// 单通道纹理： T=double
-	/// 三通道纹理： T=RGBSpectrum
+	/// 单通道纹理： TMemory = double, TReturn = double
+	/// 三通道纹理： TMemory = RGBSpectrum, TReturn = Spectrum
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	template<class TMemory, class TReturn>
@@ -70,6 +71,7 @@ namespace Raven {
 		static void convertIn(const RGBSpectrum& from, double& to, bool gamma = true) {
 			to = gamma ? InverseGammaCorrect(from.y()) : from.y();
 		}
+
 		static void convertIn(const RGBSpectrum& from, RGBSpectrum& to, bool gamma = true) {
 			for (int i = 0; i < RGBSpectrum::sampleNumber; i++) {
 				to.c[i] = gamma ? InverseGammaCorrect(from[i]) : from[i];
@@ -87,7 +89,13 @@ namespace Raven {
 		}
 	};
 
+	std::shared_ptr<ImageTexture<double, double>> makeImageTextureFloat(
+		const std::shared_ptr<TextureMapping2D>& mapping,
+		const PropertyList& param);
 
+	//std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(
+	//	const std::shared_ptr<TextureMapping2D>& mapping,
+	//	const PropertyList& param);
 }
 
 #endif

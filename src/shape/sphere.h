@@ -4,6 +4,7 @@
 
 #include"../core/base.h"
 #include"../core/shape.h"
+#include"../utils/propertylist.h"
 
 namespace Raven {
 	class Sphere :public Shape {
@@ -24,6 +25,7 @@ namespace Raven {
 
 		virtual double area()const {
 			return 4 * M_PI * radius;
+
 		}
 
 		virtual std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
@@ -39,5 +41,13 @@ namespace Raven {
 		static std::shared_ptr<Sphere> build(const Transform* LTW, const Transform* WTL,
 			double radius);
 	};
+
+	inline std::shared_ptr<Sphere> makeSphereShape(
+		const std::shared_ptr<Transform>& LTW,
+		const std::shared_ptr<Transform>& WTL,
+		const PropertyList& pList) {
+		double radius = pList.getFloat("radius");
+		return std::make_shared<Sphere>(LTW.get(), WTL.get(), radius);
+	}
 }
 #endif

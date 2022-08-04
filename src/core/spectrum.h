@@ -294,6 +294,7 @@ namespace Raven {
 		RGBSpectrum(const RGBSpectrum& s, RGBType type = RGBReflection) {
 			*this = s;
 		}
+		static RGBSpectrum fromRGBInt(int v0, int v1, int v2);
 		static RGBSpectrum fromSampled(const double* lambda, const double* v, int n);
 		static RGBSpectrum fromXYZ(const double xyz[3], RGBType type = RGBReflection);
 		static RGBSpectrum fromRGB(const double rgb[3], RGBType type = RGBReflection);
@@ -309,9 +310,7 @@ namespace Raven {
 		static double interpolateSpectrumSamples(const double* lambda, const double* values, int n, int l);
 	};
 
-
-	//	using Spectrum = Vector3f;
-
+	//void getSpectrumSample(std::shared_ptr<double[]> lambda, std::shared_ptr<double[]> v, int* n, const std::string& str);
 
 	using Spectrum = RGBSpectrum;
 

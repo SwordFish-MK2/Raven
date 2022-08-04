@@ -82,5 +82,32 @@ namespace Raven {
 		rayDifferential = CameraToWorld(sampleRay);
 		return 1;
 	}
+	std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(
+		const Transform& CTW,
+		const Transform& STR,
+		const PropertyList& param) {
+		double lensRadius = param.getFloat("lensRadius");
+		double focalDistance = param.getFloat("focalDis");
+		double near = param.getFloat("near");
+		double far = param.getFloat("far");
+		double fov = param.getFloat("fov");
+		double aspectRatio = param.getFloat("aspectRatio");
+		return std::make_shared<PerspectiveCamera>(CTW, STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
+	}
+
+	std::shared_ptr<OrthographicCamera> makeOrthographicCamera(
+		const Transform& CTW,
+		const Transform& STR,
+		const PropertyList& param) {
+		double lensRadius = param.getFloat("lensRadius");
+		double focalDistance = param.getFloat("focalDis");
+		double top = param.getFloat("top");
+		double bottom = param.getFloat("bottom");
+		double left = param.getFloat("left");
+		double right = param.getFloat("right");
+		double near = param.getFloat("near");
+		double far = param.getFloat("far");
+		return std::make_shared<OrthographicCamera>(CTW, STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
+	}
 
 }
