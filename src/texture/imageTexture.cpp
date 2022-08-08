@@ -1,17 +1,25 @@
 #include"imageTexture.h"
 #include"../utils/loader.h"
-
+#include"../core/mipmap.h"
 namespace Raven {
 	template<class TMemory, class TReturn>
 	std::map <TextureInfo, std::unique_ptr<Mipmap<TMemory>>> ImageTexture<TMemory, TReturn>::textureMap;
 
 	template<class TMemory, class TReturn>
 	TReturn ImageTexture<TMemory, TReturn>::evaluate(const SurfaceInteraction& its)const {
-
 		auto [st, dstdx, dstdy] = mapping->map(its);
+
+		//Image<TMemory>* texture = map->getLevel(0);
+		//int s = std::floor(st.x * texture->uSize());
+		//int t = std::floor(st.y * texture->vSize());
+		//TMemory value = (*texture)(s,t);
+
 		TMemory value = map->lookup(st, dstdx, dstdy);
+
 		TReturn result;
 		convertOut(value, result);
+
+
 		return result;
 	}
 

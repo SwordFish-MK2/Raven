@@ -1,7 +1,10 @@
 #include"interaction.h"
 
 namespace Raven {
+
+	//根据微分光线计算交点的参数坐标(u,v)分别关于屏幕空间坐标(x,y)的偏导数
 	void SurfaceInteraction::computeDifferential(const RayDifferential& rd) {
+		//光线不含有微分光线，则纹理与法线的偏导数全部置零
 		if (!rd.hasDifferential) {
 			dudx = 0;
 			dudy = 0;
@@ -18,7 +21,7 @@ namespace Raven {
 			double ty = (-Dot(n, Vector3f(rd.originY)) - d) / Dot(n, rd.directionY);
 			Point3f py = rd.originY + rd.directionY * ty;
 
-			//compute dpdx dpdy
+			//计算dpdx,dpdy,由于dx、dy为1,dpdx = dp,dpdy = dy
 			dpdx = px - p;
 			dpdy = py - p;
 

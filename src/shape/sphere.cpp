@@ -89,7 +89,7 @@ namespace Raven {
 		double sinPhi = -pHit.z * invR;
 		Vector3f dpdu = Vector3f(pHit.z * 2 * M_PI, 0.0, -pHit.x * 2 * M_PI);
 		Vector3f dpdv = M_PI * Vector3f(pHit.y * cosPhi, -sin(theta) * zRadius, -pHit.y * M_PI * sinPhi);
-
+		
 
 		//¼ÆËãÆ«µ¼dndu£¬dndv
 		double pi2 = M_PI * M_PI;

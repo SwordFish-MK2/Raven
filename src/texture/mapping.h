@@ -41,7 +41,6 @@ namespace Raven {
 		}
 	private:
 		const Transform worldToTexture;
-
 		Point2f mapSphere(const Point3f& p)const;
 	};
 	
