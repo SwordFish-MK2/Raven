@@ -1,5 +1,6 @@
 #include"mipmap.h"
 #include<omp.h>
+#include<sstream>
 
 namespace Raven {
 	template<class T>
@@ -90,14 +91,16 @@ namespace Raven {
 			for (int t = 0; t < tRes; t++) {
 				for (int s = 0; s < sRes; s++) {
 					(*pyramid[i])(s, t) = 0.25 * (
-						texel(i - 1, s * 2, t * 2) + 
-						texel(i - 1, s * 2 + 1, t * 2) + 
-						texel(i - 1, s * 2, t * 2 + 1) + 
+						texel(i - 1, s * 2, t * 2) +
+						texel(i - 1, s * 2 + 1, t * 2) +
+						texel(i - 1, s * 2, t * 2 + 1) +
 						texel(i - 1, s * 2 + 1, t * 2 + 1)
 						);
 				}
 			}
 		}
+
+		log();
 	}
 
 
@@ -158,7 +161,26 @@ namespace Raven {
 		//纹理滤波的宽度为四个偏导数的最大值
 		double filterWidth = Max(Max(abs(dstdx.x), abs(dstdx.y)),
 			Max(abs(dstdy.x), abs(dstdy.y)));
+		double level = pyramid.size() - 1 + Log2(Max(filterWidth, 1e-8));
+		if (level > maxLevel)
+			std::cout << "?";
 		return lookup(st, filterWidth);
+	}
+
+	template<class T>
+	void Mipmap<T>::log() {
+
+		const char* command = "mkdir mipmap";
+		system(command);
+
+		std::ostringstream ss("mipmap/level",std::ios_base::ate);
+		for (size_t i = 0; i < pyramid.size(); i++) {
+			ss << i<<".jpg";
+			std::string filename = ss.str();
+			ss.str("mipmap/level");
+			Image<T>* l = getLevel(i);
+			WriteImage(*l, filename);
+		}
 	}
 
 	// 双线性插值

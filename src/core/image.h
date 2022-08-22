@@ -68,6 +68,10 @@ namespace Raven {
 	Spectrum toSpectrum(const unsigned char* data);
 
 	Image<RGBSpectrum> ReadImage(const std::string& path);
+
+	void WriteImage(const Image<RGBSpectrum>& image, const std::string& filename);
+
+	void WriteImage(const Image<double>& image, const std::string& filename);
 }
 
 #endif

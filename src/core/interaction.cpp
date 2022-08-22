@@ -27,11 +27,11 @@ namespace Raven {
 
 			//选择相关性较强的两个维度求解线性方程组
 			int dim[2];
-			if (n.x > n.y && n.x > n.z) {
+			if (std::abs(n.x) > std::abs(n.y) && std::abs(n.x) > std::abs(n.z)) {
 				dim[0] = 1;
 				dim[1] = 2;
 			}
-			else if (n.y > n.z && n.y > n.x) {
+			else if (std::abs(n.y) > std::abs(n.z)) {
 				dim[0] = 0;
 				dim[1] = 2;
 			}

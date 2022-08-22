@@ -87,9 +87,9 @@ namespace Raven {
 		double invR = 1. / zRadius;
 		double cosPhi = pHit.x * invR;
 		double sinPhi = -pHit.z * invR;
-		Vector3f dpdu = Vector3f(pHit.z * 2 * M_PI, 0.0, -pHit.x * 2 * M_PI);
-		Vector3f dpdv = M_PI * Vector3f(pHit.y * cosPhi, -sin(theta) * zRadius, -pHit.y * M_PI * sinPhi);
-		
+		Vector3f dpdu = (2 * M_PI) * Vector3f(pHit.z, 0.0, -pHit.x);
+		Vector3f dpdv = M_PI * Vector3f(pHit.y * cosPhi, -sin(theta) * radius, -pHit.y * sinPhi);
+
 
 		//¼ÆËãÆ«µ¼dndu£¬dndv
 		double pi2 = M_PI * M_PI;

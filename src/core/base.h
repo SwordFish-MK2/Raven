@@ -100,7 +100,7 @@ namespace Raven {
 	//use Cramer's law to solve 2x2 linear equation system
 	inline bool solve2x2LinearSystem(const double* A, const double* b, double* x0, double* x1) {
 		double det = A[0] * A[3] - A[1] * A[2];
-		if (det < 1e-8)
+		if (std::abs(det) < 1e-8)
 			return false;
 		//use Cramer's law to solve linear equation system
 		double det0 = b[0] * A[3] - b[1] * A[1];

@@ -1,6 +1,5 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include<stb_image/stb_image_write.h>
+
 #include"film.h"
 #include"../filter/gaussian.h"
 #include"math.h"
@@ -10,48 +9,34 @@
 namespace Raven {
 
 	void Film::write()const {
-		unsigned char* colorData = (unsigned char*)malloc(sizeof(unsigned char) * 3 * xRes * yRes);
-
-		//遍历每个像素
-		for (int y = 0; y < yRes; y++) {
-			for (int x = 0; x < xRes; x++) {
-				const RGBSpectrum& pixelValue = frameBuffer(x, y);
-				for (int i = 0; i < 3; i++) {
-					int offset = 3 * (y * xRes + x) + i;
-					double value = GammaCorrect(pixelValue[i]);
-					colorData[offset] = static_cast<int>(255 * Clamp(value, 0.0, 0.999));
-				}
-			}
-		}
-		stbi_write_jpg("result.jpg", xRes, yRes, 3, colorData, 0);
-		free(colorData);
+		WriteImage(frameBuffer, "result.jpg");
 	}
 
 
-	void Film::testMipmap() {
-		Mipmap<RGBSpectrum> mipmap(frameBuffer, true, ImClamp);
-		std::cout << std::endl << "Mipmap max level = " << mipmap.maxL() << std::endl;
-		Image<RGBSpectrum>* ilevelImage = mipmap.getLevel(0);
+	//void Film::testMipmap() {
+	//	Mipmap<RGBSpectrum> mipmap(frameBuffer, true, ImClamp);
+	//	std::cout << std::endl << "Mipmap max level = " << mipmap.maxL() << std::endl;
+	//	Image<RGBSpectrum>* ilevelImage = mipmap.getLevel(0);
 
-		int uSize = ilevelImage->uSize();
-		int vSize = ilevelImage->vSize();
-		unsigned char* colorData = (unsigned char*)malloc(sizeof(unsigned char) * 3 * uSize * vSize);
+	//	int uSize = ilevelImage->uSize();
+	//	int vSize = ilevelImage->vSize();
+	//	unsigned char* colorData = (unsigned char*)malloc(sizeof(unsigned char) * 3 * uSize * vSize);
 
-		//遍历每个像素
-		for (int y = 0; y < vSize; y++) {
-			for (int x = 0; x < uSize; x++) {
-				const RGBSpectrum& pixelValue = (*ilevelImage)(x, y);
-				for (int i = 0; i < 3; i++) {
-					int offset = 3 * (y * uSize + x) + i;
-					double value = GammaCorrect(pixelValue[i]);
-					colorData[offset] = static_cast<int>(255 * Clamp(value, 0.0, 0.999));
-				}
-			}
-		}
+	//	//遍历每个像素
+	//	for (int y = 0; y < vSize; y++) {
+	//		for (int x = 0; x < uSize; x++) {
+	//			const RGBSpectrum& pixelValue = (*ilevelImage)(x, y);
+	//			for (int i = 0; i < 3; i++) {
+	//				int offset = 3 * (y * uSize + x) + i;
+	//				double value = GammaCorrect(pixelValue[i]);
+	//				colorData[offset] = static_cast<int>(255 * Clamp(value, 0.0, 0.999));
+	//			}
+	//		}
+	//	}
 
-		stbi_write_jpg("mipmapResult.jpg", uSize, vSize, 3, colorData, 0);
-		free(colorData);
-	}
+	//	stbi_write_jpg("mipmapResult.jpg", uSize, vSize, 3, colorData, 0);
+	//	free(colorData);
+	//}
 
 	//void Film::filter(int filterRadius, double sigmaX, double sigmaC, double sigmaN, double sigmaD) {
 	//	for (int y = 0; y < height; y++) {

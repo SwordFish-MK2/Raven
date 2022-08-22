@@ -33,7 +33,7 @@ int main(int agrc, char** argv)
 		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, screenToRaster, 0.0, 865.0, 0.1f, 10.0f, 40.f, f->aspect_ratio);
 	std::shared_ptr<Raven::Camera> ocam =
 		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, screenToRaster, 0, 10, 278, -278, -278, 278, 2, 100);
-	Raven::PathTracingRenderer renderer(cam, f, 50, 100);
+	Raven::PathTracingRenderer renderer(cam, f, 10, 5);
 	renderer.render(sphere);
 
 	auto stop = std::chrono::system_clock::now();

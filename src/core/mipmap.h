@@ -34,6 +34,8 @@ namespace Raven {
 			return pyramid[i].get();
 		}
 
+		void log();
+
 	private:
 		const bool doTrilinear;
 		const ImageWrap wrapMode;
