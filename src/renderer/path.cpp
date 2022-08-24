@@ -8,7 +8,6 @@ namespace Raven {
 		int finishedLine = 1;
 		double process = 0.0;
 		omp_init_lock(&lock);
-		omp_set_num_threads(2);
 #pragma omp parallel for
 		for (int i = 0; i < film->yRes; ++i) {
 

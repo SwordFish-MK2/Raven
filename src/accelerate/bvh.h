@@ -14,6 +14,7 @@ namespace Raven {
 			children[0] = left;
 			children[1] = right;
 			splitAxis = axis;
+			nPrims = 0;
 		}
 
 		void buildLeaf(const Bound3f& b, size_t offset, int n) {
@@ -24,31 +25,32 @@ namespace Raven {
 
 		int splitAxis;
 		Bound3f box;
+
 		std::shared_ptr<BVHNode> children[2];
-		size_t firstPrimOffset;
-		size_t nPrims;
+		size_t firstPrimOffset;//该节点中第一个图元在图元数组中的偏移量
+		size_t nPrims;//该节点中含有多少个图元
 	};
 
 	struct SAHBucket {
 		size_t nPrimitives;
 		Bound3f box;
 		SAHBucket() :nPrimitives(0), box() {}
-	};	
-		
+	};
+
 	struct PrimitiveInfo {
 		PrimitiveInfo(const Bound3f& b, size_t index) :box(b), primitiveIndex(index),
 			centroid(0.5 * box.pMin + 0.5 * box.pMax) {}
 		PrimitiveInfo() {}
-		Bound3f box;
-		Point3f centroid;
-		size_t primitiveIndex;
-	};	
-		
+		Bound3f box;//图元的包围盒
+		Point3f centroid;//包围盒的中心点
+		size_t primitiveIndex;//在数组中的index
+	};
+
 	struct LinearBVHNode {
 		Bound3f box;
 		union {
-			uint16_t firstOffset;
-			uint16_t rightChild;
+			uint32_t firstOffset;
+			uint32_t rightChild;
 		};
 		uint16_t nPrims;
 		uint8_t axis;
@@ -74,8 +76,8 @@ namespace Raven {
 		std::shared_ptr<BVHNode> recursiveBuild(std::vector<PrimitiveInfo>& p, size_t start, size_t end,
 			std::vector<std::shared_ptr<Primitive>>& ordered, size_t& totalNodes, int depth = 0);
 
-		int flattenTree(const std::shared_ptr<BVHNode>& node, int* offset, int depth);
-	};	
-}		
-		
+		int flattenTree(const std::shared_ptr<BVHNode>& node, int* offset);
+	};
+}
+
 #endif

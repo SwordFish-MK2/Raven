@@ -22,19 +22,19 @@ int main(int agrc, char** argv)
 {
 	//if (agrc == 1) {
 	auto start = std::chrono::system_clock::now();
-	Raven::Scene box = Raven::Scene::buildCornellBox();
-	//Raven::Scene box = Raven::Scene::buildTestScene();
-	Raven::Scene sphere = Raven::Scene::buildTestSphere();
+	//Raven::Scene box = Raven::Scene::buildCornellBox();
+	Raven::Scene box = Raven::Scene::buildTestScene();
+	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(1024, 1024);
-	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, 0), Vector3f(0, 1, 0));
+	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(0, 0, -10), Point3f(0, 0, 0), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
 	std::shared_ptr<Raven::Camera> cam =
 		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, screenToRaster, 0.0, 865.0, 0.1f, 10.0f, 40.f, f->aspect_ratio);
 	std::shared_ptr<Raven::Camera> ocam =
 		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, screenToRaster, 0, 10, 278, -278, -278, 278, 2, 100);
 	Raven::PathTracingRenderer renderer(cam, f, 10, 5);
-	renderer.render(sphere);
+	renderer.render(box);
 
 	auto stop = std::chrono::system_clock::now();
 	std::cout << "Render complete:\n";

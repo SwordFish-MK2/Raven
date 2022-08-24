@@ -100,7 +100,7 @@ namespace Raven {
 			}
 		}
 
-		log();
+		//log();
 	}
 
 
@@ -161,9 +161,6 @@ namespace Raven {
 		//纹理滤波的宽度为四个偏导数的最大值
 		double filterWidth = Max(Max(abs(dstdx.x), abs(dstdx.y)),
 			Max(abs(dstdy.x), abs(dstdy.y)));
-		double level = pyramid.size() - 1 + Log2(Max(filterWidth, 1e-8));
-		if (level > maxLevel)
-			std::cout << "?";
 		return lookup(st, filterWidth);
 	}
 

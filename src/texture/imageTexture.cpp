@@ -9,11 +9,6 @@ namespace Raven {
 	TReturn ImageTexture<TMemory, TReturn>::evaluate(const SurfaceInteraction& its)const {
 		auto [st, dstdx, dstdy] = mapping->map(its);
 
-		//Image<TMemory>* texture = map->getLevel(0);
-		//int s = std::floor(st.x * texture->uSize());
-		//int t = std::floor(st.y * texture->vSize());
-		//TMemory value = (*texture)(s,t);
-
 		TMemory value = map->lookup(st, dstdx, dstdy);
 
 		TReturn result;

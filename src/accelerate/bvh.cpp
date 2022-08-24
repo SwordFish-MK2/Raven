@@ -1,34 +1,33 @@
 #include"bvh.h"
 #include<optional>
 #include<vector>
-				
+
 namespace Raven {
-	
+
 	BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>>& primitives, size_t maxSize = 100) :
 		Accelerate(primitives), maxPrimInNode(maxSize), maxDepth(0) {
-				
+
 		//初始化primitiveInfo数组
 		std::vector<PrimitiveInfo> primInfo(prims.size());
 		for (size_t i = 0; i < primInfo.size(); i++) {
 			primInfo[i] = PrimitiveInfo(prims[i]->worldBounds(), i);
 		}
-				
+
 		std::vector<std::shared_ptr<Primitive>> ordered;
-			
+
 		size_t totalNodes = 0;
 		//递归构建BVH树
 		std::shared_ptr<BVHNode>root = recursiveBuild(primInfo, 0, primInfo.size(), ordered, totalNodes);
-
+		std::cout << "BVH max depth: " << maxDepth << std::endl;
 		//用排好序的prim数组替换原数组
 		prims.swap(ordered);
 
 		linearTree = std::vector<LinearBVHNode>(totalNodes);
 		int offset = 0;
-		flattenTree(root, &offset, 0);
-		std::cout << "BVH max depth: " << maxDepth << std::endl;
+		flattenTree(root, &offset);
 		std::cout << "BVH generation complete, total node number:" << totalNodes << std::endl;
 	}
-	
+
 	std::shared_ptr<BVHNode> BVHAccel::recursiveBuild(
 		std::vector<PrimitiveInfo>& info,
 		size_t start,
@@ -36,10 +35,10 @@ namespace Raven {
 		std::vector<std::shared_ptr<Primitive>>& ordered,
 		size_t& totalNodes, int depth) {
 
-		//depth++;
-		//if (depth > maxDepth) {
-		//	maxDepth = depth;
-		//}
+		depth++;
+		if (depth > maxDepth) {
+			maxDepth = depth;
+		}
 
 		std::shared_ptr<BVHNode> currentNode = std::make_shared<BVHNode>();
 		totalNodes++;
@@ -139,7 +138,7 @@ namespace Raven {
 							}
 						}
 
-						cost[i] = 1 +
+						cost[i] = 0.125 +
 							(Max(0.0, left.surfaceArea()) * leftCount
 								+ Max(0.0, right.surfaceArea()) * rightCount)
 							/ centroidBound.surfaceArea();
@@ -173,7 +172,7 @@ namespace Raven {
 						middle = pmid - &info[0];
 					}
 
-					//不划分的开销最小
+					//不划分的开销最小	
 					else {
 						size_t firstOffset = ordered.size();
 						for (int i = 0; i < nPrimitive; i++) {
@@ -191,25 +190,17 @@ namespace Raven {
 				std::shared_ptr<BVHNode> leftNode = recursiveBuild(info, start, middle, ordered, totalNodes, depth);
 				std::shared_ptr<BVHNode> rightNode = recursiveBuild(info, middle, end, ordered, totalNodes, depth);
 				currentNode->buildInterior(leftNode, rightNode, axis);
-
-
 			}
 		}
+		depth--;
 		return currentNode;
 	}
-	
+
 	int BVHAccel::flattenTree(
 		const std::shared_ptr<BVHNode>& node,
-		int* offset,
-		int depth) {
-
-		//depth++;
-		if (depth >= maxDepth)
-			maxDepth = depth;
-
+		int* offset) {
 		//取出要赋值的linearNode
 		LinearBVHNode* lnode = &linearTree[*offset];
-
 		lnode->box = node->box;
 		int currentOffset = (*offset)++;
 
@@ -219,16 +210,14 @@ namespace Raven {
 			lnode->nPrims = node->nPrims;
 		}
 		else {
-			depth++;
 			lnode->axis = node->splitAxis;
-			node->nPrims = 0;
-			flattenTree(node->children[0], offset, depth);
-			lnode->rightChild = flattenTree(node->children[1], offset, depth);
+			lnode->nPrims = 0;
+			flattenTree(node->children[0], offset);
+			lnode->rightChild = flattenTree(node->children[1], offset);
 		}
-		depth--;
 		return currentOffset;
 	}
-	
+
 	bool BVHAccel::hit(const RayDifferential& ray, double tMax)const {
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
 		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
@@ -254,7 +243,6 @@ namespace Raven {
 					if (offset == 0)break;
 					currentIndex = nodesToVisite[--offset];
 				}
-
 				else {
 					//该节点为中间节点
 					if (dirIsNeg[node->axis]) {
@@ -275,20 +263,24 @@ namespace Raven {
 		}
 		return false;
 	}
-	
+
 	std::optional<SurfaceInteraction> BVHAccel::intersect(const RayDifferential& ray, double tMax)const {
 		bool hit = false;
 		double closest = tMax;
+		std::vector<int>flags(linearTree.size());
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
-		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
+		int dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
 		int nodesToVisite[64];
 		int currentIndex = 0;
 		int offset = 0;
 		int primHited = 0;
 		HitInfo record;
-		while (1) {
+		int counter = 0;
+		while (true) {
+			counter++;
 			const LinearBVHNode* node = &linearTree[currentIndex];
 			double t0, t1;
+
 			if (node->box.hit(ray, &t0, &t1)) {
 				//光线与包围盒相交
 
@@ -314,14 +306,10 @@ namespace Raven {
 					//该节点为中间节点
 					if (dirIsNeg[node->axis]) {
 						nodesToVisite[offset++] = currentIndex + 1;
-						if (offset >= 64)
-							std::cout << "?";
 						currentIndex = node->rightChild;
 					}
 					else {
 						nodesToVisite[offset++] = node->rightChild;
-						if (offset >= 64)
-							std::cout << "?";
 						currentIndex = currentIndex + 1;
 					}
 				}
@@ -339,9 +327,9 @@ namespace Raven {
 			return std::optional<SurfaceInteraction>(hitRecord);
 		}
 
-		else
-			return std::nullopt;
+		//else
+		return std::nullopt;
 	}
 
 }
-	
+

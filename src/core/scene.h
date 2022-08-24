@@ -58,7 +58,7 @@ namespace Raven {
 
 		//static Scene cornellBox();
 
-//		static Scene buildTestScene();
+		static Scene buildTestScene();
 
 		static Scene buildCornellBox();
 
