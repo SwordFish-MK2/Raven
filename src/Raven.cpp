@@ -24,16 +24,23 @@ int main(int agrc, char** argv)
 	auto start = std::chrono::system_clock::now();
 	//Raven::Scene box = Raven::Scene::buildCornellBox();
 	Raven::Scene box = Raven::Scene::buildTestScene();
-	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
+	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
-	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(1024, 1024);
-	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(0, 0, -10), Point3f(0, 0, 0), Vector3f(0, 1, 0));
+	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128*5, 72*5);
+	Eigen::Matrix4f cw;
+	cw << 0.-721367, -0.373123, -0.583445, -0,
+		-0, 0.842456, -0.538765, -0,
+		-0.692553, -0.388647, -0.60772, -0,
+		0.0258668, -0.29189, 5.43024, 1;
+	auto cwt = cw.transpose();
+	Raven::Transform cameraWorld(cwt);
+	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(3, 3, 3), Point3f(0, 0.25, 0), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
 	std::shared_ptr<Raven::Camera> cam =
-		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, screenToRaster, 0.0, 865.0, 0.1f, 10.0f, 40.f, f->aspect_ratio);
+		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, screenToRaster, 0.0, 1e6, 1e-2, 1000, 40.f, 1);
 	std::shared_ptr<Raven::Camera> ocam =
 		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, screenToRaster, 0, 10, 278, -278, -278, 278, 2, 100);
-	Raven::PathTracingRenderer renderer(cam, f, 10, 5);
+	Raven::PathTracingRenderer renderer(cam, f, 100, 2);
 	renderer.render(box);
 
 	auto stop = std::chrono::system_clock::now();
@@ -71,6 +78,4 @@ int main(int agrc, char** argv)
 //	Point3f pPrime = I(p);
 //
 //}
-}
-
-
+} 

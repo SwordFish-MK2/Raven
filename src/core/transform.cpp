@@ -205,7 +205,7 @@ namespace Raven {
 		int half_height = h / 2;
 		int half_width = w / 2;
 		screenToRaster << (double)half_width, 0, 0, (double)half_width,
-			0, -double(half_height), 0, (double)half_height,
+			0, -double(half_width), 0, (double)half_height,
 			0, 0, 1, 0,
 			0, 0, 0, 1;
 		return Transform(screenToRaster);

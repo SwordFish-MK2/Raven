@@ -1,5 +1,5 @@
 #include"interaction.h"
-
+#include"light.h"
 namespace Raven {
 
 	//根据微分光线计算交点的参数坐标(u,v)分别关于屏幕空间坐标(x,y)的偏导数
@@ -72,6 +72,13 @@ namespace Raven {
 		return Ray(ori, dir);
 	}
 
+	Spectrum SurfaceInteraction::Le(const Vector3f& w)const{
+		if (hitLight) {
+			light->Li(*this, w);
+		}
+		else
+			return Spectrum(0.0);
+	}
 }
 
 

@@ -12,6 +12,7 @@
 #include"../texture/imageTexture.h"
 #include"../material/mirror.h"
 #include"../material/glass.h"
+#include"../light/infiniteAreaLight.h"
 #include"mipmap.h"
 #include<string>
 
@@ -22,8 +23,9 @@ namespace Raven {
 		const std::vector<std::shared_ptr<Light>>& lights,
 		const std::vector<std::shared_ptr<TriangleMesh>>& meshes,
 		const std::vector<std::shared_ptr<Primitive>>& prims,
+		const std::vector<std::shared_ptr<InfiniteAreaLight>>& areal,
 		AccelType type) :
-		meshes(meshes), lights(lights), transforms(trans) {
+		meshes(meshes), lights(lights), transforms(trans), infinitAreaLights(areal) {
 
 		switch (type) {
 		case AccelType::List:
@@ -62,7 +64,7 @@ namespace Raven {
 		std::vector<std::shared_ptr<Transform>> usedTransform;
 		std::vector<std::shared_ptr<Light>> lights;
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
-
+		std::vector<std::shared_ptr<InfiniteAreaLight>> areal;
 		//transform
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
 		usedTransform.push_back(identity);
@@ -157,7 +159,6 @@ namespace Raven {
 
 		}
 
-
 		//Light
 		{
 			//load light mesh
@@ -184,7 +185,7 @@ namespace Raven {
 				prim_ptrs.push_back(p);//adding pritive 
 			}
 		}
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, areal, AccelType::BVH);
 
 	}
 
@@ -193,6 +194,7 @@ namespace Raven {
 		std::vector<std::shared_ptr<Transform>> usedTransform;
 		std::vector<std::shared_ptr<Light>> lights;
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
+		std::vector<std::shared_ptr<InfiniteAreaLight>> areal;
 
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
 		usedTransform.push_back(identity);
@@ -255,7 +257,7 @@ namespace Raven {
 			}
 		}
 
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, areal, AccelType::BVH);
 	}
 
 	Scene Scene::buildTestScene() {
@@ -263,50 +265,85 @@ namespace Raven {
 		std::vector<std::shared_ptr<Transform>> usedTransform;
 		std::vector<std::shared_ptr<Light>> lights;
 		std::vector<std::shared_ptr<Primitive>> prim_ptrs;
-
+		std::vector<std::shared_ptr<InfiniteAreaLight>> infAreaLights;;
 		std::shared_ptr<Transform> identity = std::make_shared<Transform>(Identity());
 		usedTransform.push_back(identity);
 
 		Loader loader;
 		//material ball
 		{
+			Eigen::Matrix4f m1;
+			m1 << 0.482906, 0, 0, 0.0571719,
+				0, 0.482906, 0, 0.213656,
+				0, 0, 0.482906, 0.0682078,
+				0, 0, 0, 1;
+			std::shared_ptr<Transform> m1world = std::make_shared<Transform>(m1);
+			std::shared_ptr<Transform> invm1 = std::make_shared<Transform>(m1.inverse());
+
+			Eigen::Matrix4f m2;
+			m2 << 0.482906, 0, 0, 0.156382,
+				0, 0.482906, 0, 0.777229,
+				0, 0, 0.482906, 0.161698,
+				0, 0, 0, 1;
+			std::shared_ptr<Transform> m2world = std::make_shared<Transform>(m2);
+			std::shared_ptr<Transform> invm2 = std::make_shared<Transform>(m2.inverse());
+
+			Eigen::Matrix4f m0;
+			m0 << 0.482906, 0, 0, 0.110507,
+				0, 0.482906, 0, 0.494301,
+				0, 0, 0.482906, 0.126194,
+				0, 0, 0, 1;
+			std::shared_ptr<Transform> m0world = std::make_shared<Transform>(m0);
+			std::shared_ptr<Transform> invm0 = std::make_shared<Transform>(m0.inverse());
+			usedTransform.push_back(m1world);
+			usedTransform.push_back(invm1);
+			usedTransform.push_back(m2world);
+			usedTransform.push_back(invm2);
+			usedTransform.push_back(m0world);
+			usedTransform.push_back(invm0);
+
 			std::optional<TriangleInfo> mateballInfo =
 				loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh001.obj");
 			std::shared_ptr<TriangleMesh> mesh1 =
-				TriangleMesh::build(identity.get(), identity.get(), *mateballInfo);
+				TriangleMesh::build(m1world.get(), invm1.get(), *mateballInfo);
 			meshes.push_back(mesh1);
 			const auto& triangles1 = mesh1->triangles;
 
 			mateballInfo = loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh002.obj");
 			std::shared_ptr<TriangleMesh> mesh2 =
-				TriangleMesh::build(identity.get(), identity.get(), *mateballInfo);
+				TriangleMesh::build(m2world.get(), invm2.get(), *mateballInfo);
 			meshes.push_back(mesh2);
 			const auto& triangles2 = mesh2->triangles;
 
 			mateballInfo = loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh000.obj");
 			std::shared_ptr<TriangleMesh> mesh3 =
-				TriangleMesh::build(identity.get(), identity.get(), *mateballInfo);
+				TriangleMesh::build(m0world.get(), invm0.get(), *mateballInfo);
 			meshes.push_back(mesh3);
 			const auto& triangles3 = mesh3->triangles;
 
+			//textures
+			const auto sigma = std::make_shared<ConstTexture<double>>(0.03);
+			const auto kd = std::make_shared<ConstTexture<Spectrum>>(Spectrum::fromRGB(0.4, 0.4, 0.4));
+			const auto ks = std::make_shared<ConstTexture<Spectrum>>(Spectrum::fromRGB(0.4, 0.4, 0.4));
+
 			//material of right wall
-			const auto mate = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5f));
+			const auto mate = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.75f));
+			const auto mate2 = Plastic::build(kd, ks, sigma);
 
 			//generate primitive
-			//for (size_t i = 0; i < triangles1.size(); i++)
-			//	prim_ptrs.push_back(std::make_shared<Primitive>(triangles1[i], mate));
-			//for (size_t i = 0; i < triangles2.size(); i++)
-			//	prim_ptrs.push_back(std::make_shared<Primitive>(triangles2[i], mate));
+			for (size_t i = 0; i < triangles1.size(); i++)
+				prim_ptrs.push_back(std::make_shared<Primitive>(triangles1[i], mate));
+			for (size_t i = 0; i < triangles2.size(); i++)
+				prim_ptrs.push_back(std::make_shared<Primitive>(triangles2[i], mate2));
 			for (size_t i = 0; i < triangles3.size(); i++)
 				prim_ptrs.push_back(std::make_shared<Primitive>(triangles3[i], mate));
 		}
-
 		//floor
 		{
-			Point3f p0(-10.0, -2.0, 10.0);
-			Point3f p1(10.0, -2.0, 10.0);
-			Point3f p2(10.0, -2.0, -10.0);
-			Point3f p3(-10.0, -2.0, -10.0);
+			Point3f p0(-10.0, 0.0, 10.0);
+			Point3f p1(10.0, 0.0, 10.0);
+			Point3f p2(10.0, 0.0, -10.0);
+			Point3f p3(-10.0, 0.0, -10.0);
 
 			std::shared_ptr<TriangleMesh> mesh = CreatePlane(identity.get(), identity.get(),
 				p0, p1, p2, p3, Normal3f(0.0, 1.0, 0.0));
@@ -320,27 +357,70 @@ namespace Raven {
 			}
 		}
 
+		////sphere
+		//{
+		//	Eigen::Matrix4f m2;
+		//	m2 << 0.482906, 0, 0, 0,
+		//		0, 0.482906, 0, 2,
+		//		0, 0, 0.482906, 0,
+		//		0, 0, 0, 1;
+		//	std::shared_ptr<Transform> m2world = std::make_shared<Transform>(m2);
+		//	std::shared_ptr<Transform> invm2 = std::make_shared<Transform>(m2.inverse());
+		//	usedTransform.push_back(m2world);
+		//	usedTransform.push_back(invm2);
+		//	const auto& sphere = Sphere::build(m2world.get(), invm2.get(), 1);
+
+		//	//textures
+		//	const auto sigma = std::make_shared<ConstTexture<double>>(0.6);
+		//	const auto kd = std::make_shared<ConstTexture<Spectrum>>(Spectrum::fromRGB(0.75));
+		//	const auto ks = std::make_shared<ConstTexture<Spectrum>>(Spectrum::fromRGB(0.9));
+
+		//	//material
+		//	const auto mate = Plastic::build(kd, ks, sigma);
+		//	//const auto mate = MatteMaterial::buildConst(0,RGBSpectrum(0.75));
+
+		//	prim_ptrs.push_back(std::make_shared<Primitive>(sphere, mate));
+		//}
+
+		////light
+		//{
+		//	Point3f pl0(443.0, 848.7, 127.0);
+		//	Point3f pl1(443.0, 848.7, 232.0);
+		//	Point3f pl2(313.0, 848.7, 232.0);
+		//	Point3f pl3(313.0, 848.7, 127.0);
+
+		//	std::shared_ptr<TriangleMesh> lightMesh = CreatePlane(identity.get(), identity.get(),
+		//		pl0, pl1, pl2, pl3, Normal3f(0.0, -1.0, 0.0));
+		//	meshes.push_back(lightMesh);
+		//	auto shapes = lightMesh->triangles;
+		//	const Spectrum lightEmit = RGBSpectrum::fromRGB(47.0, 47.0, 47.0);
+		//	const auto material = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
+
+		//	for (size_t i = 0; i < shapes.size(); i++) {
+		//		auto l = std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, shapes[i].get(), lightEmit);
+		//		auto p = std::make_shared<Primitive>(shapes[i], material, l);
+		//		lights.push_back(l);
+		//		prim_ptrs.push_back(p);
+		//	}
+		//}
+
 		//light
 		{
-			Point3f pl0(443.0, 848.7, 127.0);
-			Point3f pl1(443.0, 848.7, 232.0);
-			Point3f pl2(313.0, 848.7, 232.0);
-			Point3f pl3(313.0, 848.7, 127.0);
-
-			std::shared_ptr<TriangleMesh> lightMesh = CreatePlane(identity.get(), identity.get(),
-				pl0, pl1, pl2, pl3, Normal3f(0.0, -1.0, 0.0));
-			meshes.push_back(lightMesh);
-			auto shapes = lightMesh->triangles;
-			const Spectrum lightEmit = RGBSpectrum::fromRGB(47.0, 47.0, 47.0);
-			const auto material = MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
-
-			for (size_t i = 0; i < shapes.size(); i++) {
-				auto l = std::make_shared<DiffuseAreaLight>(identity.get(), identity.get(), 5, shapes[i].get(), lightEmit);
-				auto p = std::make_shared<Primitive>(shapes[i], material, l);
-				lights.push_back(l);
-				prim_ptrs.push_back(p);
-			}
+			Eigen::Matrix4f m;
+			m << -0.386527, 0, 0.922278, 0,
+				-0.922278, 0, -0.386527, 0,
+				0, 1, 0, 0,
+				0, 0, 0, 1;
+			std::shared_ptr<Transform> lightToWorld = std::make_shared<Transform>(m);
+			std::shared_ptr<Transform>worldToLight = std::make_shared<Transform>(m.inverse());
+			usedTransform.push_back(lightToWorld);
+			usedTransform.push_back(worldToLight);
+			Spectrum lightScale(1.0);
+			std::string path("D:/MyWorks/Raven/models/material-testball/material-testball/textures/evnmap.hdr");
+			std::shared_ptr<InfiniteAreaLight> light = std::make_shared<InfiniteAreaLight>(lightToWorld.get(), worldToLight.get(), lightScale, 2, path);
+			lights.push_back(light);
+			infAreaLights.push_back(light);
 		}
-		return Scene(usedTransform, lights, meshes, prim_ptrs, AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, infAreaLights,AccelType::BVH);
 	}
 }

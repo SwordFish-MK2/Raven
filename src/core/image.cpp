@@ -18,7 +18,10 @@ namespace Raven {
 		const char* filename = (char*)path.c_str();
 		int w, h, c;
 		unsigned char* data = stbi_load(filename, &w, &h, &c, 0);
-
+		if (!data) {
+			RGBSpectrum defaultV(1.0);
+			return Image<RGBSpectrum>(1, 1, &defaultV);
+		}
 		std::unique_ptr<Spectrum[]> convertedData = std::make_unique<Spectrum[]>(w * h);
 		if (c == 3) {
 			for (int i = 0; i < w * h; i++)

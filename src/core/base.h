@@ -34,15 +34,19 @@ namespace Raven {
 	class BxDF;
 	class Shape;
 	class Light;
+	class AreaLight;
 	class Material;
 	class Primitive;
 	class Scene;
+	class InfiniteAreaLight;
 	class Renderer;
 	class VisibilityTester;
 	class Triangle;
 	class TriangleMesh;
 	class Filter;
 	struct LightSample;
+	struct SurfaceInteraction;
+	struct Interaction;
 	template<class T>
 	T Max(T t1, T t2) { if (t1 > t2)return t1; return t2; }
 	template<class T>

@@ -42,7 +42,7 @@ namespace Raven {
 	}
 
 	std::shared_ptr<Primitive> Primitive::build(const std::shared_ptr<Shape>& s, const std::shared_ptr<Material>& m,
-		const std::shared_ptr<Light>& l) {
+		const std::shared_ptr<AreaLight>& l) {
 		return std::make_shared<Primitive>(s, m, l);
 	}
 

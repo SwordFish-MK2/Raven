@@ -3,7 +3,7 @@
 
 #include"base.h"
 #include"math.h"
-#include"interaction.h"
+
 #include"transform.h"
 #include"aabb.h"
 #include"ray.h"

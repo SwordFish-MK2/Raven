@@ -1,4 +1,5 @@
 #include"shape.h"
+#include"interaction.h"
 
 namespace Raven {
 

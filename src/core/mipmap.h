@@ -21,7 +21,7 @@ namespace Raven {
 	class Mipmap {
 	public:
 		Mipmap(const Image<T>& image, bool trilinear = true, ImageWrap wrap = ImClamp);
-		T lookup(const Point2f& uv, double width)const;
+		T lookup(const Point2f& uv, double width=0.0)const;
 		T lookup(const Point2f& st, const Vector2f& dstdx, const Vector2f& dstdy)const;
 
 		int maxL()const {

@@ -36,7 +36,7 @@ namespace Raven {
 		//int uSize() const { return xRes; }
 		//int vSize() const { return yRes; }
 
-		void testMipmap();
+		//void testMipmap();
 
 		RGBSpectrum& operator()(int x, int y) {
 			return frameBuffer(x, y);

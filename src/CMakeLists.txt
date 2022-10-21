@@ -7,7 +7,7 @@ FILE(GLOB_RECURSE RAVEN_HEADER_ALL	"./core/*.h"
 										"./shading_model/*.h"
 										"./shape/*.h"
 										"./light/*.h"
-										"./filter.*.h"
+										"./filter/*.h"
 										"./utils/*.h"
 										"./texture/*.h")
 SET(RAVEN_SOURCE_ALL)

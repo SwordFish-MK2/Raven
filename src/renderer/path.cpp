@@ -1,6 +1,7 @@
 #include"path.h"
 #include<omp.h>
 #include"../core/light.h"
+#include"../light/infiniteAreaLight.h"
 
 static omp_lock_t lock;
 namespace Raven {
@@ -64,6 +65,10 @@ namespace Raven {
 			std::optional<SurfaceInteraction> record = scene.intersect(ray, std::numeric_limits<double>::max());
 			//光线未与场景相交
 			if (!record) {
+				if (bounce == 0 || specularBounce)
+					for (const auto& envlight : scene.infinitAreaLights) {
+						Li += beta * envlight->Le(rayIn);
+					}
 				break;
 			}
 			else {
@@ -95,6 +100,7 @@ namespace Raven {
 				//计算衰减
 				double cosTheta = abs(Dot(wi, n));
 				beta *= f * cosTheta / pdf;
+				//std::cout <<f<< beta << std::endl;
 				specularBounce = (sampledType & BxDFType::Specular) != 0;
 				ray = record->scartterRay(wi);
 

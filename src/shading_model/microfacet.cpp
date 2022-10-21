@@ -173,55 +173,38 @@ namespace Raven {
 
 	double GGX::NDF(const Vector3f& wh)const {
 
-		//double tan2 = Tan2Theta(wh);
-		//if (std::isinf(tan2))
-		//	return 0;
+		double tan2 = Tan2Theta(wh);
+		if (std::isinf(tan2))
+			return 0;
 
-		//double cos2Thetah = Cos2Theta(wh);
-		//double cos4 = cos2Thetah * cos2Thetah;
+		double cos2Thetah = Cos2Theta(wh);
+		double cos4 = cos2Thetah * cos2Thetah;
 
-		//double cos2Phih = Cos2Phi(wh);
-		//double sin2Phih = Sin2Phi(wh);
-		//double alphaX2 = alphaX * alphaX;
-		//double alphaY2 = alphaY * alphaY;
+		double cos2Phih = Cos2Phi(wh);
+		double sin2Phih = Sin2Phi(wh);
+		double alphaX2 = alphaX * alphaX;
+		double alphaY2 = alphaY * alphaY;
 
-		//double e = tan2 / alphaX2;
+		double e = tan2 / alphaX2;
 
-		//return 1.0 / (M_PI * alphaX2 * cos4 * (1 + e) * (1 + e));
-
-		double tan2Theta = Tan2Theta(wh);
-		if (std::isinf(tan2Theta)) return 0.;
-		const double cos4Theta = Cos2Theta(wh) * Cos2Theta(wh);
-		double e =
-			(Cos2Phi(wh) / (alphaX * alphaX) + Sin2Phi(wh) / (alphaY * alphaY)) *
-			tan2Theta;
-		return 1 / (M_PI * alphaX * alphaY * cos4Theta * (1 + e) * (1 + e));
-
+		return 1.0 / (M_PI * alphaX2 * cos4 * (1 + e) * (1 + e));
 	}
 
 	double GGX::lambda(const Vector3f& w)const {
-		//double tan = AbsTanTheta(w);
+		double tan = AbsTanTheta(w);
 
-		//if (std::isinf(tan))
-		//	return 0.0;
+		if (std::isinf(tan))
+			return 0.0;
 
-		//double tan2 = tan * tan;
+		double tan2 = tan * tan;
 
-		//double cos2Phih = Cos2Phi(w);
-		//double sin2Phih = Sin2Phi(w);
+		double cos2Phih = Cos2Phi(w);
+		double sin2Phih = Sin2Phi(w);
 
-		//double alpha = sqrt(cos2Phih * alphaX * alphaX +
-		//	sin2Phih * alphaY * alphaY);
+		double alpha = sqrt(cos2Phih * alphaX * alphaX +
+			sin2Phih * alphaY * alphaY);
 
-		//return (-1.0 + sqrt(1.0 + alpha * alpha * tan2)) / 2;
-
-		double absTanTheta = std::abs(TanTheta(w));
-		if (std::isinf(absTanTheta)) return 0.;
-		// Compute _alpha_ for direction _w_
-		double alpha =
-			std::sqrt(Cos2Phi(w) * alphaX * alphaX + Sin2Phi(w) * alphaY * alphaY);
-		double alpha2Tan2Theta = (alpha * absTanTheta) * (alpha * absTanTheta);
-		return (-1 + std::sqrt(1.f + alpha2Tan2Theta)) / 2;
+		return (-1.0 + sqrt(1.0 + alpha * alpha * tan2)) / 2;
 	}
 
 	Vector3f GGX::sample_wh(const Vector3f& wo, const Point2f& uv)const {
@@ -299,7 +282,7 @@ namespace Raven {
 	//compute brdf value of given wo and wi directions
 	Spectrum MicrofacetReflection::f(const Vector3f& wo, const Vector3f& wi)const {
 		//compute brdf value
-		Vector3f wh = wo + wi;
+		Vector3f wh =Normalize(wo + wi);
 
 		double cosThetaO = abs(CosTheta(wo));
 		double cosThetaI = abs(CosTheta(wi));
@@ -371,7 +354,6 @@ namespace Raven {
 	//	return albedo * D * G * F * abs(cosThetaO) * abs(cosThetaI) / (temp * cosThetaO * cosThetaI);
 	//
 	//}
-
 
 	std::tuple<double, double> BeckmannSample11(const Vector3f& wo, const Point2f& uv) {
 		double invSqrtPI = 1.0 / sqrt(M_PI);
