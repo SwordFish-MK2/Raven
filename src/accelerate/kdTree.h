@@ -103,9 +103,9 @@ namespace Raven {
 			std::memcpy(treeNodes, tree.treeNodes, sizeof(KdTreeNode) * nAccelNode);
 		}
 
-		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 		~KdTreeAccel() {
 			if (treeNodes)
 				delete[] treeNodes;

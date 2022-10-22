@@ -89,12 +89,12 @@ namespace Raven {
 		SurfaceInteraction inter;
 		const Transform& t = *this;
 		inter.p = t(its.p);
-		inter.n = t(its.n);
 		inter.dndu = t(its.dndu);
 		inter.dndv = t(its.dndv);
 		inter.dpdu = t(its.dpdu);
 		inter.dpdv = t(its.dpdv);
-		inter.wo = t(its.wo);
+		inter.n = Normalize(t(its.n));
+		inter.wo = Normalize(t(its.wo));
 		inter.bsdf = its.bsdf;
 		inter.uv = its.uv;
 		inter.t = its.t;
@@ -106,7 +106,7 @@ namespace Raven {
 	Vector3f Transform::operator()(const Vector3f& v)const {
 		Eigen::Vector4f nv(v[0], v[1], v[2], 0.0f);
 		nv = m * nv;
-		return Normalize(Vector3f(nv(0), nv(1), nv(2)));
+		return Vector3f(nv(0), nv(1), nv(2));
 	}
 
 	Point3f Transform::operator()(const Point3f& p)const {
@@ -205,7 +205,7 @@ namespace Raven {
 		int half_height = h / 2;
 		int half_width = w / 2;
 		screenToRaster << (double)half_width, 0, 0, (double)half_width,
-			0, -double(half_height), 0, (double)half_height,
+			0, -double(half_width), 0, (double)half_height,
 			0, 0, 1, 0,
 			0, 0, 0, 1;
 		return Transform(screenToRaster);

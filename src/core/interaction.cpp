@@ -1,7 +1,10 @@
 #include"interaction.h"
-
+#include"light.h"
 namespace Raven {
+
+	//根据微分光线计算交点的参数坐标(u,v)分别关于屏幕空间坐标(x,y)的偏导数
 	void SurfaceInteraction::computeDifferential(const RayDifferential& rd) {
+		//光线不含有微分光线，则纹理与法线的偏导数全部置零
 		if (!rd.hasDifferential) {
 			dudx = 0;
 			dudy = 0;
@@ -11,24 +14,24 @@ namespace Raven {
 			dpdy = Vector3f(0.0);
 		}
 		else {
-			//compute coordinate of px, py
-			double d = -Dot(Vector3f(n), Vector3f(p));
+			//计算微分光线与场景的交点 px, py
+			double d = -Dot(Vector3f(n), Vector3f(p));	
 			double tx = (-Dot(n, Vector3f(rd.originX)) - d) / Dot(n, rd.directionX);
 			Point3f px = rd.originX + rd.directionX * tx;
 			double ty = (-Dot(n, Vector3f(rd.originY)) - d) / Dot(n, rd.directionY);
 			Point3f py = rd.originY + rd.directionY * ty;
 
-			//compute dpdx dpdy
+			//计算dpdx,dpdy,由于dx、dy为1,dpdx = dp,dpdy = dy
 			dpdx = px - p;
 			dpdy = py - p;
 
-			//choose two dimention to solve the linear equation system
+			//选择相关性较强的两个维度求解线性方程组
 			int dim[2];
-			if (n.x > n.y && n.x > n.z) {
+			if (std::abs(n.x) > std::abs(n.y) && std::abs(n.x) > std::abs(n.z)) {
 				dim[0] = 1;
 				dim[1] = 2;
 			}
-			else if (n.y > n.z && n.y > n.x) {
+			else if (std::abs(n.y) > std::abs(n.z)) {
 				dim[0] = 0;
 				dim[1] = 2;
 			}
@@ -40,7 +43,7 @@ namespace Raven {
 			double bx[] = { dpdx[dim[0]],dpdx[dim[1]] };
 			double by[] = { dpdy[dim[0]],dpdy[dim[1]] };
 
-			//solve linear system to get partial derivitive of uv over xy
+			//求解线性方程组解得dudx、dvdx、dudy、dvdy
 			if (!solve2x2LinearSystem(m, bx, &dudx, &dvdx)) {
 				dudx = 0;
 				dvdx = 0;
@@ -65,8 +68,17 @@ namespace Raven {
 	}
 
 	Ray SurfaceInteraction::scartterRay(const Vector3f& dir)const {
-		Point3f ori = p + dir * 0.01;
+		Point3f ori = p + dir * 0.001;
 		return Ray(ori, dir);
 	}
 
+	Spectrum SurfaceInteraction::Le(const Vector3f& w)const{
+		if (hitLight) {
+			light->Li(*this, w);
+		}
+		else
+			return Spectrum(0.0);
+	}
 }
+
+

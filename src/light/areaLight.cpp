@@ -16,7 +16,7 @@ namespace Raven {
 		//调用Shape的pdf函数求出采样该点的pdf
 		lightSample->pdf = pdf;
 		lightSample->wi = Normalize(lightInter.p - inter.p);//方向为从点p入射光源
-		lightSample->n = lightInter.n;
+		//lightSample->n = lightInter.n;
 		lightSample->p = lightInter.p;
 		return Li(lightInter, -(lightSample->wi));
 	}

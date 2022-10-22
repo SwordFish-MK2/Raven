@@ -11,12 +11,15 @@
 namespace Raven {
 	class Renderer {
 	public:
-		Renderer(const Camera* c, const Film& f,int spp=100,double epsilon=0.0001) :camera(c), film(f),spp(spp),epsilon(epsilon) {}
+		Renderer(const std::shared_ptr<Camera>& c,
+			const std::shared_ptr<Film>& f,
+			int spp = 100,
+			double epsilon = 0.0001) :camera(c), film(f), spp(spp), epsilon(epsilon) {}
 		virtual void render(const Scene& scene) = 0;
 	protected:
 		const double epsilon;
-		const Camera* camera;
-		Film film;
+		std::shared_ptr<Camera> camera;
+		std::shared_ptr<Film> film;
 		const int spp;
 	};
 	//º∆À„MIS weight
@@ -32,5 +35,5 @@ namespace Raven {
 
 	Spectrum SampleAllLights(const SurfaceInteraction& record, const Scene& scene);
 }
-	
+
 #endif

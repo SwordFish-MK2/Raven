@@ -16,7 +16,7 @@ namespace Raven {
 			const std::shared_ptr<Texture<double>>& uRough,
 			const std::shared_ptr<Texture<double>>& vRough,
 			const std::shared_ptr<Texture<double>>& bump = nullptr,
-			double eta = 1.0) :
+			double eta = 1.2) :
 			kdTex(kd), ktTex(kt), uRough(uRough), vRough(vRough), bumpTex(bump), eta(eta) {}
 
 			virtual void computeScarttingFunctions(SurfaceInteraction& its)const;
@@ -38,7 +38,15 @@ namespace Raven {
 		double eta;
 
 	};
-
+	inline std::shared_ptr<Glass> makeGlassMaterial(
+		const std::shared_ptr<Texture<Spectrum>>& kd,
+		const std::shared_ptr<Texture<Spectrum>>& kt,
+		const std::shared_ptr<Texture<double>>& uRough,
+		const std::shared_ptr<Texture<double>>& vRough,
+		const PropertyList& pList) {
+		double eta = pList.getFloat("eta");
+		return std::make_shared<Glass>(kd, kt, uRough, vRough, nullptr, eta);
+	}
 }
 
 #endif

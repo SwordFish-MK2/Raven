@@ -7,3 +7,6 @@
 [submodule "vender/eigen"]
 	path = vender/eigen
 	url = https://gitee.com/QQ975150313/Eigen.git
+[submodule "vender/tinyxml"]
+	path = vender/tinyxml
+	url = https://github.com/leethomason/tinyxml2.git

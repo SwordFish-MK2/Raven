@@ -1169,6 +1169,14 @@ namespace Raven {
 		xyz[1] = sum[1] * invL;
 		xyz[2] = sum[2] * invL;
 	}
+	RGBSpectrum RGBSpectrum::fromRGBInt(int v0, int v1, int v2) {
+		RGBSpectrum temp;
+		temp.c[0] = v0 / 255.0;
+		temp.c[1] = v1 / 255.0;
+		temp.c[2] = v2 / 255.0;
+		return temp;
+	}
+
 
 	RGBSpectrum RGBSpectrum::fromRGB(const double rgb[3], RGBType type) {
 		RGBSpectrum temp;
@@ -1255,5 +1263,28 @@ namespace Raven {
 		float t = (lambda[i] - l) / (lambda[i] - lambda[i - 1]);
 		return Lerp(t, values[i - 1], values[i]);
 	}
+
+	//void getSpectrumSample(std::shared_ptr<double[]> lambda, 
+	//	std::shared_ptr<double[]> v,
+	//	int* n,
+	//	const std::string& str) {
+	//	std::vector<std::string> tokens = tokenize(str);
+
+	//	*n = tokens.size();
+	//	lambda = std::make_shared<double[]>(tokens.size());
+	//	v = std::make_shared<double[]>(tokens.size());
+	//	for (size_t i = 0; i < tokens.size(); i++) {
+	//		std::vector<std::string> sampleToken = tokenize(tokens[i], ":");
+	//		char* end_ptr;
+	//		lambda[i]= (double)strtof(sampleToken[0].c_str(), &end_ptr);
+	//		if (end_ptr != '\0') {
+	//			std::cerr << "Failed to get spectrum sample" << std::endl;
+	//		}
+	//		v[i] = (int)strtof(sampleToken[i].c_str(), &end_ptr);
+	//		if (end_ptr != '\0') {
+	//			std::cerr << "Failed to get spectrum sample" << std::endl;
+	//		}
+	//	}
+	//}
 
 }

@@ -9,28 +9,32 @@ namespace Raven {
 		return true;
 	}
 
-	bool Primitive::intersect(const Ray& ray, SurfaceInteraction& record, double tMax)const {
+	bool Primitive::intersect(const Ray& ray, HitInfo& record, double tMax)const {
 		//判断光线是否与几何体相交
 		bool foundIntersection = shape_ptr->intersect(ray, record, tMax);
+		return foundIntersection;
+	}
 
-		//光线未与几何体相交
-		if (!foundIntersection) {
-			return false;
-		}
+	SurfaceInteraction Primitive::setInteractionProperty(const HitInfo& hitInfo, const RayDifferential& ray)const {
 
-		//相交并且击中光源
-		if (light_ptr.get()) {
+		//取得交点的几何信息
+		SurfaceInteraction record = shape_ptr->getGeoInfo(hitInfo.pHit);
+
+		record.computeDifferential(ray);
+		//配置材质信息
+		mate_ptr->computeScarttingFunctions(record);
+
+		//配置光源信息
+		if (light_ptr.get() != nullptr) {
 			record.hitLight = true;
 			record.light = this->getAreaLight();
 		}
 		else {
 			record.hitLight = false;
 		}
+		record.wo = hitInfo.wo;
 
-		//计算材质
-		if (mate_ptr.get())
-			mate_ptr->computeScarttingFunctions(record);
-		return true;
+		return record;
 	}
 
 	Bound3f Primitive::worldBounds()const {
@@ -38,7 +42,7 @@ namespace Raven {
 	}
 
 	std::shared_ptr<Primitive> Primitive::build(const std::shared_ptr<Shape>& s, const std::shared_ptr<Material>& m,
-		const std::shared_ptr<Light>& l) {
+		const std::shared_ptr<AreaLight>& l) {
 		return std::make_shared<Primitive>(s, m, l);
 	}
 
@@ -50,18 +54,9 @@ namespace Raven {
 		return prim->hit(r_in, tMax);
 	}
 
-	bool TransformedPrimitive::intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const {
-		if (!primToWorld || !worldToPrim || !prim)
-			return false;
-
-		//将光线变换到Prim坐标系下并求交
-		Ray transformedRay = (*worldToPrim)(r_in);
-		if (!prim->intersect(transformedRay, record, tMax))
-			return false;
-		else {
-			record = (*primToWorld)(record);
-			return true;
-		}
+	SurfaceInteraction TransformedPrimitive::setInteractionProperty(const HitInfo& pHit, const RayDifferential& ray)const {
+		SurfaceInteraction record = prim->setInteractionProperty(pHit,ray);
+		return (*primToWorld)(record);
 	}
 
 	Bound3f TransformedPrimitive::worldBounds()const {

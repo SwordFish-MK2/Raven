@@ -16,17 +16,17 @@ namespace Raven {
 		//Ìí¼Óshading models
 
 		//diffuse
-		if (kdValue != Spectrum(0.0)) {
-			std::shared_ptr<BxDF> lam = std::make_shared<LambertainReflection>(kdValue);
-			bsdf->addBxDF(lam);
-		}
+		//if (kdValue != Spectrum(0.0)) {
+		//	std::shared_ptr<BxDF> lam = std::make_shared<LambertainReflection>(kdValue);
+		//	bsdf->addBxDF(lam);
+		//}
 
 		//glossy
 		if (ksValue != Spectrum(0.0)) {
 			std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.5f, 1.f);
 			double alpha = GGX::RoughnessToAlpha(roughValue);
 			std::shared_ptr<MicrofacetDistribution> distribute =
-				std::make_shared<GGX>(alpha, alpha, true);
+				std::make_shared<GGX>(alpha, alpha, false);
 
 			std::shared_ptr<BxDF> spec =
 				std::make_shared<MicrofacetReflection>(fresnel, distribute, ksValue);

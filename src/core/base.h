@@ -2,6 +2,7 @@
 #define _RAVEN_CORE_BASE_H_
 #include<iostream>
 #include<random>
+#include<map>
 namespace Raven {
 	template<class T>
 	class Vector3;
@@ -19,8 +20,10 @@ namespace Raven {
 	class AABB2;
 	template<class T>
 	class Texture;
-	template <typename T, int logBlockSize = 4>
-	class BlockedArray;
+	template<class T>
+	class Mipmap;
+	template<class T>
+	class Image;
 	class Camera;
 	class Ray;
 	class RayDifferential;
@@ -31,15 +34,19 @@ namespace Raven {
 	class BxDF;
 	class Shape;
 	class Light;
+	class AreaLight;
 	class Material;
 	class Primitive;
 	class Scene;
+	class InfiniteAreaLight;
 	class Renderer;
 	class VisibilityTester;
 	class Triangle;
 	class TriangleMesh;
 	class Filter;
 	struct LightSample;
+	struct SurfaceInteraction;
+	struct Interaction;
 	template<class T>
 	T Max(T t1, T t2) { if (t1 > t2)return t1; return t2; }
 	template<class T>
@@ -54,7 +61,7 @@ namespace Raven {
 		T t3 = t0 < t1 ? t0 : t1;
 		return t3 < t2 ? t3 : t2;
 	}
-	
+
 	inline double Lerp(double t, double x1, double x2) { return (1 - t) * x1 + t * x2; }
 	inline double Clamp(double v, double min, double max) {
 		if (v > max)
@@ -92,14 +99,14 @@ namespace Raven {
 		x |= x >> 4;
 		x |= x >> 8;
 		x |= x >> 16;
-		return x++;
+		return ++x;
 	}
 	//use Cramer's law to solve 2x2 linear equation system
 	inline bool solve2x2LinearSystem(const double* A, const double* b, double* x0, double* x1) {
 		double det = A[0] * A[3] - A[1] * A[2];
-		if (det < 1e-8)
+		if (std::abs(det) < 1e-8)
 			return false;
-		//use Cramer's rule to solve linear equation system
+		//use Cramer's law to solve linear equation system
 		double det0 = b[0] * A[3] - b[1] * A[1];
 		double det1 = A[0] * b[1] - A[2] * b[0];
 		*x0 = det0 / det;
@@ -125,6 +132,9 @@ namespace Raven {
 		static std::mt19937 generator;
 		return distribution(generator);
 
+	}
+	inline double rgbToFloat(int rgb_value) {
+		return rgb_value / 255.0;
 	}
 	inline double ErfInv(double x) {
 		double w, p;
@@ -157,6 +167,11 @@ namespace Raven {
 		return p * x;
 	}
 
+	template<class T>
+	inline double Log2(T v) {
+		return std::log(v) / std::log(2);
+	}
+
 	inline void UpdateProgress(double progress)
 	{
 		int barWidth = 70;
@@ -171,5 +186,23 @@ namespace Raven {
 		std::cout << "] " << int(progress * 100.0) << " %\r";
 		std::cout.flush();
 	};
+
+	template<class T>
+	class RavenParamSetItem {
+		RavenParamSetItem(
+			const std::string& name,
+			const std::unique_ptr<T[]>& value,
+			int nValues = 1) :
+			name(name), values(value), nValues(nValues) {}
+	private:
+		std::string name;
+		std::unique_ptr<T[]> values;
+		int nValues;
+	};
+
+	std::vector<std::string> tokenize(
+		const std::string& string,
+		const std::string& delim= ",",
+		bool includeEmpty = false);
 }
 #endif

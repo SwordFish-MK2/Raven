@@ -6,3 +6,4 @@ models/
 #files
 CMakeSettings.json
 notation.md
+xmake.lua

@@ -1,17 +1,14 @@
 #ifndef _RAVEN_CORE_FILM_H_
 #define _RAVEN_CORE_FILM_H_
 
-
-
-
-
+#include"image.h"
 #include<iostream>
 #include"base.h"
 #include<fstream>
 #include"math.h"
 #include<vector>
 #include"spectrum.h"
-
+#include"../utils/propertylist.h"
 namespace Raven {
 	//struct GeometryData {
 
@@ -23,82 +20,40 @@ namespace Raven {
 	//	GeometryData(const GeometryData& data) :n(data.n), color(data.color), p(data.p), hit(data.hit) {}
 	//};
 
+
+	//TODO::add filter
 	class Film {
 	public:
-		const int height, width;
+		const int xRes, yRes;
 		const double aspect_ratio;
 
-		Film(int w, int h) :height(h), width(w), aspect_ratio(w / h), index(0) {
-			data = (unsigned char*)malloc(sizeof(unsigned char) * h * w * 3);
+		Film(int width, int height) :xRes(width), yRes(height), aspect_ratio(width / height), frameBuffer(width, height) {}
+		Film(const Film& film)
+			:xRes(film.xRes), yRes(film.yRes), aspect_ratio(film.aspect_ratio), frameBuffer(film.frameBuffer) {
 		}
-		Film(const Film& f) :height(f.height), width(f.width), aspect_ratio(f.aspect_ratio), index(0)
-		{
-			data = (unsigned char*)malloc(sizeof(unsigned char) * height * width * 3);
-			memcpy(data, f.data, sizeof(unsigned char) * height * width * 3);
-		}
-		~Film() {
-			free(data);
-		}
-		void writeTxt()const;
 		void write()const;
-		//	void writeColor();
-		void in(int value, int ind) {
-			data[ind] = value;
-		}
-		void in(int value) {
-			data[index++] = value;
-		}
-		void setColor(const Spectrum& color, int x, int y) {
-			int offset = (y * width + x) * 3;
-			double invGamma = 1.0 / 2.2;
-			for (int i = 0; i < 3; i++)
-			{
-				double c = GammaCorrect(color[i]);
 
-				//double c = pow(color[i], invGamma);//gamma correct
-				int intC = static_cast<int>(255 * Clamp(c, 0.0, 0.999));
-				in(intC, offset + i);
-			}
+		//int uSize() const { return xRes; }
+		//int vSize() const { return yRes; }
+
+		//void testMipmap();
+
+		RGBSpectrum& operator()(int x, int y) {
+			return frameBuffer(x, y);
 		}
-		void in(const Spectrum& color) {
-			for (int i = 0; i < 3; i++) {
-				double c = GammaCorrect(color[i]);
-				int intC = static_cast<int>(255 * Clamp(c, 0.0, 0.999));
-				in(intC);
-			}
+		const RGBSpectrum& operator()(int x, int y) const {
+			return frameBuffer(x, y);
 		}
-		//void setColor(const Vector3f& c, int x, int y) {
-		//	int index = x + y * width;
-		//	buffer[index].color = c;
-		//}
-		//void setGBuffer(GeometryData data, int x, int y) {
-		//	int index = x + y * width;
-		//	buffer[index] = data;
-		//}
-		//Vector3f getColor(int x, int y)const {
-		//	Clamp(x, 0, width - 1);
-		//	Clamp(y, 0, height - 1);
-		//	index = y * width + x;
-		//	return buffer[index].color;
-		//}
-		//Point3f getDepth(int x, int y)const {
-		//	Clamp(x, 0, width - 1);
-		//	Clamp(y, 0, height - 1);
-		//	int index = y * width + x;
-		//	return buffer[index].p;
-		//}
-		//Normal3f getNormal(int x, int y)const {
-		//	Clamp(x, 0, width - 1);
-		//	Clamp(y, 0, height - 1);
-		//	int index = y * width + x;
-		//	return buffer[index].n;
-		//}
-		//void filter(int filterSize, double sigmaX, double sigmaC, double sigmaN, double sigmaD);
 
 	private:
-		mutable int index;
-		unsigned char* data;
-
+		Image<RGBSpectrum> frameBuffer;
 	};
+
+	inline std::shared_ptr<Film> makeFilm(const PropertyList& param) {
+		int u = param.getInteger("uSize");
+		int v = param.getInteger("vSize");
+		return std::make_shared<Film>(u, v);
+	}
+
 }
 #endif

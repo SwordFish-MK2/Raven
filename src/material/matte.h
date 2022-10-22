@@ -34,6 +34,13 @@ namespace Raven {
 			return std::make_shared<MatteMaterial>(sigma, kd, bump);
 		}
 	};
+
+	inline std::shared_ptr<MatteMaterial> makeMatteMaterial(
+		const std::shared_ptr<Texture<double>>& sigma,
+		const std::shared_ptr<Texture<Spectrum>>& kd,
+		const PropertyList& property) {
+		return std::make_shared<MatteMaterial>(sigma, kd, nullptr);
+	}
 }
 
 #endif

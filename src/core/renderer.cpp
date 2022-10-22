@@ -5,6 +5,11 @@ namespace Raven {
 
 	Spectrum EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light) {
 
+		//处理光源
+		for (std::shared_ptr<Light> light : scene.lights) {
+			light->preprocess(scene);
+		}
+
 		Spectrum L(0.0);
 
 		//从光源的分布上采样
@@ -19,17 +24,15 @@ namespace Raven {
 
 				//判断shadow ray是否被遮挡
 				//Ray shadowRay(record.p, lSample.wi);
-				Ray shadowRay = record.scartterRay(lSample.wi);
+				Ray shadowRay = record.scartterRay(lSample.wi);//shadow ray从交点射向光源
 				double distance = (record.p - lSample.p).length();
-				std::optional<SurfaceInteraction> test = scene.intersect(shadowRay, distance - 0.001);
-				if (test)
+				if (scene.hit(shadowRay, distance - 0.01))
 					Le = Spectrum(0.0);	//如果shadow ray被遮挡，返回Radiance=0
 
 				//计算此次采样的贡献
 				if (Le != Spectrum(0.0)) {
 					double weight = PowerHeuristic(1, lSample.pdf, 1, scarttingPdf);
 					L += Le * f * weight / lSample.pdf;
-					//L += Le * f / lSample.pdf;
 				}
 			}
 		}
@@ -37,14 +40,14 @@ namespace Raven {
 		//从brdf的分布上采样
 
 		//采样brdf
-		auto [f,wi,scarttingPdf,sampledType] = record.bsdf->sample_f(record.wo, Point2f(GetRand(), GetRand()));
+		auto [f, wi, scarttingPdf, sampledType] =
+			record.bsdf->sample_f(record.wo, Point2f(GetRand(), GetRand()));
 
 		double lightPdf = 1.0;
 		if (f != Spectrum(0.0) && scarttingPdf > 0) {
 
 			double cosTheta = abs(Dot(wi, record.n));
 			f *= cosTheta;
-
 
 			//计算lightPdf，求MIS权重
 			lightPdf = light.pdf_Li(record, wi);
@@ -53,16 +56,19 @@ namespace Raven {
 			double weight = PowerHeuristic(1, scarttingPdf, 1, lightPdf);
 
 			//出射shadow ray 判断光源是否被遮挡
-			//Ray shadowRay(record.p, wi);
 			Ray shadowRay = record.scartterRay(wi);
 			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay, std::numeric_limits<double>::max());
 
 			//采样的shadow ray未被遮挡，计算光源的贡献
-			if (intersection && (*intersection).hitLight && (*intersection).light == &light) {
-				Spectrum Le = light.Li(*intersection, -wi);
-				if (Le != Spectrum(0.0))
-					L += weight * f * Le / scarttingPdf;
+			Spectrum Le(0.0);
+			if (intersection) {
+				if (intersection->hitLight && intersection->light == &light)
+					Le += intersection->Le(-wi);
 			}
+			else
+				Le += light.Le(shadowRay);
+			if (!Le.isBlack())
+				L += weight * f * Le / scarttingPdf;
 		}
 		return L;
 	}

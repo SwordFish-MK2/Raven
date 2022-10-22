@@ -3,6 +3,7 @@
 
 #include"../core/camera.h"
 #include"../core/base.h"
+#include"../utils/propertylist.h"
 
 namespace Raven {
 
@@ -63,6 +64,11 @@ namespace Raven {
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
 	};
 
+
+	std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(const Transform& CTW, const Transform& STR,
+		const PropertyList& param);
+	std::shared_ptr<OrthographicCamera> makeOrthographicCamera(const Transform& CTW, const Transform& STR,
+		const PropertyList& param);
 }
 
 #endif

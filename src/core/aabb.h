@@ -23,8 +23,8 @@ namespace Raven {
 			//defual constructor set pmin>pmax to make sure this aabb do not exist
 			T minNum = std::numeric_limits<T>::lowest();
 			T maxNum = std::numeric_limits<T>::max();
-			pMin = Point3<T>(1, 1, 1);
-			pMax = Point3<T>(-1, -1, -1);
+			pMin = Point3<T>(maxNum, maxNum, maxNum);
+			pMax = Point3<T>(minNum, minNum, minNum);
 		}
 
 		AABB3<T>(const AABB3<T>& box) { this->pMax = box.pMax; this->pMin = box.pMin; }

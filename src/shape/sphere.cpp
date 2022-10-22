@@ -41,7 +41,7 @@ namespace Raven {
 		return localBox;
 	}
 
-	bool Sphere::intersect(const Ray& r_in, SurfaceInteraction& inter, double tMax)const {
+	bool Sphere::intersect(const Ray& r_in, HitInfo& info, double tMax)const {
 		//将光线变换到局部坐标系下
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -65,10 +65,15 @@ namespace Raven {
 				return false;
 		}
 
-		//计算交点信息，pHit,uvHit,nHit
+		//计算交点信息
 		Point3f pHit = localRay.position(tHit);
+		pHit *= radius / Distance(pHit, Point3f(0, 0, 0));
+		info.setInfo(pHit, tHit, -r_in.dir);
+		return true;
+	}
 
-		double phi = -atan(pHit.z / pHit.x);
+	SurfaceInteraction Sphere::getGeoInfo(const Point3f& pHit)const {
+		double phi = atan2(-pHit.z, pHit.x);
 		if (phi < 0)phi += 2 * M_PI;
 		double theta = acos(Clamp(pHit.y / radius, -1, 1));
 
@@ -77,14 +82,13 @@ namespace Raven {
 
 		Normal3f nHit = (Normal3f)(pHit - Point3f(0.0)).normalized();
 
-
 		//计算偏导dpdu，dpdv
-		double invR = 1. / radius;
+		double zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
+		double invR = 1. / zRadius;
 		double cosPhi = pHit.x * invR;
 		double sinPhi = -pHit.z * invR;
-		Vector3f dpdu = (pHit.z * 2 * M_PI, 0.0, -pHit.x * 2 * M_PI);
-		Vector3f dpdv = M_PI * (pHit.y * cosPhi, -sin(theta) * radius, -pHit.y * M_PI * sinPhi);
-
+		Vector3f dpdu = (2 * M_PI) * Vector3f(pHit.z, 0.0, -pHit.x);
+		Vector3f dpdv = M_PI * Vector3f(pHit.y * cosPhi, -sin(theta) * radius, -pHit.y * sinPhi);
 
 		//计算偏导dndu，dndv
 		double pi2 = M_PI * M_PI;
@@ -109,17 +113,15 @@ namespace Raven {
 		//记录相交信息并变换到世界坐标系
 		SurfaceInteraction record;
 		record.p = pHit;
-		record.t = tHit;
 		record.n = nHit;
-		record.wo = -localRay.dir;
 		record.uv = Point2f(u, v);
 		record.dpdu = dpdu;
 		record.dpdv = dpdv;
 		record.dndu = dndu;
 		record.dndv = dndv;
 		record = (*localToWorld)(record);
-		inter = record;
-		return true;
+		return record;
+
 	}
 
 	//在圆上均匀采样一个点

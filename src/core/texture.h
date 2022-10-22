@@ -3,7 +3,7 @@
 
 #include"base.h"
 #include"interaction.h"
-
+#include"../utils/propertylist.h"
 namespace Raven {
 	/// <summary>
 	/// 2DŒ∆¿Ìmapping 
@@ -61,6 +61,9 @@ namespace Raven {
 		std::shared_ptr<Texture<T>> vTexture;
 		std::shared_ptr<Texture<T>> sTexture;
 	};
+
+	std::shared_ptr<ConstTexture<double>> makeConstTextureFloat(const PropertyList& param);
+	std::shared_ptr<ConstTexture<Spectrum>> makeConstTextureSpectrum(const PropertyList& param);
 }
 
 #endif

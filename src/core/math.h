@@ -8,6 +8,7 @@
 #define _USE_MATH_DEFINES
 #endif
 
+#include<assert.h>
 #include<math.h>
 
 
@@ -145,6 +146,7 @@ namespace Raven {
 		//Methods--------------------------------------------------
 		Vector2() :x(0), y(0) {}
 		//exception
+		Vector2(const T& v) :x(v), y(v) {}
 		Vector2(T xx, T yy) :x(xx), y(yy) {
 			//exceptions not a number
 		}
@@ -240,6 +242,7 @@ namespace Raven {
 		Point3() :x(0), y(0), z(0) {}
 		Point3(T xx, T yy, T zz) :x(xx), y(yy), z(zz) {
 		}
+		Point3(const T& v) :x(v), y(v), z(v) {}
 		Point3(const Point3<T>& p) :x(p.x), y(p.y), z(p.z) {}
 		explicit Point3(const Vector3<T>& v) { x = v.x; y = v.y; z = v.z; }
 		//overload operators-------------------------------------------
@@ -334,6 +337,7 @@ namespace Raven {
 		//exception
 		Point2(T xx, T yy) :x(xx), y(yy) {
 		}
+		Point2(const T& v) :x(v), y(v) {}
 		Point2(const Point2<T>& p) :x(p.x), y(p.y) {}
 		explicit Point2(const Vector2<T>& v) { x = v.x; y = v.y; }
 		explicit Point2(const Point3<T>& p) { x = p.x; y = p.y; }
@@ -401,6 +405,7 @@ namespace Raven {
 		T x, y, z;
 		Normal3() :x(0.f), y(0.f), z(0.f) {}
 		Normal3(T xx, T yy, T zz) :x(xx), y(yy), z(zz) {}
+		Normal3(const T& v) :x(v), y(v), z(v) {}
 		explicit Normal3(const Vector3<T>& v) { x = v.x; y = v.y; z = v.z; }
 		Normal3(const Normal3<T>& n) :x(n.x), y(n.y), z(n.z) {}
 
@@ -606,7 +611,7 @@ namespace Raven {
 	}
 
 	inline double SphericalTheta(const Vector3f& v) {
-		return acos(Clamp(v.z,-1.0,1.0));
+		return acos(Clamp(v.z, -1.0, 1.0));
 	}
 
 	inline double SphericalPhi(const Vector3f& v) {
@@ -760,6 +765,20 @@ namespace Raven {
 		Normal3<T> FaceForward(const Normal3<T>& n, const Normal3<T>& v) {
 		return (Dot(n, v) < 0.f) ? -n : n;
 	}
+
+	Vector3f toVector3f(const std::string& str);
+
+	Vector2f toVector2f(const std::string& str);
+
+	Point3f toPoint3f(const std::string& str);
+
+	Point2f toPoint2f(const std::string& str);
+
+	Normal3f toNormal(const std::string& str);
+
+	double toFloat(const std::string& str);
+
+	double toInt(const std::string& str);
 }
 
 #endif

@@ -1,25 +1,15 @@
 #include"mesh.h"
 #include"../core/distribution.h"
+#include"../utils/loader.h"
+#include"../core/light.h"
 #include"../core/primitive.h"
+
 namespace Raven {
-	std::vector<std::shared_ptr<Triangle>> TriangleMesh::getTriangles() {
-		std::vector<std::shared_ptr<Triangle>> triangles;
+	void TriangleMesh::generateTriangles() {
 		for (size_t i = 0; i < nTriangles; i++) {
-			std::shared_ptr<Triangle> t = std::make_shared<Triangle>(OTW, WTO, this, i);
+			auto t = std::make_shared<Triangle>(OTW, WTO, this, i);
 			triangles.push_back(t);
 		}
-		return triangles;
-	}
-
-	std::vector<std::shared_ptr<Primitive>> TriangleMesh::generatePrimitive(const std::shared_ptr<Material>& mate,
-		const std::shared_ptr<Light>& light) {
-		std::vector<std::shared_ptr<Primitive>> primitives;
-		for (size_t i = 0; i < nTriangles; i++) {
-			std::shared_ptr<Triangle> t = std::make_shared<Triangle>(OTW, WTO, this, i);
-			std::shared_ptr<Primitive> p = std::make_shared<Primitive>(t, mate, light);
-			primitives.push_back(p);
-		}
-		return primitives;
 	}
 
 	void Triangle::getUVs(Point2f uv[3])const {
@@ -41,29 +31,31 @@ namespace Raven {
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
 		const Point3f& p2 = mesh->vertices[index(2)];
+
 		//利用克莱姆法则求解三角型的重心坐标与光线的传播时间t
 		Vector3f e1 = p1 - p0;
 		Vector3f e2 = p2 - p0;
 		Vector3f s = r_in.origin - p0;
 		Vector3f s1 = Cross(r_in.dir, e2);
 		Vector3f s2 = Cross(s, e1);
+
 		auto det = Dot(s1, e1); //行列式必须不为零且重心坐标的值必须大于0
 		if (det <= 0)return false;
+
 		double invDet = 1.0 / det;
-		double t = invDet * Dot(s2, e2); if (t < 0 || t >= tMax) return false;
-		double b1 = invDet * Dot(s1, s); if (b1 < 0 || b1>1) return false;
-		double b2 = invDet * Dot(s2, r_in.dir); if (b2 < 0 || (b2 + b1)>1)return false;
+		double t = invDet * Dot(s2, e2);
+		double b1 = invDet * Dot(s1, s);
+		double b2 = invDet * Dot(s2, r_in.dir);
 		double b0 = 1 - b1 - b2;
-		const Normal3f& n0 = mesh->normals[index(0)];
-		const Normal3f& n1 = mesh->normals[index(1)];
-		const Normal3f& n2 = mesh->normals[index(2)];
-		Normal3f nHit = n0 * b0 + n1 * b1 + n2 * b2;
-		if (Dot(nHit, r_in.dir) > 0)
-			return false;
+
+		if (t < 0 || t >= tMax) return false;
+
+		if (b0 <= 0 || b1 <= 0 || b2 <= 0)return false;
+
 		return true;
 	}
 
-	bool Triangle::intersect(const Ray& r_in, SurfaceInteraction& record, double tMax)const {
+	bool Triangle::intersect(const Ray& r_in, HitInfo& info, double tMax)const {
 		//取从网格中取出三角形的三个顶点p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
@@ -86,21 +78,27 @@ namespace Raven {
 		double b2 = invDet * Dot(s2, r_in.dir);
 		double b0 = 1 - b1 - b2;
 
-		//交点不在三角形内
-		if (b0 < 0)
-			return false;
-
 		//光线必须沿正向传播
-		if (t <= 0)
+		if (t <= 0 || t >= tMax)
 			return false;
 
 		//重心坐标都大于0时，交点在三角形内，光线与三角形相交	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
 			return false;
-		//TODO::检查相交时间
-		if (t >= tMax)
-			return false;
-		//利用重心坐标插值求出交点几何坐标、纹理坐标与法线
+
+		info.setInfo(Point3f(b0, b1, b2), t, -r_in.dir);
+		return true;
+	}
+
+	SurfaceInteraction Triangle::getGeoInfo(const Point3f& b)const {
+		const Point3f p0 = mesh->vertices[index(0)];
+		const Point3f p1 = mesh->vertices[index(1)];
+		const Point3f p2 = mesh->vertices[index(2)];
+
+		const double alpha = b[0];
+		const double beta = b[1];
+		const double gamma = b[2];
+
 		Point2f uv[3];
 		getUVs(uv);
 
@@ -111,12 +109,12 @@ namespace Raven {
 		const Normal3f& n0 = mesh->normals[index(0)];
 		const Normal3f& n1 = mesh->normals[index(1)];
 		const Normal3f& n2 = mesh->normals[index(2)];
-		Point3f pHit = b0 * p0 + b1 * p1 + b2 * p2;
-		Point3f pb1 = b0 * p0;
-		Point3f pb2 = b1 * p1;
-		Point3f pb3 = b2 * p2;
-		Point2f uvHit = b0 * uv0 + b1 * uv1 + b2 * uv2;
-		auto nHit = b0 * n0 + b1 * n1 + b2 * n2;
+		Point3f pHit = alpha * p0 + beta * p1 + gamma * p2;
+		Point3f pb1 = alpha * p0;
+		Point3f pb2 = beta * p1;
+		Point3f pb3 = gamma * p2;
+		Point2f uvHit = alpha * uv0 + beta * uv1 + gamma * uv2;
+		auto nHit = alpha * n0 + beta * n1 + gamma * n2;
 
 		////如果从背面入射，调整法线方向
 		//if (Dot(nHit, r_in.dir) >= 0.0)
@@ -148,10 +146,7 @@ namespace Raven {
 		its.n = nHit;
 		its.p = pHit;
 		its.uv = uvHit;
-		its.t = t;
-		its.wo = -r_in.dir;
-		record = its;
-		return true;
+		return its;
 	}
 
 	Bound3f Triangle::localBound()const {
@@ -209,22 +204,38 @@ namespace Raven {
 		return std::tuple<SurfaceInteraction, double>(sisec, pdf);
 	}
 
-	TriangleMesh CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
-		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal) {
+	std::shared_ptr<TriangleMesh> CreatePlane(
+		const Transform* LTW, 
+		const Transform* WTL, 
+		const Point3f& v0,
+		const Point3f& v1, 
+		const Point3f& v2, 
+		const Point3f& v3, 
+		const Normal3f& normal) {
 		std::vector<Point3f> vertices = { v0,v1,v2,v3 };
 		std::vector<int> indices = { 0,1,3,1,2,3 };
 		std::vector<Point2f> uvs = { Point2f(0,1),Point2f(1,1),Point2f(1,0),Point2f(0,0) };
 		std::vector<Normal3f> normals = { normal,normal,normal, normal };
 		std::vector<Vector3f> tangants;
-		TriangleMesh mesh(LTW, WTL, 2, vertices, indices, normals, tangants, uvs, AccelType::List);
+		std::shared_ptr<TriangleMesh> mesh=std::make_shared<TriangleMesh>(LTW, WTL, 2, vertices, indices, normals, tangants, uvs);
 		return mesh;
 	}
 
-
 	std::shared_ptr<TriangleMesh> TriangleMesh::build(const Transform* LTW, const Transform* WTL,
-		const TriangleInfo& info, AccelType buildType) {
+		const TriangleInfo& info) {
 		return std::make_shared<TriangleMesh>(LTW, WTL, info.numbers, info.vertices,
-			info.indices, info.normals, info.tangants, info.uvs, buildType);
+			info.indices, info.normals, info.tangants, info.uvs);
+	}
+
+	std::shared_ptr<TriangleMesh> makeTriangleMesh(
+		const std::shared_ptr<Transform>& LTW,
+		const std::shared_ptr<Transform>& WTL,
+		const PropertyList& pList) {
+		std::string path = pList.getString("path");
+		std::string filename = pList.getString("filename");
+		Loader loader;
+		std::optional<TriangleInfo> info = loader.load(path, filename);
+		return TriangleMesh::build(LTW.get(), WTL.get(), *info);
 	}
 
 }

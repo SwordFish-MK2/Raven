@@ -34,7 +34,13 @@ namespace Raven {
 
 
 	};
-
+	inline std::shared_ptr<Plastic> makePlasticMaterial(
+		const std::shared_ptr<Texture<Spectrum>>& kd,
+		const std::shared_ptr<Texture<Spectrum>>& ks,
+		const std::shared_ptr<Texture<double>>& roughness,
+		const PropertyList& pList) {
+		return std::make_shared<Plastic>(kd, ks, roughness, nullptr);
+	}
 }
 
 #endif
