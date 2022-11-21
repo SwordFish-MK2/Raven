@@ -3,7 +3,8 @@
 build/
 doc/
 models/
+models/
 #files
 CMakeSettings.json
 notation.md
-xmake.lua
+CMakeSettings.json
