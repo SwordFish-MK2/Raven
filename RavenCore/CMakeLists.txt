@@ -1,6 +1,6 @@
 file(GLOB_RECURSE srcs CONFIGURE_DEPENDS src/**/*/cpp src/*.cpp include/**/*.h include/*.h)
 
-add_executable(Raven ${srcs})
+add_executable(Raven ${srcs} "include/Raven/core/media.h" "src/core/media.cpp")
 
 target_include_directories(Raven PUBLIC include)
 

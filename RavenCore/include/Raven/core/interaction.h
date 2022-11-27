@@ -12,6 +12,21 @@ namespace Raven {
 
 	};
 
+	struct MediumInterface {
+		//interface
+		MediumInterface(
+			const std::shared_ptr<Medium>& medium
+		) :outside(medium), inside(medium) {}
+		MediumInterface(
+			const std::shared_ptr<Medium>& outside,
+			const std::shared_ptr<Medium>& inside) :
+			outside(outside), inside(inside) {}
+
+		//data
+		std::shared_ptr<Medium> outside;
+		std::shared_ptr<Medium> inside;
+	};
+
 	struct SurfaceInteraction :public Interaction {
 		double t;//光线的传播距离参数t
 		double eta = 1;//refract index

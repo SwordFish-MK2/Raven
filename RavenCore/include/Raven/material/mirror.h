@@ -27,6 +27,7 @@ namespace Raven {
 		std::shared_ptr<Texture<Spectrum>> rTex;
 		std::shared_ptr<Texture<double>> bumpTex;
 	};
+
 	inline std::shared_ptr<Mirror> makeMirrorMaterial(
 		const std::shared_ptr<Texture<Spectrum>>& r,
 		const PropertyList& pList) {

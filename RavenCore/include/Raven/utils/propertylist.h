@@ -57,6 +57,7 @@ namespace Raven {
 	private:
 		struct  Property {
 			Property() :type(boolean_type) {}
+
 			enum Type {
 				boolean_type,
 				integer_type,
@@ -69,6 +70,7 @@ namespace Raven {
 				spectra_type,
 				string_type
 			}type;
+
 			struct Value {
 				bool boolean_value;
 				int integer_value;

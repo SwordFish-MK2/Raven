@@ -38,6 +38,7 @@ namespace Raven {
 	class Light;
 	class AreaLight;
 	class Material;
+	class Medium;
 	class Primitive;
 	class Scene;
 	class InfiniteAreaLight;
@@ -46,6 +47,7 @@ namespace Raven {
 	class Triangle;
 	class TriangleMesh;
 	class Filter;
+	class Sampler;
 	struct LightSample;
 	struct SurfaceInteraction;
 	struct Interaction;
