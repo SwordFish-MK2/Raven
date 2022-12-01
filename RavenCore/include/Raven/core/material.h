@@ -25,7 +25,7 @@ namespace Raven {
 	class MaterialFactory {
 		using MaterialConstructor = std::function<Ref<Material>(const PropertyList&)>;
 	public:
-		static std::map<std::string,
+		static std::map<std::string,MaterialConstructor>
 	};
 }
 #endif
