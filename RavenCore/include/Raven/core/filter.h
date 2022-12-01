@@ -3,9 +3,10 @@
 
 #include<Raven/core/math.h>
 #include<Raven/core/base.h>
+#include<Raven/core/object.h>
 
 namespace Raven {
-	class Filter {
+	class Filter:RavenObject {
 	public:
 		//输入要处理的点距离滤波核的距离
 		virtual double evaluate(const Point2f& p)const = 0;

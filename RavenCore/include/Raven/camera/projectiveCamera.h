@@ -46,6 +46,8 @@ namespace Raven {
 		}
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
+
+		static Ref<Camera> construct(const PropertyList& param);
 	};
 
 	class OrthographicCamera :public ProjectiveCamera {
@@ -62,6 +64,8 @@ namespace Raven {
 		}
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
+
+		static Ref<Camera> construct(const PropertyList& param);
 	};
 
 

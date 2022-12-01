@@ -2,7 +2,7 @@
 #define _RAVEN_CORE_AABB_H_
 
 #include<Raven/core/base.h>
-#include<Raven/core/math.h>s
+#include<Raven/core/math.h>
 
 namespace Raven {
 	using Bound3f = AABB3<double>;

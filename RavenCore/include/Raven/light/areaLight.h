@@ -37,8 +37,8 @@ namespace Raven {
 		const std::shared_ptr<Transform>& WTL,
 		const std::shared_ptr<Shape>& shape,
 		const PropertyList& pList) {
-		int nSamples = pList.getInteger("nsamples");
-		Spectrum emit = pList.getSpectra("emit");
+		int nSamples = pList.getInteger("nsamples",2);
+		Spectrum emit = pList.getSpectra("emit",Spectrum(1.0));
 		return std::make_shared<DiffuseAreaLight>(LTW.get(), WTL.get(), nSamples, shape.get(), emit);
 	}
 }

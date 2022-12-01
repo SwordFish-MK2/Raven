@@ -59,50 +59,50 @@ namespace Raven {
 		}
 	}
 
-	std::shared_ptr<ImageTexture<double, double>> makeImageTextureFloat(
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param) {
-		std::string path = param.getString("filename");
-		bool doTrilinear = param.getBoolean("trilinear");
-		int wrap = param.getInteger("wrap");
-		bool gamma = param.getBoolean("gamma");
-		ImageWrap iwrap;
-		switch (wrap) {
-		case 0:
-			iwrap = ImageWrap::ImClamp;
-			break;
-		case 1:
-			iwrap = ImageWrap::ImRepeat;
-			break;
-		case 2:
-			iwrap = ImageWrap::ImBlack;
-			break;
-		}
-		return std::make_shared<ImageTexture<double, double>>(path, mapping, doTrilinear, iwrap, gamma);
-	}
+	//std::shared_ptr<ImageTexture<double, double>> makeImageTextureFloat(
+	//	const std::shared_ptr<TextureMapping2D>& mapping,
+	//	const PropertyList& param) {
+	//	std::string path = param.getString("filename");
+	//	bool doTrilinear = param.getBoolean("trilinear");
+	//	int wrap = param.getInteger("wrap");
+	//	bool gamma = param.getBoolean("gamma");
+	//	ImageWrap iwrap;
+	//	switch (wrap) {
+	//	case 0:
+	//		iwrap = ImageWrap::ImClamp;
+	//		break;
+	//	case 1:
+	//		iwrap = ImageWrap::ImRepeat;
+	//		break;
+	//	case 2:
+	//		iwrap = ImageWrap::ImBlack;
+	//		break;
+	//	}
+	//	return std::make_shared<ImageTexture<double, double>>(path, mapping, doTrilinear, iwrap, gamma);
+	//}
 
-	std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param) {
-		std::string path = param.getString("filename");
-		bool doTrilinear = param.getBoolean("trilinear");
-		int wrap = param.getInteger("wrap");
-		ImageWrap iwrap;
-		switch (wrap) {
-		case 0:
-			iwrap = ImageWrap::ImClamp;
-			break;
-		case 1:
-			iwrap = ImageWrap::ImRepeat;
-			break;
-		case 2:
-			iwrap = ImageWrap::ImBlack;
-			break;
-		}
-		bool gamma = param.getBoolean("gamma");
+	//std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(
+	//	const std::shared_ptr<TextureMapping2D>& mapping,
+	//	const PropertyList& param) {
+	//	std::string path = param.getString("filename");
+	//	bool doTrilinear = param.getBoolean("trilinear");
+	//	int wrap = param.getInteger("wrap");
+	//	ImageWrap iwrap;
+	//	switch (wrap) {
+	//	case 0:
+	//		iwrap = ImageWrap::ImClamp;
+	//		break;
+	//	case 1:
+	//		iwrap = ImageWrap::ImRepeat;
+	//		break;
+	//	case 2:
+	//		iwrap = ImageWrap::ImBlack;
+	//		break;
+	//	}
+	//	bool gamma = param.getBoolean("gamma");
 
-		return std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(path, mapping, doTrilinear, iwrap, gamma);
-	}
+	//	return std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(path, mapping, doTrilinear, iwrap, gamma);
+	//}
 
 	//ImageTexture有两种形式
 	template class ImageTexture<RGBSpectrum, Spectrum>;//以RGB格式存储，返回Raven正在使用的光谱格式

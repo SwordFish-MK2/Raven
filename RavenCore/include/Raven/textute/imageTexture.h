@@ -87,11 +87,12 @@ namespace Raven {
 		static void convertOut(double from, double& to) {
 			to = from;
 		}
+
+		//static void imageTextureConstruct
 	};
 
-	std::shared_ptr<ImageTexture<double, double>> makeImageTextureFloat(
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param);
+	//std::shared_ptr<ImageTexture<double, double>> makeImageTextureFloat(
+	//	const PropertyList& param);
 
 	//std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(
 	//	const std::shared_ptr<TextureMapping2D>& mapping,

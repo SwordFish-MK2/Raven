@@ -130,13 +130,13 @@ namespace Raven {
 	//	return data;
 	//}
 
-	std::shared_ptr<Renderer>makePathTracingRenderer(
-		const std::shared_ptr<Film>& film,
-		const std::shared_ptr<Camera>& camera,
-		const PropertyList& param) {
-		int spp = param.getInteger("spp");
-		int maxDepth = param.getInteger("maxDepth");
-		double epsilon = param.getFloat("epsilon");
-		return std::make_shared<PathTracingRenderer>(camera, film, spp, maxDepth, epsilon);
-	}
+	//std::shared_ptr<Renderer>makePathTracingRenderer(
+	//	const std::shared_ptr<Film>& film,
+	//	const std::shared_ptr<Camera>& camera,
+	//	const PropertyList& param) {
+	//	int spp = param.getInteger("spp");
+	//	int maxDepth = param.getInteger("maxDepth");
+	//	double epsilon = param.getFloat("epsilon");
+	//	return std::make_shared<PathTracingRenderer>(camera, film, spp, maxDepth, epsilon);
+	//}
 }

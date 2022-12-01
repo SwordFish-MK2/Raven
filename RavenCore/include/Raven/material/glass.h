@@ -43,7 +43,7 @@ namespace Raven {
 		const std::shared_ptr<Texture<double>>& uRough,
 		const std::shared_ptr<Texture<double>>& vRough,
 		const PropertyList& pList) {
-		double eta = pList.getFloat("eta");
+		double eta = pList.getFloat("eta", 1.0);
 		return std::make_shared<Glass>(kd, kt, uRough, vRough, nullptr, eta);
 	}
 }

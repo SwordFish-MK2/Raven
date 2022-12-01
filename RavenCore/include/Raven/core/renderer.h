@@ -8,9 +8,10 @@
 #include<Raven/core/interaction.h>
 #include<Raven/core/spectrum.h>
 #include<Raven/core/bsdf.h>
+#include<Raven/core/object.h>
 
 namespace Raven {
-	class Renderer {
+	class Renderer:public RavenObject {
 	public:
 		Renderer(const std::shared_ptr<Camera>& c,
 			const std::shared_ptr<Film>& f,

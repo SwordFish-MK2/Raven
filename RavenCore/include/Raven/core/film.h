@@ -9,20 +9,19 @@
 #include<vector>
 #include<Raven/core/spectrum.h>
 #include<Raven/utils/propertylist.h>
+#include<Raven/core/object.h>
+
 namespace Raven {
-	//struct GeometryData {
+#define _RAVEN_FILM_REG_(regName,className,constructor)\
+	class className##Reg{\
+	private:\
+		className##Reg(){\
+			FilmFactory::regClass(#regName,constructor);\
+		}\
+		static className##Reg regHelper;\
+	};\
 
-	//	Normal3f n;
-	//	Point3f p;
-	//	Vector3f color;
-	//	bool hit;
-	//	GeometryData() :n(Normal3f(0.0)), color(Vector3f(0.0)), hit(false), p(0, 0, 0) {}
-	//	GeometryData(const GeometryData& data) :n(data.n), color(data.color), p(data.p), hit(data.hit) {}
-	//};
-
-
-	//TODO::add filter
-	class Film {
+	class Film :public RavenObject {
 	public:
 		const int xRes, yRes;
 		const double aspect_ratio;
@@ -33,27 +32,36 @@ namespace Raven {
 		}
 		void write()const;
 
-		//int uSize() const { return xRes; }
-		//int vSize() const { return yRes; }
-
-		//void testMipmap();
-
 		RGBSpectrum& operator()(int x, int y) {
 			return frameBuffer(x, y);
 		}
 		const RGBSpectrum& operator()(int x, int y) const {
 			return frameBuffer(x, y);
 		}
-
+		static Ref<Film> construct(const PropertyList& param) {
+			int u = param.getInteger("width", 1080);
+			int v = param.getInteger("height", 720);
+			return std::make_shared<Film>(u, v);
+		}
 	private:
 		Image<RGBSpectrum> frameBuffer;
 	};
 
-	inline std::shared_ptr<Film> makeFilm(const PropertyList& param) {
-		int u = param.getInteger("uSize");
-		int v = param.getInteger("vSize");
-		return std::make_shared<Film>(u, v);
-	}
+	class FilmFactory {
+		using FilmConstructor = std::function<Ref<Film>(const PropertyList&)>;
+	public:
+		static bool registed(const std::string& className);
 
+		static void regClass(const std::string& className, const FilmConstructor& con);
+
+		static Ref<Film> generateClass(const std::string& className, const PropertyList& params);
+
+		static std::map<std::string, FilmConstructor>& getMap() {
+			static std::map<std::string, FilmConstructor>my_class;
+			return my_class;
+		}
+	};
+
+	_RAVEN_FILM_REG_(film,Film,Film::construct)
 }
 #endif

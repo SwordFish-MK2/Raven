@@ -2,6 +2,7 @@
 #define _RAVEN_CORE_TRANSFORM_H_
 
 #define _USE_MATH_DEFINES
+
 #include<math.h>
 #include<Eigen/Dense>
 #include<Raven/core/math.h>
@@ -9,9 +10,10 @@
 #include<Raven/core/ray.h>
 #include<Raven/core/aabb.h>
 #include<Raven/core/interaction.h>
+#include<Raven/core/object.h>
 
 namespace Raven {
-	class Transform {
+	class Transform:public RavenObject {
 	private:
 		Eigen::Matrix4f m, invm;
 		//friend struct Quaternion;

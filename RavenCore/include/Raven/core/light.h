@@ -5,6 +5,7 @@
 #include<Raven/core/math.h>
 #include<Raven/core/shape.h>
 #include<Raven/core/spectrum.h>
+#include<Raven/core/object.h>
 
 namespace Raven {
 	enum class LightFlag :int {
@@ -21,7 +22,7 @@ namespace Raven {
 	/// <summary>
 	/// 光源类接口，所有光源必须继承该类
 	/// </summary>
-	class Light {
+	class Light:public RavenObject {
 	public:
 		Light(const Transform* LTW, const Transform* WTL, int flag, int nSamples) :
 			lightToWorld(LTW), worldToLight(WTL), flag(flag), nSamples(nSamples) {}

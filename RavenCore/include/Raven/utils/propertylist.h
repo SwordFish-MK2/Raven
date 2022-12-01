@@ -6,6 +6,7 @@
 #include<Raven/core/transform.h>
 #include<Raven/core/base.h>
 #include<optional>
+#include<queue>
 
 namespace Raven {
 
@@ -26,6 +27,22 @@ namespace Raven {
 		std::string id;
 	};
 
+	struct ObjectRef {
+	public:
+		inline Ref<RavenObject> getRef() {
+			return my_ref;
+		}
+
+		inline bool matchType(const std::string& type) {
+			return type == my_type;
+		}
+		ObjectRef() :my_type("nullptr"), my_ref(nullptr) {}
+		ObjectRef(const std::string& type,const Ref<RavenObject>& ref) :my_type(type), my_ref(ref) {}
+	private:
+		std::string my_type;
+		Ref<RavenObject> my_ref;
+	};
+
 	class PropertyList {
 	public:
 		void setBoolean(const std::string&, const bool& value);
@@ -38,20 +55,22 @@ namespace Raven {
 		void setNormal3f(const std::string&, const Normal3f& value);
 		void setSpectra(const std::string&, const Spectrum& value);
 		void setString(const std::string&, const std::string& value);
+		void setObjectRef(const std::string&,const Ref<RavenObject>& ref);
+		static void setObjectRefById(const std::string&, const std::string&, const Ref<RavenObject>&);
+	//	std::vector<Ref<RavenObject>> pointerList;
 
-		std::vector<Pointer> pointerList;
-
-		bool getBoolean(const std::string&)const;
-		int getInteger(const std::string&)const;
-		double getFloat(const std::string&)const;
-		Point2f getPoint2f(const std::string&)const;
-		Vector2f getVector2f(const std::string&)const;
-		Point3f getPoint3f(const std::string&)const;
-		Vector3f getVector3f(const std::string&)const;
-		Normal3f getNormal3f(const std::string&)const;
-		Spectrum getSpectra(const std::string&)const;
-		std::string getString(const std::string&)const;
-
+		bool getBoolean(const std::string&,const bool&)const;
+		int getInteger(const std::string&,const int&)const;
+		double getFloat(const std::string&,const double&)const;
+		Point2f getPoint2f(const std::string&,const Point2f&)const;
+		Vector2f getVector2f(const std::string&,const Vector2f&)const;
+		Point3f getPoint3f(const std::string&,const Point3f&)const;
+		Vector3f getVector3f(const std::string&,const Vector3f&)const;
+		Normal3f getNormal3f(const std::string&,const Normal3f&)const;
+		Spectrum getSpectra(const std::string&,const Spectrum&)const;
+		std::string getString(const std::string&,const std::string&)const;
+		ObjectRef getObjectRef(int)const;
+		static ObjectRef getObjectRefById(const std::string& refId);
 		//void setPointer(const std::string&, RavenPointerType);
 		//RavenPointerType getPointer(const std::string&)const;
 	private:
@@ -68,8 +87,12 @@ namespace Raven {
 				vector3f_type,
 				normal_type,
 				spectra_type,
-				string_type
+				matrix_type,
+				string_type,
+				ref_type,
+				object_type
 			}type;
+
 
 			struct Value {
 				bool boolean_value;
@@ -83,9 +106,12 @@ namespace Raven {
 				Spectrum spectra_value;
 				std::string string_value;
 			}value;
+
 		};
 		std::map<std::string, Property> propertyMap;
-		std::map<std::string, RavenPointerType> pointerMap;
+		std::vector<ObjectRef> refQueue;//用于存放直接声明在class内部的对象指针
+
+		static std::map<std::string, ObjectRef> refMap;//用于存放声明在外部的指针
 	};
 }
 #endif

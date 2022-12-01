@@ -4,6 +4,7 @@
 #include<Raven/core/base.h>
 #include<Raven/core/math.h>
 #include<Raven/core/transform.h>
+#include<Raven/core/object.h>
 
 namespace Raven {
 	struct CameraSample {
@@ -15,7 +16,8 @@ namespace Raven {
 		CameraSample(double fu, double fv, double t, double lu, double lv) :
 			filmSample(Point2f(fu, fv)), time(t), lensSample(Point2f(lu, lv)) {}
 	};
-	class Camera {
+
+	class Camera:public RavenObject {
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			Camera(const Transform& CTW) :CameraToWorld(CTW) {}

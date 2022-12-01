@@ -82,32 +82,43 @@ namespace Raven {
 		rayDifferential = CameraToWorld(sampleRay);
 		return 1;
 	}
-	std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(
-		const Transform& CTW,
-		const Transform& STR,
-		const PropertyList& param) {
-		double lensRadius = param.getFloat("lensRadius");
-		double focalDistance = param.getFloat("focalDis");
-		double near = param.getFloat("near");
-		double far = param.getFloat("far");
-		double fov = param.getFloat("fov");
-		double aspectRatio = param.getFloat("aspectRatio");
-		return std::make_shared<PerspectiveCamera>(CTW, STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
-	}
+	//std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(
+	//	const Transform& CTW,
+	//	const Transform& STR,
+	//	const PropertyList& param) {
+	//	double lensRadius = param.getFloat("lensRadius");
+	//	double focalDistance = param.getFloat("focalDis");
+	//	double near = param.getFloat("near");
+	//	double far = param.getFloat("far",0.0001);
+	//	double fov = param.getFloat("fov");
+	//	double aspectRatio = param.getFloat("aspectRatio");
+	//	return std::make_shared<PerspectiveCamera>(CTW, STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
+	//}
 
-	std::shared_ptr<OrthographicCamera> makeOrthographicCamera(
-		const Transform& CTW,
-		const Transform& STR,
-		const PropertyList& param) {
-		double lensRadius = param.getFloat("lensRadius");
-		double focalDistance = param.getFloat("focalDis");
-		double top = param.getFloat("top");
-		double bottom = param.getFloat("bottom");
-		double left = param.getFloat("left");
-		double right = param.getFloat("right");
-		double near = param.getFloat("near");
-		double far = param.getFloat("far");
-		return std::make_shared<OrthographicCamera>(CTW, STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
-	}
+	//Ref<Camera> PerspectiveCamera::construct(const PropertyList& param) {
+	//	ObjectRef CTW = param.getObjectRef("CTW");
+
+	//	double lensRadius = param.getFloat("lensRadius");
+	//	double focalDistance = param.getFloat("focalDis");
+	//	double near = param.getFloat("near");
+	//	double far = param.getFloat("far");
+	//	double aspectRatio = param.getFloat("aspectRatio");
+	//	return std::make_shared<PerspectiveCamera>(CTW,STR)
+	//}
+
+	//std::shared_ptr<OrthographicCamera> makeOrthographicCamera(
+	//	const Transform& CTW,
+	//	const Transform& STR,
+	//	const PropertyList& param) {
+	//	double lensRadius = param.getFloat("lensRadius",0.0);
+	//	double focalDistance = param.getFloat("focalDis",1);
+	//	double top = param.getFloat("top",100);
+	//	double bottom = param.getFloat("bottom",-100);
+	//	double left = param.getFloat("left",-100);
+	//	double right = param.getFloat("right",100);
+	//	double near = param.getFloat("near"0.001);
+	//	double far = param.getFloat("far",1000);
+	//	return std::make_shared<OrthographicCamera>(CTW, STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
+	//}
 
 }

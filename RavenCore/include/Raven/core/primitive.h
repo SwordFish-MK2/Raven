@@ -4,11 +4,12 @@
 #include<Raven/core/base.h>
 #include<Raven/core/material.h>
 #include<Raven/core/shape.h>
+#include<Raven/core/object.h>
 
 
 namespace Raven {
 
-	class Primitive {
+	class Primitive:public RavenObject {
 	public:
 
 		Primitive(const std::shared_ptr<Shape>& shape_ptr, const std::shared_ptr<Material>& mate_ptr,

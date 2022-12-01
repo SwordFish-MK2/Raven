@@ -7,8 +7,6 @@
 #include<tuple>
 
 namespace Raven {
-
-
 	static const int nSamples = 60;
 	static const int sampledLambdaStart = 400;
 	static const int sampledLambdaEnd = 700;

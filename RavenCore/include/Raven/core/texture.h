@@ -4,12 +4,13 @@
 #include<Raven/core/base.h>
 #include<Raven/core/interaction.h>
 #include<Raven/utils/propertylist.h>
+#include<Raven/core/object.h>
 
 namespace Raven {
 	/// <summary>
 	/// 2DŒ∆¿Ìmapping 
 	/// </summary>
-	class TextureMapping2D {
+	class TextureMapping2D:public RavenObject {
 	public:
 		virtual std::tuple<Point2f, Vector2f, Vector2f> map(const SurfaceInteraction& si)const = 0;
 	};
@@ -17,7 +18,7 @@ namespace Raven {
 	/// <summary>
 	/// 3DŒ∆¿Ìmapping
 	/// </summary>
-	class TextureMapping3D {
+	class TextureMapping3D:public RavenObject {
 	public:
 		virtual std::tuple<Point3f, Vector3f, Vector3f>map(const SurfaceInteraction& si)const = 0;
 	};
