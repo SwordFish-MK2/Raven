@@ -1,4 +1,4 @@
-#include<Raven/core/renderer.h>
+#include<Raven/core/integrator.h>
 #include<Raven/core/light.h>
 
 namespace Raven {
@@ -105,5 +105,32 @@ namespace Raven {
 		for (int i = 0; i < nSample; i++)
 			Le += EvaluateLight(record, scene, *chosen) / p;
 		return Le / nSample;
+	}
+
+
+
+	bool IntegratorFactory::registed(const std::string& className) {
+		const auto& integratorClassMap = IntegratorFactory::getMap();
+		const auto& classItem = integratorClassMap.find(className);
+		if (classItem == integratorClassMap.end())
+			return false;
+		return true;
+	}
+
+	void IntegratorFactory::regClass(
+		const std::string& className,
+		const IntegratorConstructor& param
+	) {
+		auto& map = IntegratorFactory::getMap();
+		map[className] = param;
+	}
+
+	Ref<Integrator> IntegratorFactory::generateClass(
+		const std::string& className,
+		const PropertyList& param
+	) {
+		const auto& map = IntegratorFactory::getMap();
+		const auto& constructor = map.find(className)->second;
+		return constructor(param);
 	}
 }

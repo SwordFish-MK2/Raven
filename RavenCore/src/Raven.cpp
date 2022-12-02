@@ -5,9 +5,8 @@
 #include<Raven/core/scene.h>
 #include"Raven/core/film.h"
 #include"Raven/camera/projectiveCamera.h"
-#include"Raven/renderer/path.h"
+#include"Raven/integrator/path.h"
 #include<chrono>
-#include<Raven/renderer/normal.h>
 #include<Raven/textute/solidTexture.h>
 #include<Raven/shape/mesh.h>
 #include<Raven/core/math.h>
@@ -82,8 +81,15 @@ using namespace Raven;
 
 int main() {
 	PropertyList list;
-	list.setInteger("width", 1080);
-	list.setInteger("height", 720);
+	//list.setInteger("width", 1080);
+	//list.setInteger("height", 720);
+	
+	list.setInteger("spp", 100);
+	list.setInteger("maxDepth", 20);
+	list.setFloat("epsilon", 1e-6);
+
+	const Ref<Integrator> intg = IntegratorFactory::generateClass("path", list);
+
 	//std::map<std::string, ObjectConstructor>& myG = Generator::getGenerator();
 
 	const Ref<Film> film = FilmFactory::generateClass("film", list);

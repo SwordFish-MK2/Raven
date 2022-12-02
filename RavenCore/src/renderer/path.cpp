@@ -1,11 +1,17 @@
-#include<Raven/renderer/path.h>
+#include<Raven/integrator/path.h>
 #include<omp.h>
 #include<Raven/core/light.h>
 #include<Raven/light/infiniteAreaLight.h>
 
 static omp_lock_t lock;
 namespace Raven {
-	void PathTracingRenderer::render(const Scene& scene) {
+	//渲染场景
+	//遍历Film中的每个像素，估计像素颜色的值
+	void PathTracingIntegrator::render(
+		const Scene& scene,
+		const Ref<Camera>& camera,
+		Ref<Film>& film)const
+	{
 		int finishedLine = 1;
 		double process = 0.0;
 		omp_init_lock(&lock);
@@ -51,7 +57,11 @@ namespace Raven {
 	}
 
 	//路径追踪算法
-	Spectrum PathTracingRenderer::integrate(const Scene& scene, const RayDifferential& rayIn, int bounce)const {
+	Spectrum PathTracingIntegrator::integrate(
+		const Scene& scene,
+		const RayDifferential& rayIn,
+		int bounce)const
+	{
 		//	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		Spectrum Li(0.0);
 		Spectrum beta(1.0);//光线的衰减参数
@@ -117,26 +127,16 @@ namespace Raven {
 		return Li;
 	}
 
-	//GeometryData PathTracingRenderer::gBuffer(const Ray& ray, const Scene& scene)const {
-	//	GeometryData data;
-	//	std::optional<SurfaceInteraction> record = scene.intersect(ray, std::numeric_limits<double>::max());
-	//	if (record != std::nullopt) {
-	//		const Point3f& p = (*record).p;
-	//		const Normal3f& n = (*record).n;
-	//		data.n = (*record).n;
-	//		data.p = (*record).p;
-	//		data.hit = true;
-	//	}
-	//	return data;
-	//}
+	Ref<PathTracingIntegrator> PathTracingIntegrator::construct(
+		const PropertyList& param
+	) {
+		int spp = param.getInteger("spp", 5);
+		int maxDepth = param.getInteger("maxDepth", 10);
+		double epsilon = param.getFloat("epsilon", 1e-6);
+		return std::make_shared<PathTracingIntegrator>(spp, maxDepth, epsilon);
+	}
 
-	//std::shared_ptr<Renderer>makePathTracingRenderer(
-	//	const std::shared_ptr<Film>& film,
-	//	const std::shared_ptr<Camera>& camera,
-	//	const PropertyList& param) {
-	//	int spp = param.getInteger("spp");
-	//	int maxDepth = param.getInteger("maxDepth");
-	//	double epsilon = param.getFloat("epsilon");
-	//	return std::make_shared<PathTracingRenderer>(camera, film, spp, maxDepth, epsilon);
-	//}
+	//实例化注册类静态对象
+	PathTracingIntegratorReg PathTracingIntegratorReg::regHelper;
+
 }

@@ -64,15 +64,13 @@ namespace Raven {
 		}
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
-
-		static Ref<Camera> construct(const PropertyList& param);
 	};
 
 
-	std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(const Transform& CTW, const Transform& STR,
-		const PropertyList& param);
-	std::shared_ptr<OrthographicCamera> makeOrthographicCamera(const Transform& CTW, const Transform& STR,
-		const PropertyList& param);
+	//std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(const Transform& CTW, const Transform& STR,
+	//	const PropertyList& param);
+	//std::shared_ptr<OrthographicCamera> makeOrthographicCamera(const Transform& CTW, const Transform& STR,
+	//	const PropertyList& param);
 }
 
 #endif

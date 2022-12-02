@@ -22,10 +22,10 @@ namespace Raven {
 		virtual void computeScarttingFunctions(SurfaceInteraction& its)const = 0;
 	};
 
-	class MaterialFactory {
-		using MaterialConstructor = std::function<Ref<Material>(const PropertyList&)>;
-	public:
-		static std::map<std::string,MaterialConstructor>
-	};
+	//class MaterialFactory {
+	//	using MaterialConstructor = std::function<Ref<Material>(const PropertyList&)>;
+	//public:
+	//	static std::map<std::string,MaterialConstructor>
+	//};
 }
 #endif

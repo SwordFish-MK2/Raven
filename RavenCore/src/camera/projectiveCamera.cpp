@@ -82,6 +82,8 @@ namespace Raven {
 		rayDifferential = CameraToWorld(sampleRay);
 		return 1;
 	}
+	
+	
 	//std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(
 	//	const Transform& CTW,
 	//	const Transform& STR,
