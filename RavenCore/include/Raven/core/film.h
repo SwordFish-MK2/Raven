@@ -10,16 +10,17 @@
 #include<Raven/core/spectrum.h>
 #include<Raven/utils/propertylist.h>
 #include<Raven/core/object.h>
+#include<Raven/utils/factory.h>
 
 namespace Raven {
-#define _RAVEN_FILM_REG_(regName,className,constructor)\
-	class className##Reg{\
-	private:\
-		className##Reg(){\
-			FilmFactory::regClass(#regName,constructor);\
-		}\
-		static className##Reg regHelper;\
-	};\
+//#define _RAVEN_FILM_REG_(regName,className,constructor)\
+//	class className##Reg{\
+//	private:\
+//		className##Reg(){\
+//			FilmFactory::regClass(#regName,constructor);\
+//		}\
+//		static className##Reg regHelper;\
+//	};\
 
 	class Film :public RavenObject {
 	public:
@@ -47,21 +48,6 @@ namespace Raven {
 		Image<RGBSpectrum> frameBuffer;
 	};
 
-	class FilmFactory {
-		using FilmConstructor = std::function<Ref<Film>(const PropertyList&)>;
-	public:
-		static bool registed(const std::string& className);
-
-		static void regClass(const std::string& className, const FilmConstructor& con);
-
-		static Ref<Film> generateClass(const std::string& className, const PropertyList& params);
-
-		static std::map<std::string, FilmConstructor>& getMap() {
-			static std::map<std::string, FilmConstructor>my_class;
-			return my_class;
-		}
-	};
-
-	_RAVEN_FILM_REG_(film,Film,Film::construct)
+	_RAVEN_CLASS_REG_(film,Film,Film::construct)
 }
 #endif

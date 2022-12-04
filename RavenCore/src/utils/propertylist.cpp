@@ -1,15 +1,5 @@
 #include<Raven/utils/propertylist.h>
 namespace Raven {
-
-	//void PropertyList::setPointer(const std::string& id, RavenPointerType type) {
-	//	pointerMap[id] = type;
-	//}
-
-	//RavenPointerType PropertyList::getPointer(const std::string& id)const {
-	//	auto item = pointerMap.find(id);
-	//	return item->second;
-	//}
-
 #define DEFINE_PROPERTY_ACCESSOR(Type,TypeName,xmlTypeName)							\
 	void PropertyList::set##TypeName(const std::string& name,const Type& value){	\
 		if(propertyMap.find(name)!=propertyMap.end()){								\
@@ -27,11 +17,13 @@ namespace Raven {
 			return defaultVal;	\
 	}	
 
-	std::map<std::string, ObjectRef> PropertyList::refMap;
 
 	void PropertyList::setObjectRef(
-		const std::string& type, 
-		const Ref<RavenObject>& ref) {
+		const std::string& type,
+		const Ref<RavenObject>& ref
+	) {
+		refTypeList.push_back(RefType::Ref);
+		refCount++;
 		ObjectRef objref(type, ref);
 		refQueue.push_back(objref);
 	}
@@ -39,28 +31,43 @@ namespace Raven {
 	void PropertyList::setObjectRefById(
 		const std::string& refId,
 		const std::string& type,
-		const Ref<RavenObject>& ref) {
+		const Ref<RavenObject>& ref,
+		PropertyList& list) {
+		list.refTypeList.push_back(RefType::RefById);
+		list.refCount++;
 		ObjectRef objref(type, ref);
+		auto& refMap = getRefMap();
 		refMap[refId] = objref;
 	}
 
 	ObjectRef PropertyList::getObjectRef(int n)const {
-		if (refQueue.size() <= n) {
-			return ObjectRef("nullptr", nullptr);
+		if (n > refCount) {
+			return ObjectRef("Failed to get Raven object ref, ref vector overflow.", nullptr);
 		}
-		ObjectRef ref = refQueue[n];
-		return ref;
-	}
+		int refC = 0;
+		int refByIdC = 0;
 
-	ObjectRef PropertyList::getObjectRefById(const std::string& refId) {
-		const auto& it = refMap.find(refId);
-		if (it == refMap.end()) {
-			return ObjectRef("nullptr", nullptr);
+		for (int i = 0; i < n; i++) {
+			if (refTypeList[i] == RefType::Ref)
+				refC++;
+			else
+				refByIdC++;
 		}
-		else
+
+		if (refTypeList[n] == RefType::Ref) {
+			return refQueue[refC];
+		}
+		else {
+			std::string refId = refIds[refByIdC];
+			auto& refMap = getRefMap();
+			const auto& it = refMap.find(refId);
+			if (it == refMap.end()) {
+				std::string msg("Failed to parse ref id :");
+				return ObjectRef(msg + refId, nullptr);
+			}
 			return it->second;
+		}
 	}
-
 
 	DEFINE_PROPERTY_ACCESSOR(bool, Boolean, boolean)
 

@@ -12,7 +12,6 @@ namespace Raven {
 		WriteImage(frameBuffer, "result.jpg");
 	}
 
-
 	//void Film::testMipmap() {
 	//	Mipmap<RGBSpectrum> mipmap(frameBuffer, true, ImClamp);
 	//	std::cout << std::endl << "Mipmap max level = " << mipmap.maxL() << std::endl;
@@ -85,24 +84,4 @@ namespace Raven {
 	//	}
 	//}
 
-
-	void FilmFactory::regClass(const std::string& className, const FilmConstructor& constructor) {
-		FilmConstructor cons = constructor;
-		std::pair<std::string, FilmConstructor> my_pair = std::make_pair(className, cons);
-		auto& my_class = FilmFactory::getMap();
-		my_class.insert(my_pair);
-	}
-
-	bool FilmFactory::registed(const std::string& className) {
-		auto& my_class = FilmFactory::getMap();
-		auto classIt = my_class.find(className);
-		return classIt != my_class.end();
-	}
-
-	Ref<Film> FilmFactory::generateClass(const std::string& className, const PropertyList& params) {
-		auto& my_class = FilmFactory::getMap();
-		auto classIt = my_class.find(className);
-		Ref<Film> my_object = classIt->second(params);
-		return my_object;
-	}
 }

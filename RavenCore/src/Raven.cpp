@@ -13,6 +13,7 @@
 #include<tinyxml2.h>
 #include<Raven/core/programe.h>
 #include<Raven/core/camera.h>
+#include<Raven/utils/factory.h>
 
 using namespace std;
 using namespace Raven;
@@ -83,7 +84,7 @@ int main() {
 	PropertyList list;
 	//list.setInteger("width", 1080);
 	//list.setInteger("height", 720);
-	
+
 	list.setInteger("spp", 100);
 	list.setInteger("maxDepth", 20);
 	list.setFloat("epsilon", 1e-6);
@@ -93,5 +94,24 @@ int main() {
 	//std::map<std::string, ObjectConstructor>& myG = Generator::getGenerator();
 
 	const Ref<Film> film = FilmFactory::generateClass("film", list);
-	
+
+	Factory& myfactory = Factory::getInctance();
+
+	myfactory.regClass("film", Film::construct);
+
+	myfactory.regClass("perspective", PerspectiveCamera::construct);
+
+	//Ref<RavenObject> obj = myfactory.generate("film", list);
+	Ref<Transform> ctw = std::make_shared<Transform>(Identity());
+	Ref<Transform> str = ctw;
+
+	//Ref<Film> f = std::dynamic_pointer_cast<Film>(obj);
+
+
+	list.setObjectRef("transform", ctw);
+	list.setObjectRef("transform", str);
+
+
+	Ref<Camera> c = std::dynamic_pointer_cast<Camera>(myfactory.generate("perspective", list));
+
 }

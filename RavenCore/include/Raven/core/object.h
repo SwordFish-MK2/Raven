@@ -15,7 +15,9 @@ namespace Raven {
 
 	class RavenObject {
 	protected:
-		~RavenObject() {}
+		virtual ~RavenObject() {}
+
+	private:
 	};
 
 	class RavenClass {
@@ -23,11 +25,11 @@ namespace Raven {
 		using ObjectConstructor = std::function<Ref<RavenObject>(const PropertyList& properties)>;
 
 		RavenClass(const ObjectConstructor& cons) :constructor(cons) {}
-		
+
 		//构建对象
 		virtual Ref<RavenObject> constructObject()const;
 	private:
-		
+
 		std::string type;
 		ObjectConstructor constructor;
 	};

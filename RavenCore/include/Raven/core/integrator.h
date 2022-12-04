@@ -11,14 +11,6 @@
 #include<Raven/core/object.h>
 
 namespace Raven {
-#define _RAVEN_INTEGRATOR_REG_(regName,className,constructor)\
-	class className##Reg{\
-	private:\
-		className##Reg(){\
-			IntegratorFactory::regClass(#regName,constructor);\
-		}\
-		static className##Reg regHelper;\
-	};\
 
 	class Integrator :public RavenObject {
 	public:
@@ -44,31 +36,13 @@ namespace Raven {
 		double g = gNum * gPdf;
 		return f * f / (f * f + g * g);
 	}
+	
 
 	Spectrum EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light);
 
 	Spectrum SampleOneLight(const SurfaceInteraction& record, const Scene& scene, int nSample);
 
 	Spectrum SampleAllLights(const SurfaceInteraction& record, const Scene& scene);
-
-
-	class IntegratorFactory {
-		using IntegratorConstructor = std::function<Ref<Integrator>(const PropertyList&)>;
-
-	public:
-		static bool registed(const std::string& className);
-
-		static void regClass(const std::string& className, const IntegratorConstructor& param);
-
-		static Ref<Integrator> generateClass(const std::string& className, const PropertyList& param);
-
-		static std::map<std::string, IntegratorConstructor>& getMap() {
-			static std::map<std::string, IntegratorConstructor> mapInstance;
-			return mapInstance;
-		}
-	private:
-
-	};
 }
 
 #endif

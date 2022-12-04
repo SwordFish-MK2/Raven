@@ -27,7 +27,7 @@ namespace Raven {
 		const int maxDepth;
 	};
 
-	_RAVEN_INTEGRATOR_REG_(path,PathTracingIntegrator,PathTracingIntegrator::construct)
+	_RAVEN_CLASS_REG_(path,PathTracingIntegrator,PathTracingIntegrator::construct)
 }
 
 #endif
