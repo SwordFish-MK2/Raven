@@ -39,7 +39,7 @@ namespace Raven {
 	public:
 		ImageTexture(
 			const std::string path,
-			const std::shared_ptr<TextureMapping2D>& mapping,
+			const Ref<TextureMapping2D>& mapping,
 			bool doTrilinear,
 			ImageWrap wrap,
 			bool gamma,
@@ -48,15 +48,6 @@ namespace Raven {
 		}
 
 		virtual	TReturn evaluate(const SurfaceInteraction& its)const;
-
-		static std::shared_ptr<ImageTexture<TMemory, TReturn>> build(
-			const std::string& path,
-			const std::shared_ptr<TextureMapping2D>& mapping,
-			bool dotrilinear,
-			ImageWrap wrap,
-			bool gamma) {
-			return std::make_shared<ImageTexture<TMemory, TReturn>>(path, mapping, dotrilinear, wrap, gamma);
-		}
 
 	private:
 		bool filter;
@@ -87,15 +78,23 @@ namespace Raven {
 		static void convertOut(double from, double& to) {
 			to = from;
 		}
+
+		static void clearCache() {
+			textureMap.erase(textureMap.begin(), textureMap.end());
+		}
+
+		//static void imageTextureConstruct
 	};
 
-	std::shared_ptr<ImageTexture<double, double>> makeImageTextureFloat(
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param);
+	namespace TextureBuild {
+		Ref<ImageTexture<double, double>> makeImageTextureFloat(const PropertyList& param);
 
-	//std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(
-	//	const std::shared_ptr<TextureMapping2D>& mapping,
-	//	const PropertyList& param);
+		Ref<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(const PropertyList& param);
+	}
+
+	_RAVEN_CLASS_REG_(imagefloat,ImageTextureFloat,TextureBuild::makeImageTextureFloat)
+
+	_RAVEN_CLASS_REG_(imagespectra,ImageTextureSpectra,TextureBuild::makeImageTextureSpectrum)
 }
 
 #endif

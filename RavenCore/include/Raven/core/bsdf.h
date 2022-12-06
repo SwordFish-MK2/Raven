@@ -26,9 +26,11 @@ namespace Raven {
 			const Point2f& sample, BxDFType type = All)const;
 
 		double pdf(const Vector3f& wo, const Vector3f& wi)const;
+
 		inline double getEta()const {
 			return eta;
 		}
+
 	private:
 		Vector3f sx, sy;	//axis formed the coordinate space
 		Normal3f n, ns;		//surface normal and surface shading normal

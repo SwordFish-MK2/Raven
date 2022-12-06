@@ -6,10 +6,11 @@
 
 namespace Raven {
 
+	FilmReg FilmReg::regHelper;
+
 	void Film::write()const {
 		WriteImage(frameBuffer, "result.jpg");
 	}
-
 
 	//void Film::testMipmap() {
 	//	Mipmap<RGBSpectrum> mipmap(frameBuffer, true, ImClamp);
@@ -82,4 +83,5 @@ namespace Raven {
 	//		}
 	//	}
 	//}
+
 }

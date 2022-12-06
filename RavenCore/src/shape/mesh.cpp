@@ -227,15 +227,15 @@ namespace Raven {
 			info.indices, info.normals, info.tangants, info.uvs);
 	}
 
-	std::shared_ptr<TriangleMesh> makeTriangleMesh(
-		const std::shared_ptr<Transform>& LTW,
-		const std::shared_ptr<Transform>& WTL,
-		const PropertyList& pList) {
-		std::string path = pList.getString("path");
-		std::string filename = pList.getString("filename");
-		Loader loader;
-		std::optional<TriangleInfo> info = loader.load(path, filename);
-		return TriangleMesh::build(LTW.get(), WTL.get(), *info);
-	}
+	//std::shared_ptr<TriangleMesh> makeTriangleMesh(
+	//	const std::shared_ptr<Transform>& LTW,
+	//	const std::shared_ptr<Transform>& WTL,
+	//	const PropertyList& pList) {
+	//	std::string path = pList.getString("path");
+	//	std::string filename = pList.getString("filename");
+	//	Loader loader;
+	//	std::optional<TriangleInfo> info = loader.load(path, filename);
+	//	return TriangleMesh::build(LTW.get(), WTL.get(), *info);
+	//}
 
 }

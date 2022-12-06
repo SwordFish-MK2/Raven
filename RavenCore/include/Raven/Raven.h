@@ -4,7 +4,7 @@
 #pragma once
 
 #include <iostream>
-#include<Raven/core/renderer.h>
+#include<Raven/core/integrator.h>
 #include<Raven/core/camera.h>
 #include<Raven/core/scene.h>
 #include<Raven/core/film.h>

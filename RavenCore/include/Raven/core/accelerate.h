@@ -5,6 +5,7 @@
 #include<Raven/core/primitive.h>
 #include<optional>
 #include<Raven/core/interaction.h>
+#include<Raven/core/object.h>
 
 enum AccelType {
 	List, KdTree, BVH
@@ -12,7 +13,7 @@ enum AccelType {
 
 namespace Raven {
 
-	class Accelerate {
+	class Accelerate:public RavenObject {
 	public:
 		Accelerate(const std::vector<std::shared_ptr<Primitive>>& prims) :prims(prims) {
 			for (int i = 0; i < prims.size(); i++)

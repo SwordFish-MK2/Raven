@@ -42,16 +42,16 @@ namespace Raven {
 		return Point2f(theta, phi);
 	}
 
-	std::shared_ptr<UVMapping2D> makeUVMapping(const PropertyList& param) {
-		double scaleU = param.getFloat("su");
-		double scaleV = param.getFloat("sv");
-		double uOffset = param.getFloat("du");
-		double vOffset = param.getFloat("dv");
-		return std::make_shared<UVMapping2D>(scaleU, scaleV, uOffset, vOffset);
-	}
+	//std::shared_ptr<UVMapping2D> makeUVMapping(const PropertyList& param) {
+	//	double scaleU = param.getFloat("su");
+	//	double scaleV = param.getFloat("sv");
+	//	double uOffset = param.getFloat("du");
+	//	double vOffset = param.getFloat("dv");
+	//	return std::make_shared<UVMapping2D>(scaleU, scaleV, uOffset, vOffset);
+	//}
 
-	std::shared_ptr<SphericalMapping2D> makeSphericalMapping2D(
-		const std::shared_ptr<Transform>& worldTexture, const PropertyList& param) {
-		return std::make_shared<SphericalMapping2D>(*worldTexture);
-	}
+	//std::shared_ptr<SphericalMapping2D> makeSphericalMapping2D(
+	//	const std::shared_ptr<Transform>& worldTexture, const PropertyList& param) {
+	//	return std::make_shared<SphericalMapping2D>(*worldTexture);
+	//}
 }

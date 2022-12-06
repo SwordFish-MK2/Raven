@@ -46,7 +46,7 @@ namespace Raven {
 		const std::shared_ptr<Transform>& LTW,
 		const std::shared_ptr<Transform>& WTL,
 		const PropertyList& pList) {
-		double radius = pList.getFloat("radius");
+		double radius = pList.getFloat("radius",1.0);
 		return std::make_shared<Sphere>(LTW.get(), WTL.get(), radius);
 	}
 }

@@ -8,6 +8,7 @@
 #include<Raven/core/aabb.h>
 #include<Raven/core/ray.h>
 #include<optional>
+#include<Raven/core/object.h>
 
 namespace Raven {
 	enum PrimType {
@@ -31,7 +32,7 @@ namespace Raven {
 	/// <summary>
 	/// Shape interface, all geometrics must inherit this class
 	/// </summary>
-	class Shape {
+	class Shape:public RavenObject{
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	protected:
 		const Transform* localToWorld;

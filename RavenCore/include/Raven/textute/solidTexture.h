@@ -24,12 +24,21 @@ namespace Raven {
 				return tex2->evaluate(its);
 		}
 
-		static std::shared_ptr<CheckeredTexture<T>> build(
-			const std::shared_ptr<Texture<T>>& oddTexture,
-			const std::shared_ptr<Texture<T>>& evenTexture,
-			const std::shared_ptr<TextureMapping2D>& mapping) {
-			return std::make_shared<CheckeredTexture<T>>(oddTexture, evenTexture, mapping);
-		}
+		//static std::optional<Ref<CheckeredTexture<T>>> construct(
+		//	const PropertyList& params) {
+		//	ObjectRef odd = params.getObjectRef();
+		//	ObjectRef even = params.getObjectRef();
+		//	ObjectRef mapping = params.getObjectRef();
+		//	if (even.matchType == "nullptr" || odd.matchType == "nullptr" || even.matchType == "nullptr")
+		//		std::cout << "Failed;checkered texture null ptr\.n";
+		//	if (odd.matchType != "texture")
+		//		std::cout << "Failed odd.\n";
+		//	if (even.matchType != "texture")
+		//		std::cout << "Failed even.\n";
+		//	if (matchType != "mapping")
+		//		std::cout << "Failed mapping.\n";
+		//	return std::make_shared<CheckeredTexture<T>>(odd.getRef(), even.getRef(), mapping);
+		//}
 	private:
 		std::shared_ptr<Texture<T>> tex1;
 		std::shared_ptr<Texture<T>> tex2;

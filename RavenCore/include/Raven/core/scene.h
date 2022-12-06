@@ -11,10 +11,11 @@
 #include<Raven/shape/mesh.h>
 #include<string>
 #include<Raven/core/interaction.h>
+#include<Raven/core/object.h>
 
 
 namespace Raven {
-	class Scene {
+	class Scene :public RavenObject {
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	private:
 		std::vector<std::shared_ptr<Transform>> transforms;
