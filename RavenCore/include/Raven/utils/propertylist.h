@@ -62,11 +62,19 @@ namespace Raven {
 
 		ObjectRef getObjectRef(int)const;
 
+
+		static void clearCache() {
+			auto& refMap = getRefMap();
+			refMap.erase(refMap.begin(), refMap.end());
+		}
+
+	private:
+
 		static std::map<std::string, ObjectRef>& getRefMap() {
 			static std::map<std::string, ObjectRef> refMap;//用于存放声明在外部的指针
 			return refMap;
 		}
-	private:
+
 		struct  Property {
 			Property() :type(boolean_type) {}
 
