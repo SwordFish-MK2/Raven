@@ -157,12 +157,13 @@ namespace Raven {
 				temp.c[i] = sqrt(c[i], p);
 			return temp;
 		}
-		CoefficientSpectrum exf(double p)const {
+		CoefficientSpectrum exp()const {
 			CoefficientSpectrum temp;
 			for (int i = 0; i < sampleNumber; i++)
-				temp.c[i] = exf(c[i], p);
+				temp.c[i] = exp(c[i]);
 			return temp;
 		}
+
 		bool hasNaNs() {
 			for (int i = 0; i < sampleNumber; i++)
 				if (std::isnan(c[i]))
