@@ -24,7 +24,9 @@ namespace Raven {
 				return tex2->evaluate(its);
 		}
 
-		static Ref<Texture<T>> construct(const PropertyList& param);
+		//static Ref<Texture<T>> construct(const PropertyList& param) {
+
+		//}
 	private:
 		std::shared_ptr<Texture<T>> tex1;
 		std::shared_ptr<Texture<T>> tex2;

@@ -1,6 +1,91 @@
 #include<Raven/core/interaction.h>
 #include<Raven/core/light.h>
 namespace Raven {
+	Interaction::Interaction(
+		const Point3f& p,
+		const Normal3f& n,
+		const Vector3f& wo,
+		double time,
+		const MediumInterface& mediumInterface) :
+		p(p),
+		n(n),
+		wo(Normalize(wo)),
+		time(time),
+		mediumInterface(mediumInterface),
+		t(0) {}
+
+	Interaction::Interaction(
+		const Point3f& p,
+		const Normal3f& n,
+		const Vector3f& wo,
+		double time,
+		double t) :
+		p(p),
+		n(n),
+		wo(Normalize(wo)),
+		time(time),
+		t(t) {}
+
+	Interaction::Interaction(
+		const Point3f& p,
+		const Vector3f& wo,
+		double time,
+		double t,
+		const MediumInterface& mediumInterface) :
+		p(p),
+		wo(wo),
+		time(time),
+		t(t) {}
+
+	Interaction::Interaction(
+		const Point3f& p,
+		double time,
+		double t,
+		const MediumInterface& mediumInterface) :
+		p(p),
+		time(time),
+		t(t),
+		mediumInterface(mediumInterface) {}
+
+	const Ref<Medium> Interaction::getMedium(const Vector3f& w)const {
+		return Dot(w, n) > 0 ?
+			mediumInterface.outside :
+			mediumInterface.inside;
+	}
+
+	const Ref<Medium> Interaction::getMedium()const {
+		assert(mediumInterface.inside == mediumInterface.outside);
+		return mediumInterface.inside;
+	}
+	SurfaceInteraction::SurfaceInteraction(
+		const Point3f& p, const Normal3f& n,
+		const Vector3f& wo, const Point2f& uv,
+		const Vector3f& dpdu, const Vector3f& dpdv,
+		const Vector3f& dndu, const Vector3f& dndv,
+		double time, double t)
+		:Interaction(p, Normal3f(Normalize(Cross(dpdu, dpdv))), wo, time, t),
+		dpdu(dpdu),
+		dpdv(dpdv),
+		dndu(dndu),
+		dndv(dndv) {
+
+		//生成shading geometry
+		shading.n = n;
+		shading.dndu = dndu;
+		shading.dndv = dndv;
+		shading.dpdu = dpdu;
+		shading.dpdv = dpdv;
+	}
+
+	MediumInteraction::MediumInteraction(
+		const Point3f& p,
+		const Vector3f& wo,
+		double time,
+		double t,
+		const Ref<Medium> medium,
+		const Ref<PhaseFunction>& phase) :
+		Interaction(p, wo, time, t, MediumInterface(medium)),
+		phase(phase) {}
 
 	//根据微分光线计算交点的参数坐标(u,v)分别关于屏幕空间坐标(x,y)的偏导数
 	void SurfaceInteraction::computeDifferential(const RayDifferential& rd) {
@@ -15,7 +100,7 @@ namespace Raven {
 		}
 		else {
 			//计算微分光线与场景的交点 px, py
-			double d = -Dot(Vector3f(n), Vector3f(p));	
+			double d = -Dot(Vector3f(n), Vector3f(p));
 			double tx = (-Dot(n, Vector3f(rd.originX)) - d) / Dot(n, rd.directionX);
 			Point3f px = rd.originX + rd.directionX * tx;
 			double ty = (-Dot(n, Vector3f(rd.originY)) - d) / Dot(n, rd.directionY);
@@ -55,8 +140,8 @@ namespace Raven {
 		}
 	}
 
-	void SurfaceInteraction::SetShadingGeometry(const Vector3f& dpdu, const Vector3f& dpdv,
-		const Normal3f& dndu, const Normal3f& dndv) {
+	void SurfaceInteraction::setShadingGeometry(const Vector3f& dpdu, const Vector3f& dpdv,
+		const Vector3f& dndu, const Vector3f& dndv) {
 		//compute shading.n 
 		shading.n = Normalize(Cross(dpdu, dpdv));
 		shading.n = FaceForward(n, shading.n);
@@ -72,7 +157,7 @@ namespace Raven {
 		return Ray(ori, dir);
 	}
 
-	Spectrum SurfaceInteraction::Le(const Vector3f& w)const{
+	Spectrum SurfaceInteraction::Le(const Vector3f& w)const {
 		if (hitLight) {
 			light->Li(*this, w);
 		}
