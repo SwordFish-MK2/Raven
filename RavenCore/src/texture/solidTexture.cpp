@@ -1,20 +1,24 @@
 #include<Raven/textute/solidTexture.h>
 
 namespace Raven {
-	std::shared_ptr<CheckeredTexture<double>> makeCheckeredFloat(
-		const std::shared_ptr<Texture<double>>& oddTexture,
-		const std::shared_ptr<Texture<double>>& evenTexture,
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param) {
-		return std::make_shared<CheckeredTexture<double>>(oddTexture, evenTexture, mapping);
-	}
+	CheckeredTextureFloatReg CheckeredTextureFloatReg::regHelper;
 
-	std::shared_ptr<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(
-		const std::shared_ptr<Texture<Spectrum>>& oddTexture,
-		const std::shared_ptr<Texture<Spectrum>>& evenTexture,
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param) {
-		return std::make_shared<CheckeredTexture<Spectrum>>(oddTexture, evenTexture, mapping);
+	CheckeredTextureSpectraReg CheckeredTextureSpectraReg::regHelper;
+
+	namespace TextureBuild {
+		Ref<CheckeredTexture<double>> makeCheckeredFloat(const PropertyList& param) {
+			ObjectRef oddT = param.getObjectRef(0);
+			ObjectRef evenT = param.getObjectRef(1);
+			ObjectRef mapping = param.getObjectRef(2);
+			return std::make_shared<CheckeredTexture<double>>(oddT.getRef(), evenT.getRef(), mapping);
+		}
+
+		Ref<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(const PropertyList& param) {
+			ObjectRef oddT = param.getObjectRef(0);
+			ObjectRef evenT = param.getObjectRef(1);
+			ObjectRef mapping = param.getObjectRef(2);
+			return std::make_shared<CheckeredTexture<Spectrum>>(oddT.getRef(), evenT.getRef(), mapping);
+		}
 	}
 }
 

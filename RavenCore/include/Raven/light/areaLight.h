@@ -5,6 +5,7 @@
 #include<Raven/core/base.h>
 #include<Raven/core/light.h>
 #include<Raven/utils/propertylist.h>
+#include<Raven/utils/factory.h>
 
 namespace Raven {
 	/// <summary>
@@ -13,10 +14,10 @@ namespace Raven {
 	class DiffuseAreaLight :public AreaLight {
 	public:
 		DiffuseAreaLight(
-			const Transform* LTW,
-			const Transform* WTL,
+			const Ref<Transform>& LTW,
+			const Ref<Transform>& WTL,
 			int nSamples,
-			const Shape* shape,
+			const Ref<Shape>& shape,
 			const Spectrum& I) :
 			AreaLight(LTW, WTL, (int)LightFlag::AreaLight, nSamples, shape), emittedRadiance(I) {}
 
@@ -28,19 +29,21 @@ namespace Raven {
 		virtual Spectrum power()const;
 
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const;
+
+		static Ref<Light> construct(const PropertyList& param) {
+			const int n = param.getInteger("nSamples", 1);
+			const Spectrum I = param.getSpectra("intansity", Spectrum(1.0));
+			const ObjectRef s = param.getObjectRef(0);
+			const Ref<Shape> shape = std::dynamic_pointer_cast<Shape>(s.getRef());
+			return std::make_shared<DiffuseAreaLight>(nullptr, nullptr, n, shape, I);
+		}
+
 	private:
 		const Spectrum emittedRadiance;
 	};
 
-	inline std::shared_ptr<DiffuseAreaLight> makeDiffuseAreaLight(
-		const std::shared_ptr<Transform>& LTW,
-		const std::shared_ptr<Transform>& WTL,
-		const std::shared_ptr<Shape>& shape,
-		const PropertyList& pList) {
-		int nSamples = pList.getInteger("nsamples",2);
-		Spectrum emit = pList.getSpectra("emit",Spectrum(1.0));
-		return std::make_shared<DiffuseAreaLight>(LTW.get(), WTL.get(), nSamples, shape.get(), emit);
-	}
+	_RAVEN_CLASS_REG_(area,DiffuseAreaLight,DiffuseAreaLight::construct)
+
 }
 
 

@@ -24,4 +24,6 @@ namespace Raven {
 			record.bsdf->addBxDF(std::make_shared<SpecularTransmission>(kt, 1.0, eta));
 		}
 	}
+
+	GlassReg GlassReg::regHelper;
 }

@@ -18,14 +18,6 @@ namespace Raven {
 		}
 	}
 
-	std::shared_ptr<MatteMaterial> MatteMaterial::buildConst(
-		double sigma, 
-		const Spectrum& kd
-	) {
-		std::shared_ptr<Texture<double>> sigmaT = std::make_shared<ConstTexture<double>>(sigma);
-		std::shared_ptr<Texture<Spectrum>> kdT = std::make_shared<ConstTexture<Spectrum>>(kd);
-
-		return std::make_shared<MatteMaterial>(sigmaT, kdT);
-	}
+	MatteMaterialReg MatteMaterialReg::regHelper;
 
 }

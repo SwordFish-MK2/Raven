@@ -5,6 +5,25 @@
 #include<Raven/core/primitive.h>
 
 namespace Raven {
+	TriangleMesh::TriangleMesh(
+		const Ref<Transform>& OTW,
+		const Ref<Transform>& WTO,
+		int triNum,
+		const std::vector<Point3f>& vs,
+		const std::vector<int>& ins,
+		const std::vector<Normal3f>& ns,
+		const std::vector<Vector3f>& ts,
+		const std::vector<Point2f> uvs)
+		:OTW(OTW), WTO(WTO),
+		nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
+		uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
+		//transform all vertices of triangle mesh to world space 
+		for (int i = 0; i < vertices.size(); i++) {
+			vertices[i] = (*OTW)(vertices[i]);
+		}
+		generateTriangles();
+	}
+
 	void TriangleMesh::generateTriangles() {
 		for (size_t i = 0; i < nTriangles; i++) {
 			auto t = std::make_shared<Triangle>(OTW, WTO, this, i);
@@ -205,27 +224,23 @@ namespace Raven {
 	}
 
 	std::shared_ptr<TriangleMesh> CreatePlane(
-		const Transform* LTW, 
-		const Transform* WTL, 
+		const Transform* LTW,
+		const Transform* WTL,
 		const Point3f& v0,
-		const Point3f& v1, 
-		const Point3f& v2, 
-		const Point3f& v3, 
+		const Point3f& v1,
+		const Point3f& v2,
+		const Point3f& v3,
 		const Normal3f& normal) {
 		std::vector<Point3f> vertices = { v0,v1,v2,v3 };
 		std::vector<int> indices = { 0,1,3,1,2,3 };
 		std::vector<Point2f> uvs = { Point2f(0,1),Point2f(1,1),Point2f(1,0),Point2f(0,0) };
 		std::vector<Normal3f> normals = { normal,normal,normal, normal };
 		std::vector<Vector3f> tangants;
-		std::shared_ptr<TriangleMesh> mesh=std::make_shared<TriangleMesh>(LTW, WTL, 2, vertices, indices, normals, tangants, uvs);
+		std::shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>(LTW, WTL, 2, vertices, indices, normals, tangants, uvs);
 		return mesh;
 	}
 
-	std::shared_ptr<TriangleMesh> TriangleMesh::build(const Transform* LTW, const Transform* WTL,
-		const TriangleInfo& info) {
-		return std::make_shared<TriangleMesh>(LTW, WTL, info.numbers, info.vertices,
-			info.indices, info.normals, info.tangants, info.uvs);
-	}
+	TriangleMeshReg TriangleMeshReg::regHelper;
 
 	//std::shared_ptr<TriangleMesh> makeTriangleMesh(
 	//	const std::shared_ptr<Transform>& LTW,

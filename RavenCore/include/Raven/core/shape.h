@@ -22,7 +22,7 @@ namespace Raven {
 
 		HitInfo() {}
 
-		void setInfo(const Point3f& p,double t,const Vector3f dir) {
+		void setInfo(const Point3f& p, double t, const Vector3f dir) {
 			pHit = p;
 			hitTime = t;
 			wo = dir;
@@ -32,13 +32,13 @@ namespace Raven {
 	/// <summary>
 	/// Shape interface, all geometrics must inherit this class
 	/// </summary>
-	class Shape:public RavenObject{
+	class Shape :public RavenObject {
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	protected:
-		const Transform* localToWorld;
-		const Transform* worldToLocal;
+		Ref<Transform> localToWorld;
+		Ref<Transform> worldToLocal;
 	public:
-		Shape(const Transform* LTW, const Transform* WTL) :localToWorld(LTW), worldToLocal(WTL) {}
+		Shape(const Ref<Transform>& LTW, const Ref<Transform>& WTL) :localToWorld(LTW), worldToLocal(WTL) {}
 
 		//intersect incident ray with shape and return whether shape is hitted
 		virtual bool hit(const Ray& r_in, double tMax)const = 0;

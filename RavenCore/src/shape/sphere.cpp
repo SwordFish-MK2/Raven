@@ -218,8 +218,5 @@ namespace Raven {
 		return UniformConePdf(cosThetaMax);
 	}
 
-	std::shared_ptr<Sphere> Sphere::build(const Transform* LTW, const Transform* WTL,
-		double radius) {
-		return std::make_shared<Sphere>(LTW, WTL, radius);
-	}
+	SphereReg SphereReg::regHelper;
 }

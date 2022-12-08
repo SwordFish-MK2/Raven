@@ -18,8 +18,12 @@ namespace Raven {
 
 		virtual std::tuple<Point2f, Vector2f, Vector2f> map(const SurfaceInteraction& si)const;
 
-		static std::shared_ptr<UVMapping2D> build(double su = 1.0, double sv = 1.0, double du = 0.0, double dv = 0.0) {
-			return std::make_shared<UVMapping2D>(su, sv, du, dv);
+		static Ref<TextureMapping2D> construct(const PropertyList& param) {
+			double su = param.getFloat("su", 1.0);
+			double sv = param.getFloat("sv", 1.0);
+			double du = param.getFloat("du", 0.0);
+			double dv = param.getFloat("dv", 1.0);
+			return std::make_shared<TextureMapping2D>(su, sv, du, dv);
 		}
 	private:
 		double su, sv;//UV×ø±êµÄËõ·Å
@@ -32,21 +36,23 @@ namespace Raven {
 	/// </summary>
 	class SphericalMapping2D :public TextureMapping2D {
 	public:
-		SphericalMapping2D(const Transform& trans) :worldToTexture(trans) {}
+		SphericalMapping2D(const Ref<Transform>& trans) :worldToTexture(trans) {}
 
 		virtual std::tuple<Point2f, Vector2f, Vector2f> map(const SurfaceInteraction& si)const;
 
-		static std::shared_ptr<SphericalMapping2D> build(const Transform& trans) {
-			return std::make_shared<SphericalMapping2D>(trans);
+		static Ref<TextureMapping2D> construct(const PropertyList& param) {
+			ObjectRef worldToTexture = param.getObjectRef(0);
+			return std::make_shared<TextureMapping2D>(worldToTexture.getRef());
 		}
-	private:
-		const Transform worldToTexture;
-		Point2f mapSphere(const Point3f& p)const;
-	};
-	
-	std::shared_ptr<UVMapping2D> makeUVMapping(const PropertyList& param);
 
-	std::shared_ptr<SphericalMapping2D> makeSphericalMapping2D(
-		const std::shared_ptr<Transform>& worldTexture, const PropertyList& param);
+	private:
+		Point2f mapSphere(const Point3f& p)const;
+
+		const Ref<Transform> worldToTexture;
+	};
+	_RAVEN_CLASS_REG_(uv, UVMapping2D, UVMapping2D::construct)
+
+	_RAVEN_CLASS_REG_(spherical, SphericalMapping2D, SphericalMapping2D::construct)
+
 }
 #endif

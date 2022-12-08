@@ -24,38 +24,22 @@ namespace Raven {
 				return tex2->evaluate(its);
 		}
 
-		//static std::optional<Ref<CheckeredTexture<T>>> construct(
-		//	const PropertyList& params) {
-		//	ObjectRef odd = params.getObjectRef();
-		//	ObjectRef even = params.getObjectRef();
-		//	ObjectRef mapping = params.getObjectRef();
-		//	if (even.matchType == "nullptr" || odd.matchType == "nullptr" || even.matchType == "nullptr")
-		//		std::cout << "Failed;checkered texture null ptr\.n";
-		//	if (odd.matchType != "texture")
-		//		std::cout << "Failed odd.\n";
-		//	if (even.matchType != "texture")
-		//		std::cout << "Failed even.\n";
-		//	if (matchType != "mapping")
-		//		std::cout << "Failed mapping.\n";
-		//	return std::make_shared<CheckeredTexture<T>>(odd.getRef(), even.getRef(), mapping);
-		//}
+		static Ref<Texture<T>> construct(const PropertyList& param);
 	private:
 		std::shared_ptr<Texture<T>> tex1;
 		std::shared_ptr<Texture<T>> tex2;
 		std::shared_ptr<TextureMapping2D> mapping;
 	};
 
-	std::shared_ptr<CheckeredTexture<double>> makeCheckeredFloat(
-		const std::shared_ptr<Texture<double>>& oddTexture,
-		const std::shared_ptr<Texture<double>>& evenTexture,
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param);
+	namespace TextureBuild {
+		Ref<CheckeredTexture<double>> makeCheckeredFloat(const PropertyList& param);
 
-	std::shared_ptr<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(
-		const std::shared_ptr<Texture<Spectrum>>& oddTexture,
-		const std::shared_ptr<Texture<Spectrum>>& evenTexture,
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param);
+		Ref<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(const PropertyList& param);
+	}
+
+	_RAVEN_CLASS_REG_(checkeredfloat,CheckeredTextureFloat,TextureBuild::makeCheckeredFloat)
+
+	_RAVEN_CLASS_REG_(checkeredspectra,CheckeredTextureSpectra,TextureBuild::makeCheckeredSpectrum)
 }
 
 #endif

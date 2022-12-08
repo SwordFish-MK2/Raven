@@ -15,4 +15,5 @@ namespace Raven {
 		}
 	}
 
+	MirrorReg MirrorReg::regHelper;
 }

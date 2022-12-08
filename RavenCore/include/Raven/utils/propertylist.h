@@ -11,7 +11,7 @@
 namespace Raven {
 	struct ObjectRef {
 	public:
-		inline Ref<RavenObject> getRef() {
+		inline Ref<RavenObject> getRef()const {
 			return my_ref;
 		}
 
