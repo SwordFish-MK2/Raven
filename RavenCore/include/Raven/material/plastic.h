@@ -21,12 +21,6 @@ namespace Raven {
 
 		virtual void computeScarttingFunctions(SurfaceInteraction& its)const;
 
-		static std::shared_ptr<Plastic> build(
-			const std::shared_ptr<Texture<Spectrum>>& kd,
-			const std::shared_ptr<Texture<Spectrum>>& ks,
-			const std::shared_ptr<Texture<double>>& roughness,
-			const std::shared_ptr<Texture<double>>& bump = nullptr);
-
 		static Ref<Material> construct(const PropertyList& param) {
 			const auto& kd = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(0).getRef());
 			const auto& ks = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(1).getRef());

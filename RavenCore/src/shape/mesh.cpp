@@ -234,7 +234,7 @@ namespace Raven {
 		std::vector<Point3f> vertices = { v0,v1,v2,v3 };
 		std::vector<int> indices = { 0,1,3,1,2,3 };
 		std::vector<Point2f> uvs = { Point2f(0,1),Point2f(1,1),Point2f(1,0),Point2f(0,0) };
-		std::vector<Normal3f> normals = { normal,normal,normal, normal };
+		std::vector<Normal3f> normals{ normal,normal,normal, normal };
 		std::vector<Vector3f> tangants;
 		std::shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>(LTW, WTL, 2, vertices, indices, normals, tangants, uvs);
 		return mesh;

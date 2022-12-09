@@ -24,6 +24,12 @@ namespace Raven {
 
 		void computeScarttingFunctions(SurfaceInteraction& its) const;
 
+		static Ref<Material> buildConst(double sigma, const Spectrum& kd) {
+			Ref<Texture<double>> sigmaTex = std::make_shared<ConstTexture<double>>(sigma);
+			Ref<Texture<Spectrum>> kdTex = std::make_shared<ConstTexture<Spectrum>>(kd);
+			return std::make_shared<MatteMaterial>(sigmaTex, kdTex, nullptr);
+		}
+
 		static Ref<Material> construct(const PropertyList& param) {
 			const ObjectRef& sigmaRef = param.getObjectRef(0);
 			const ObjectRef& kdRef = param.getObjectRef(1);
@@ -36,7 +42,9 @@ namespace Raven {
 		}
 	};
 
-	_RAVEN_CLASS_REG_(matte,MatteMaterial,MatteMaterial::construct)
+
+
+	_RAVEN_CLASS_REG_(matte, MatteMaterial, MatteMaterial::construct)
 }
 
 #endif
