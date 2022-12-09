@@ -13,8 +13,8 @@ namespace Raven {
 
 	Spectrum HomogeneousMedium::Tr(
 		const Ray& ray,
-		const Sampler& sampler) {
-		double d = Min(ray.tMax * ray.d.length(), std::numeric_limits<double>::max());
-		return exp(-siagma_t * d);
+		Sampler& sampler)const {
+		double d = Min(ray.tMax * ray.dir.length(), std::numeric_limits<double>::max());
+		return Exp(-sigma_t * d);
 	}
 }

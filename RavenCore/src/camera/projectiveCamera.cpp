@@ -141,19 +141,6 @@ namespace Raven {
 		return 1;
 	}
 
-	Ref<Camera> PerspectiveCamera::construct(const PropertyList& param) {
-		ObjectRef CTWObj = param.getObjectRef(0);
-		ObjectRef STRObj = param.getObjectRef(1);
-		double lensRadius = param.getFloat("lensRadius", 0);
-		double focalDistance = param.getFloat("focalDis", 10);
-		double near = param.getFloat("near", 0.001);
-		double far = param.getFloat("far", 1000.0);
-		double fov = param.getFloat("fov", 45.0);
-		double aspectRatio = param.getFloat("aspectRatio", 1.5);
-		Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
-		Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
-		return std::make_shared<PerspectiveCamera>(*CTW, *STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
-	}
 
 	Ref<Camera> OrthographicCamera::construct(const PropertyList& param) {
 		ObjectRef CTWObj = param.getObjectRef(0);
@@ -170,7 +157,7 @@ namespace Raven {
 		Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
 		Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
 
-		return std::make_shared<Camera>(*CTW, *STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
+		return std::make_shared<OrthographicCamera>(*CTW, *STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
 
 	}
 

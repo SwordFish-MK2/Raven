@@ -62,7 +62,8 @@ namespace Raven {
 
 	namespace TextureBuild {
 		Ref<ImageTexture<double, double>> makeImageTextureFloat(const PropertyList& param) {
-			ObjectRef mapping = param.getObjectRef(0);
+			ObjectRef mappingRef = param.getObjectRef(0);
+			const auto& mapping = std::dynamic_pointer_cast<TextureMapping2D>(mappingRef.getRef());
 			std::string path = param.getString("filename", "");
 			bool doTrilinear = param.getBoolean("trilinear", false);
 			int wrap = param.getInteger("wrap", 0);
@@ -79,12 +80,13 @@ namespace Raven {
 				iwrap = ImageWrap::ImBlack;
 				break;
 			}
-			return std::make_shared<ImageTexture<double, double>>(path, mapping.getRef(), doTrilinear, iwrap, gamma);
+			return std::make_shared<ImageTexture<double, double>>(path, mapping, doTrilinear, iwrap, gamma);
 		}
 
 		std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>>makeImageTextureSpectrum(const PropertyList& param)
 		{
-			ObjectRef mapping = param.getObjectRef(0);
+			ObjectRef mappingRef = param.getObjectRef(0);
+			const auto& mapping = std::dynamic_pointer_cast<TextureMapping2D>(mappingRef.getRef());
 			std::string path = param.getString("filename", "");
 			bool doTrilinear = param.getBoolean("trilinear", false);
 			int wrap = param.getInteger("wrap", 0);
@@ -102,7 +104,7 @@ namespace Raven {
 			}
 			bool gamma = param.getBoolean("gamma", false);
 
-			return std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(path, mapping.getRef(), doTrilinear, iwrap, gamma);
+			return std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(path, mapping, doTrilinear, iwrap, gamma);
 		}
 	}
 

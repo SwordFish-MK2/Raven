@@ -8,7 +8,6 @@
 #include<Raven/core/math.h>
 #include<Raven/core/accelerate.h>
 #include<Raven/accelerate/kdTree.h>
-#include<Raven/utils/loader.h>
 
 namespace Raven {
 
@@ -38,22 +37,7 @@ namespace Raven {
 			const std::vector<int>& ins, const std::vector<Normal3f>& ns, const std::vector<Vector3f>& ts,
 			const std::vector<Point2f> uvs);
 
-		static Ref<TriangleMesh> construct(const PropertyList& param) {
-			Loader loader;
-			const std::string& filename = param.getString("filename", "");
-			auto objdata = loader.load("", filename);
-			const ObjectRef& otwRef = param.getObjectRef(0);
-			const Ref<Transform>& otw = std::dynamic_pointer_cast<Transform>(otwRef.getRef());
-			const Ref<Transform> wto = std::make_shared<Transform>(Inverse(*otw));
-			const std::vector<Point3f>& vs = objdata->vertices;
-			const std::vector<int>& ins = objdata->indices;
-			const std::vector<Normal3f>& ns = objdata->normals;
-			const std::vector<Vector3f>& ts = objdata->tangants;
-			const std::vector<Point2f>& uvs = objdata->uvs;
-			int num = objdata->numbers;
-			return std::make_shared<TriangleMesh>(otw, wto, num, vs, ins, ns, ts, uvs);
-
-		}
+		//static Ref<TriangleMesh> construct(const PropertyList& param);
 
 	private:
 		void generateTriangles();
@@ -124,9 +108,9 @@ namespace Raven {
 		return os;
 	}
 
-	_RAVEN_CLASS_REG_(mesh,TriangleMesh,TriangleMesh::construct)
+	//_RAVEN_CLASS_REG_(mesh,TriangleMesh,TriangleMesh::construct)
 
-	std::shared_ptr<TriangleMesh> CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
+	std::shared_ptr<TriangleMesh> CreatePlane(const Ref<Transform>& LTW, const Ref<Transform>& WTL, const Point3f& v0,
 		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal);
 
 }

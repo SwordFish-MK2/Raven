@@ -9,7 +9,7 @@
 namespace Raven {
 	class InfiniteAreaLight :public Light {
 	public:
-		InfiniteAreaLight(const Transform* LightToWorld,const Transform* worldToLight,
+		InfiniteAreaLight(const Ref<Transform>& LightToWorld,const Ref<Transform>& worldToLight,
 			const Spectrum& L, int nSamples, const std::string& textureMap);
 		//输入空间中的一个点p，在光源上随机采样，并计算出射的Radiance
 		Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const;

@@ -42,9 +42,19 @@ namespace Raven {
 	class ConstTexture :public Texture<T> {
 	public:
 		ConstTexture(T value) :value(value) {}
-		virtual  inline T evaluate(const SurfaceInteraction& its)const {
-			return value;
-		}
+
+		virtual T evaluate(const SurfaceInteraction& its)const override { return value; }
+
+		//static Ref<Texture<T>> construct(const PropertyList& param) {
+		//	if (std::is_same_v<T, double>) {
+		//		double data = param.getFloat("data", 1.0);
+		//		return std::make_shared<ConstTexture<T>>(data);
+		//	}
+		//	else{
+		//		Spectrum data = param.getSpectra("reflectance", Spectrum(1.));
+		//		return std::make_shared<ConstTexture<T>>(data);
+		//	}
+		//}
 	private:
 		T value;
 	};
@@ -53,9 +63,10 @@ namespace Raven {
 	class ScaleTexture :public Texture<T> {
 	public:
 		virtual T evaluate(const SurfaceInteraction& its)const {
-			return vTexuture->evaluate(its) * sTexture->evaluate(its);
+			return vTexture->evaluate(its) * sTexture->evaluate(its);
 		}
 		ScaleTexture(const Ref<Texture<T>>& t1, const Ref<Texture<T>>& t2) :vTexture(t1), sTexture(t2) {}
+
 	private:
 		Ref<Texture<T>> vTexture;
 		Ref<Texture<T>> sTexture;
@@ -65,18 +76,16 @@ namespace Raven {
 		Ref<Texture<double>> makeConstTextureFloat(const PropertyList& param);
 		Ref<Texture<Spectrum>> makeConstTextureSpectrum(const PropertyList& param);
 
-		Ref<Texture<double>> makeScaleTextureFloat(const PropertyList& param);
-		Ref<Texture<Spectrum>> makeScaleTextureSpectrum(const PropertyList& param);
 	}
-
-	_RAVEN_CLASS_REG_(constfloat,ConstTextureFloat,TextureBuild::makeConstTextureFloat)
-
-	_RAVEN_CLASS_REG_(constspectra,ConstTextureSpectra,TextureBuild::makeConstTextureSpectrum)
-
-	_RAVEN_CLASS_REG_(scalefloat,ScaleTextureFloat,TextureBuild::makeScaleTextureFloat)
-
-	_RAVEN_CLASS_REG_(scalespectra,ScaleTextureSpectra,TextureBuild::makeScaleTextureSpectrum)
+	//
+	//	_RAVEN_CLASS_REG_(constfloat, ConstTextureFloat, ConstTexture<double>::construct)
+	//
+	//		_RAVEN_CLASS_REG_(constspectra, ConstTextureSpectra, ConstTexture<Spectrum>::construct)
+	//
+	//		//_RAVEN_CLASS_REG_(scalefloat, ScaleTextureFloat, TextureBuild::makeScaleTextureFloat)
+	//
+	//		//_RAVEN_CLASS_REG_(scalespectra, ScaleTextureSpectra, TextureBuild::makeScaleTextureSpectrum)
+	//}
 }
-
 
 #endif

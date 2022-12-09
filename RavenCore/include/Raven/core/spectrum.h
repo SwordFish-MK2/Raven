@@ -46,6 +46,12 @@ namespace Raven {
 				temp.c[i] = this->c[i] - s.c[i];
 			return temp;
 		}
+		CoefficientSpectrum operator-()const {
+			CoefficientSpectrum temp = *this;
+			for (int i = 0; i < sampleNumber; i++)
+				temp.c[i] *= -1;
+			return temp;
+		}
 		CoefficientSpectrum& operator-=(const CoefficientSpectrum& s) {
 			for (int i = 0; i < sampleNumber; i++)
 				c[i] -= s.c[i];
@@ -75,40 +81,42 @@ namespace Raven {
 				c[i] *= t;
 			return *this;
 		}
-		friend inline CoefficientSpectrum operator*(double a, const CoefficientSpectrum& s) {
-			CoefficientSpectrum temp;
-			for (int i = 0; i < nSpectrumSamples; i++) {
-				temp.c[i] = s.c[i] * a;
-			}
-			return temp;
-		}
+
+		template<int n>
+		friend inline CoefficientSpectrum operator*(double a, const CoefficientSpectrum& s);
+
 		CoefficientSpectrum operator/(const CoefficientSpectrum& s)const {
 			CoefficientSpectrum temp = *this;
 			for (int i = 0; i < sampleNumber; i++)
 				temp.c[i] /= s.c[i];
 			return temp;
 		}
+
 		CoefficientSpectrum& operator/=(const CoefficientSpectrum& s) {
 			for (int i = 0; i < sampleNumber; i++)
 				c[i] /= s.c[i];
 			return *this;
 		}
+
 		CoefficientSpectrum operator/(double t)const {
 			CoefficientSpectrum temp;
 			for (int i = 0; i < sampleNumber; i++)
 				temp.c[i] = c[i] / t;
 			return temp;
 		}
+
 		CoefficientSpectrum& operator/=(double t) {
 			for (int i = 0; i < sampleNumber; i++)
 				c[i] /= t;
 			return *this;
 		}
+
 		CoefficientSpectrum& operator=(const CoefficientSpectrum& s) {
 			for (int i = 0; i < sampleNumber; i++)
 				c[i] = s.c[i];
 			return *this;
 		}
+
 		bool operator==(const CoefficientSpectrum& s)const {
 			for (int i = 0; i < sampleNumber; i++) {
 				if (c[i] != s.c[i])
@@ -116,6 +124,7 @@ namespace Raven {
 			}
 			return true;
 		}
+
 		bool operator!=(const CoefficientSpectrum& s)const {
 			for (int i = 0; i < sampleNumber; i++) {
 				if (c[i] != s.c[i])
@@ -123,46 +132,33 @@ namespace Raven {
 			}
 			return false;
 		}
+
 		double& operator[](int i) {
 			if (i < sampleNumber) {
 				return c[i];
 			}
 		}
+
 		double operator[](int i) const {
 			return c[i];
 		}
-		CoefficientSpectrum clamp(double min = 0.F, double max = FLT_MAX)const {
+
+		CoefficientSpectrum Clamp(double min = 0.F, double max = FLT_MAX)const {
 			CoefficientSpectrum temp;
 			for (int i = 0; i < sampleNumber; i++) {
 				temp.c[i] = Clamp(c[i], min, max);
 			}
 			return temp;
 		}
-		CoefficientSpectrum lerp(double t, const CoefficientSpectrum& c2)const {
-			CoefficientSpectrum temp;
-			for (int i = 0; i < sampleNumber; i++) {
-				temp.c[i] = Lerp(t, c[i], c2.c[i]);
-			}
-			return temp;
-		}
-		CoefficientSpectrum pow(double p)const {
-			CoefficientSpectrum temp;
-			for (int i = 0; i < sampleNumber; i++)
-				temp.c[i] = pow(c[i], p);
-			return temp;
-		}
-		CoefficientSpectrum sqrt(double p)const {
-			CoefficientSpectrum temp;
-			for (int i = 0; i < sampleNumber; i++)
-				temp.c[i] = sqrt(c[i], p);
-			return temp;
-		}
-		CoefficientSpectrum exp()const {
-			CoefficientSpectrum temp;
-			for (int i = 0; i < sampleNumber; i++)
-				temp.c[i] = exp(c[i]);
-			return temp;
-		}
+
+		template<int n>
+		friend inline CoefficientSpectrum Pow(const CoefficientSpectrum& s, double p);
+
+		template<int n>
+		friend inline CoefficientSpectrum Sqrt(const CoefficientSpectrum& s);
+
+		template<int n>
+		friend inline CoefficientSpectrum Exp(const CoefficientSpectrum& s);
 
 		bool hasNaNs() {
 			for (int i = 0; i < sampleNumber; i++)
@@ -170,12 +166,24 @@ namespace Raven {
 					return true;
 			return false;
 		}
+
 		bool isBlack() {
 			for (int i = 0; i < sampleNumber; i++) {
 				if (c[i] != 0.f)
 					return false;
 			}
 			return true;
+		}
+
+		friend inline std::ostream& operator<<(std::ostream& out, const CoefficientSpectrum& s) {
+			out << "[";
+			for (int i = 0; i < sampleNumber; i++) {
+				out << c[i];
+				if (i < sampleNumber - 1)
+					out << ","
+			}
+			out << "]";
+			return out;
 		}
 	};
 
@@ -313,10 +321,42 @@ namespace Raven {
 
 	using Spectrum = RGBSpectrum;
 
-	inline std::ostream& operator<<(std::ostream& os, const Spectrum& v) {
-		os << "[ " << v[0] << ", " << v[1] << ", " << v[2] << " ]";
-		return os;
+	template<int n>
+	inline CoefficientSpectrum<n> operator*(double a, const CoefficientSpectrum<n>& s) {
+		CoefficientSpectrum<n> temp;
+		for (int i = 0; i < n; i++) {
+			temp.c[i] = s.c[i] * a;
+		}
+		return temp;
 	}
+
+	template<int n>
+	inline CoefficientSpectrum<n> Pow(const CoefficientSpectrum<n>& s, double p) {
+		CoefficientSpectrum<n> temp;
+		for (int i = 0; i < n; i++) {
+			temp.c[i] = std::pow(s.c[i], p);
+		}
+		return temp;
+	}
+
+	template<int n>
+	inline CoefficientSpectrum<n> Sqrt(const CoefficientSpectrum<n>& s) {
+		CoefficientSpectrum<n> temp;
+		for (int i = 0; i < n; i++) {
+			temp.c[i] = std::sqrt(s.c[i]);
+		}
+		return temp;
+	}
+
+	template<int n>
+	inline CoefficientSpectrum<n> Exp(const CoefficientSpectrum<n>& s) {
+		CoefficientSpectrum<n> temp;
+		for (int i = 0; i < n; i++) {
+			temp.c[i] = std::exp(s.c[i]);
+		}
+		return temp;
+	}
+
 }
 
 #endif

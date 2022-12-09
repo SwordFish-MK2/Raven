@@ -23,7 +23,7 @@ namespace Raven {
 			double sv = param.getFloat("sv", 1.0);
 			double du = param.getFloat("du", 0.0);
 			double dv = param.getFloat("dv", 1.0);
-			return std::make_shared<TextureMapping2D>(su, sv, du, dv);
+			return std::make_shared<UVMapping2D>(su, sv, du, dv);
 		}
 	private:
 		double su, sv;//UV×ø±êµÄËõ·Å
@@ -42,7 +42,8 @@ namespace Raven {
 
 		static Ref<TextureMapping2D> construct(const PropertyList& param) {
 			ObjectRef worldToTexture = param.getObjectRef(0);
-			return std::make_shared<TextureMapping2D>(worldToTexture.getRef());
+			const auto& wtt = std::dynamic_pointer_cast<Transform>(worldToTexture.getRef());
+			return std::make_shared<SphericalMapping2D>(wtt);
 		}
 
 	private:

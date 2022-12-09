@@ -224,8 +224,8 @@ namespace Raven {
 	}
 
 	std::shared_ptr<TriangleMesh> CreatePlane(
-		const Transform* LTW,
-		const Transform* WTL,
+		const Ref<Transform>& LTW,
+		const Ref<Transform>& WTL,
 		const Point3f& v0,
 		const Point3f& v1,
 		const Point3f& v2,
@@ -240,7 +240,7 @@ namespace Raven {
 		return mesh;
 	}
 
-	TriangleMeshReg TriangleMeshReg::regHelper;
+	//TriangleMeshReg TriangleMeshReg::regHelper;
 
 	//std::shared_ptr<TriangleMesh> makeTriangleMesh(
 	//	const std::shared_ptr<Transform>& LTW,
@@ -251,6 +251,23 @@ namespace Raven {
 	//	Loader loader;
 	//	std::optional<TriangleInfo> info = loader.load(path, filename);
 	//	return TriangleMesh::build(LTW.get(), WTL.get(), *info);
+	//}
+
+	//Ref<TriangleMesh> TriangleMesh::construct(const PropertyList& param) {
+	//	Loader loader;
+	//	const std::string& filename = param.getString("filename", "");
+	//	auto objdata = loader.load("", filename);
+	//	const ObjectRef& otwRef = param.getObjectRef(0);
+	//	const Ref<Transform>& otw = std::dynamic_pointer_cast<Transform>(otwRef.getRef());
+	//	const Ref<Transform> wto = std::make_shared<Transform>(Inverse(*otw));
+	//	const std::vector<Point3f>& vs = objdata->vertices;
+	//	const std::vector<int>& ins = objdata->indices;
+	//	const std::vector<Normal3f>& ns = objdata->normals;
+	//	const std::vector<Vector3f>& ts = objdata->tangants;
+	//	const std::vector<Point2f>& uvs = objdata->uvs;
+	//	int num = objdata->numbers;
+	//	return std::make_shared<TriangleMesh>(otw, wto, num, vs, ins, ns, ts, uvs);
+
 	//}
 
 }

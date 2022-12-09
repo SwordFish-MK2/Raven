@@ -2,7 +2,8 @@
 #define _RAVEN_MEDIUM_HOMOGENEOUS_H_
 
 #include<Raven/core/medium.h>
-
+#include<Raven/core/base.h>
+#include<Raven/core/ray.h>
 namespace Raven {
 	class HomogeneousMedium :public Medium {
 	public:
