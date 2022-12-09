@@ -3,9 +3,11 @@
 
 namespace Raven {
 
-	void Mirror::computeScarttingFunctions(SurfaceInteraction& record)const {
+	void Mirror::computeScarttingFunctions(
+		SurfaceInteraction& record,
+		bool allowMultipleLobes)const
+	{
 		record.bsdf = std::make_shared <BSDF>(record);
-
 
 		std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelNoOp>();
 

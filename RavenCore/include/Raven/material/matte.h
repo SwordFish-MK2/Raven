@@ -22,7 +22,8 @@ namespace Raven {
 			const std::shared_ptr<Texture<double>>& bump = NULL)
 			:sigma(sigma), kd(Kd), bump(bump) {}
 
-		void computeScarttingFunctions(SurfaceInteraction& its) const;
+		void computeScarttingFunctions(SurfaceInteraction& its,
+			bool allowMultipleLobes) const override;
 
 		static Ref<Material> buildConst(double sigma, const Spectrum& kd) {
 			Ref<Texture<double>> sigmaTex = std::make_shared<ConstTexture<double>>(sigma);

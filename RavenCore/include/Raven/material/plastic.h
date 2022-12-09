@@ -19,7 +19,8 @@ namespace Raven {
 			roughness(roughnessTexture),
 			bump(bumpTexture) {}
 
-		virtual void computeScarttingFunctions(SurfaceInteraction& its)const;
+		void computeScarttingFunctions(SurfaceInteraction& its,
+			bool allowMultipleLobes) const override;
 
 		static Ref<Material> construct(const PropertyList& param) {
 			const auto& kd = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(0).getRef());

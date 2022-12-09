@@ -16,7 +16,8 @@ namespace Raven {
 			const std::shared_ptr<Texture<double>>& bump = nullptr) :
 			rTex(r), bumpTex(bump) {}
 
-		void computeScarttingFunctions(SurfaceInteraction& its) const;
+		void computeScarttingFunctions(SurfaceInteraction& its,
+			bool allowMultipleLobes) const override;
 
 		static std::shared_ptr<Mirror> build(
 			const std::shared_ptr<Texture<Spectrum>>& r,

@@ -4,7 +4,10 @@
 
 namespace Raven {
 
-	void Plastic::computeScarttingFunctions(SurfaceInteraction& hitRecord)const {
+	void Plastic::computeScarttingFunctions(
+		SurfaceInteraction& hitRecord,
+		bool allowMultipleLobes)const
+	{
 
 		std::shared_ptr<BSDF> bsdf = std::make_shared <BSDF>(hitRecord);
 
