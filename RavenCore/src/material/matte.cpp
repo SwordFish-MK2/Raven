@@ -2,7 +2,9 @@
 
 namespace Raven {
 	//determing bump effect and generate BSDF
-	void MatteMaterial::computeScarttingFunctions(SurfaceInteraction& its)const {
+	void MatteMaterial::computeScarttingFunctions(
+		SurfaceInteraction& its,
+		bool allowMultipleLobes)const {
 
 		its.bsdf = std::make_shared <BSDF>(its);
 		//calculate values of textures 

@@ -22,7 +22,7 @@ namespace Raven {
 
 		record.computeDifferential(ray);
 		//配置材质信息
-		mate_ptr->computeScarttingFunctions(record);
+		mate_ptr->computeScarttingFunctions(record, true);
 
 		//配置光源信息
 		if (light_ptr.get() != nullptr) {
@@ -55,7 +55,7 @@ namespace Raven {
 	}
 
 	SurfaceInteraction TransformedPrimitive::setInteractionProperty(const HitInfo& pHit, const RayDifferential& ray)const {
-		SurfaceInteraction record = prim->setInteractionProperty(pHit,ray);
+		SurfaceInteraction record = prim->setInteractionProperty(pHit, ray);
 		return (*primToWorld)(record);
 	}
 

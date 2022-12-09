@@ -16,7 +16,7 @@ namespace Raven {
 		return -wo + n * Dot(wo, n) * 2.0;
 	}
 
-	inline Vector3f Reflect(const Vector3f& wo, const Vector3f& n = Vector3f(0, 0, 1)) {
+	inline Vector3f Reflect(const Vector3f& wo, const Vector3f& n) {
 		return -wo + n * Dot(wo, n) * 2.0;
 	}
 

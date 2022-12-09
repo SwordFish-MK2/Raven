@@ -297,6 +297,11 @@ namespace Raven {
 	class RGBSpectrum :public CoefficientSpectrum<3> {
 	public:
 		RGBSpectrum() :CoefficientSpectrum(0.f) {}
+		RGBSpectrum(double r, double g, double b) {
+			c[0] = r;
+			c[1] = g;
+			c[2] = b;
+		}
 		RGBSpectrum(const CoefficientSpectrum<3>& s) :CoefficientSpectrum(s) {}
 		RGBSpectrum(const RGBSpectrum& s, RGBType type = RGBReflection) {
 			*this = s;
