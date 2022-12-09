@@ -154,7 +154,7 @@
 //
 //			//判断当前节点对应的类型
 //			bool isScene = tag == RTag::RScene;
-//			bool isClass = tag < RTag::RPropertyStart&& tag != RTag::RScene;
+//			bool isObject = tag < RTag::RPropertyStart&& tag != RTag::RScene;
 //
 //			//当前节点对应场景类
 //			if (isScene) {
@@ -195,7 +195,7 @@
 //			}
 //
 //			//当前节点对应Raven中的类
-//			if (isClass) {
+//			if (isObject) {
 //
 //				//创建propertylist用于存储构造该类对象所需的数据
 //				PropertyList list;
@@ -426,6 +426,25 @@
 //					const tinyxml2::XMLAttribute* v = node->FindAttribute("value");
 //					Normal3f value = toNormal(v->Value());
 //					pList->setNormal3f(name, value);
+//					break;
+//				}
+//				case RSpectraRGB: {
+//					//获取rgb的值
+//					std::string name = node->FindAttribute("name")->Value();
+//					std::string vstr = node->FindAttribute("value")->Value();
+//					Vector3f rgbValue = toVector3f(vstr);
+//					Spectrum rgb = RGBSpectrum::fromRGB(rgbValue);
+//
+//					//获取父节点类型，根据父节点类型判断生成Spectrum对象或ConstTexture指针
+//					std::string fathername = fatherNode->Name();
+//
+//					//父节点为Material，
+//					//此时Spectra为Material的reflectance属性，
+//					//生成ConstTexture<Spectrum>对象
+//					if (fathername == "bsdf") {
+//						Ref<ConstTexture<Spectrum>> spectra = std::make_shared<ConstTexture<Spectrum>>(rgb);
+//						pList->setObjectRef(name, spectra);
+//					}
 //					break;
 //				}
 //				case RSpectra: {

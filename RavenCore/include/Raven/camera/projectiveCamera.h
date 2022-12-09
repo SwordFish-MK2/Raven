@@ -4,6 +4,7 @@
 #include<Raven/core/camera.h>
 #include<Raven/core/base.h>
 #include<Raven/utils/propertylist.h>
+#include<Raven/utils/factory.h>
 
 namespace Raven {
 
@@ -35,7 +36,19 @@ namespace Raven {
 
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
 
-		static Ref<Camera> construct(const PropertyList& param);
+		static Ref<Camera> construct(const PropertyList& param) {
+			ObjectRef CTWObj = param.getObjectRef(0);
+			ObjectRef STRObj = param.getObjectRef(1);
+			double lensRadius = param.getFloat("lensRadius", 0);
+			double focalDistance = param.getFloat("focalDis", 10);
+			double near = param.getFloat("near", 0.001);
+			double far = param.getFloat("far", 1000.0);
+			double fov = param.getFloat("fov", 45.0);
+			double aspectRatio = param.getFloat("aspectRatio", 1.5);
+			Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
+			Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
+			return std::make_shared<PerspectiveCamera>(*CTW, *STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
+		}
 
 	private:
 
@@ -66,10 +79,6 @@ namespace Raven {
 
 	_RAVEN_CLASS_REG_(orthographic,OrthographicCamera,OrthographicCamera::construct)
 
-	//std::shared_ptr<PerspectiveCamera> makePerspectiveCamera(const Transform& CTW, const Transform& STR,
-	//	const PropertyList& param);
-	//std::shared_ptr<OrthographicCamera> makeOrthographicCamera(const Transform& CTW, const Transform& STR,
-	//	const PropertyList& param);
 }
 
 #endif

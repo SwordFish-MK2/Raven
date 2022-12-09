@@ -31,16 +31,10 @@ namespace Raven {
 			std::shared_ptr<BxDF> spec =
 				std::make_shared<MicrofacetReflection>(fresnel, distribute, ksValue);
 
-			bsdf->addBxDF(spec);	
+			bsdf->addBxDF(spec);
 		}
 		hitRecord.bsdf = bsdf;
 	}
 
-	std::shared_ptr<Plastic> Plastic::build(
-		const std::shared_ptr<Texture<Spectrum>>& kd,
-		const std::shared_ptr<Texture<Spectrum>>& ks,
-		const std::shared_ptr<Texture<double>>& roughness,
-		const std::shared_ptr<Texture<double>>& bump) {
-		return std::make_shared<Plastic>(kd, ks, roughness, bump);
-	}
+	PlasticReg PlasticReg::regHelper;
 }

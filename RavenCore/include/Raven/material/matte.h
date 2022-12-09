@@ -24,23 +24,19 @@ namespace Raven {
 
 		void computeScarttingFunctions(SurfaceInteraction& its) const;
 
+		static Ref<Material> construct(const PropertyList& param) {
+			const ObjectRef& sigmaRef = param.getObjectRef(0);
+			const ObjectRef& kdRef = param.getObjectRef(1);
+			//const ObjectRef& bump = param.getObjectRef(2);
 
-		static std::shared_ptr<MatteMaterial> buildConst(double sigma, const Spectrum& kd);
+			const Ref<Texture<double>>& sigma = std::dynamic_pointer_cast<Texture<double>>(sigmaRef.getRef());
+			const Ref<Texture<Spectrum>>& kd = std::dynamic_pointer_cast<Texture<Spectrum>>(kdRef.getRef());
 
-		static std::shared_ptr<MatteMaterial> build(
-			const std::shared_ptr<Texture<double>>& sigma,
-			const std::shared_ptr<Texture<Spectrum>>& kd,
-			const std::shared_ptr<Texture<double>>& bump = nullptr) {
-			return std::make_shared<MatteMaterial>(sigma, kd, bump);
+			return std::make_shared<MatteMaterial>(sigma, kd, nullptr);
 		}
 	};
 
-	inline std::shared_ptr<MatteMaterial> makeMatteMaterial(
-		const std::shared_ptr<Texture<double>>& sigma,
-		const std::shared_ptr<Texture<Spectrum>>& kd,
-		const PropertyList& property) {
-		return std::make_shared<MatteMaterial>(sigma, kd, nullptr);
-	}
+	_RAVEN_CLASS_REG_(matte,MatteMaterial,MatteMaterial::construct)
 }
 
 #endif

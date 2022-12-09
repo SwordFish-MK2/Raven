@@ -25,10 +25,23 @@ namespace Raven {
 
 	};
 
+
+
 	/// <summary>
 	/// Triangle mesh classes stores all infomation about triangles inside and hold the instances of relative triangle array
 	/// </summary>
-	class TriangleMesh {
+	class TriangleMesh :public RavenObject {
+	public:
+		TriangleMesh(
+			const Ref<Transform>& OTW, const Ref<Transform>& WTO, int triNum, const std::vector<Point3f>& vs,
+			const std::vector<int>& ins, const std::vector<Normal3f>& ns, const std::vector<Vector3f>& ts,
+			const std::vector<Point2f> uvs);
+
+		//static Ref<TriangleMesh> construct(const PropertyList& param);
+
+	private:
+		void generateTriangles();
+
 	public:
 		const int nTriangles;
 		const int nVertices;
@@ -44,43 +57,15 @@ namespace Raven {
 		bool hasUV;
 		bool hasTan;
 
-		TriangleMesh(
-			const Transform* OTW, 
-			const Transform* WTO, 
-			int triNum, 
-			const std::vector<Point3f>& vs,
-			const std::vector<int>& ins, 
-			const std::vector<Normal3f>& ns, 
-			const std::vector<Vector3f>& ts,
-			const std::vector<Point2f> uvs) 
-			:OTW(OTW), WTO(WTO),
-			nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
-			uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
-			//transform all vertices of triangle mesh to world space 
-			for (int i = 0; i < vertices.size(); i++) {
-				vertices[i] = (*OTW)(vertices[i]);
-			}
-			generateTriangles();
-		}
-
-		static std::shared_ptr<TriangleMesh> build(
-			const Transform* WTL,
-			const Transform* LTW,
-			const TriangleInfo& info);
-
 	private:
-		const Transform* OTW;
-		const Transform* WTO;
 
-		void generateTriangles();
+		Ref<Transform> OTW;
+		Ref<Transform> WTO;
 	};
 
 	class Triangle :public Shape {
-	private:
-		const TriangleMesh* mesh;
-		int i;//此处记录的为三角形第一个index在indices中的位置，构造函数中输入的为三角形在三角形数组中的位置
 	public:
-		Triangle(const Transform* LTW, const Transform* WTL, const TriangleMesh* m, int index) :
+		Triangle(const Ref<Transform>& LTW, const Ref<Transform>& WTL, const TriangleMesh* m, int index) :
 			Shape(LTW, WTL), mesh(m), i(3 * index) {}
 
 		virtual bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const;
@@ -109,6 +94,10 @@ namespace Raven {
 		std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
 
 		double pdf()const { return 1 / area(); }
+
+	private:
+		const TriangleMesh* mesh;
+		int i;//此处记录的为三角形第一个index在indices中的位置，构造函数中输入的为三角形在三角形数组中的位置
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Triangle& t) {
@@ -119,13 +108,11 @@ namespace Raven {
 		return os;
 	}
 
-	std::shared_ptr<TriangleMesh> CreatePlane(const Transform* LTW, const Transform* WTL, const Point3f& v0,
+	//_RAVEN_CLASS_REG_(mesh,TriangleMesh,TriangleMesh::construct)
+
+	std::shared_ptr<TriangleMesh> CreatePlane(const Ref<Transform>& LTW, const Ref<Transform>& WTL, const Point3f& v0,
 		const Point3f& v1, const Point3f& v2, const Point3f& v3, const Normal3f& normal);
 
-	std::shared_ptr<TriangleMesh> makeTriangleMesh(
-		const std::shared_ptr<Transform>& LTW,
-		const std::shared_ptr<Transform>& WTl,
-		const PropertyList& pList);
 }
 
 #endif

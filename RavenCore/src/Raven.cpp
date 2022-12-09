@@ -88,13 +88,6 @@ int main() {
 	list.setInteger("spp", 100);
 	list.setInteger("maxDepth", 20);
 	list.setFloat("epsilon", 1e-6);
-
-	const Ref<Integrator> intg = IntegratorFactory::generateClass("path", list);
-
-	//std::map<std::string, ObjectConstructor>& myG = Generator::getGenerator();
-
-	const Ref<Film> film = FilmFactory::generateClass("film", list);
-
 	Factory& myfactory = Factory::getInctance();
 
 	myfactory.regClass("film", Film::construct);
@@ -112,6 +105,10 @@ int main() {
 	list.setObjectRef("transform", str);
 
 
-	Ref<Camera> c = std::dynamic_pointer_cast<Camera>(myfactory.generate("perspective", list));
+
+
+//	Ref<Camera> c = std::dynamic_pointer_cast<Camera>(myfactory.generate("perspective", list));
+
+	//std::cout << decltype(*c);
 
 }

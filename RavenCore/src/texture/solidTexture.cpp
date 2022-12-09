@@ -1,20 +1,24 @@
 #include<Raven/textute/solidTexture.h>
 
 namespace Raven {
-	std::shared_ptr<CheckeredTexture<double>> makeCheckeredFloat(
-		const std::shared_ptr<Texture<double>>& oddTexture,
-		const std::shared_ptr<Texture<double>>& evenTexture,
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param) {
-		return std::make_shared<CheckeredTexture<double>>(oddTexture, evenTexture, mapping);
-	}
+	CheckeredTextureFloatReg CheckeredTextureFloatReg::regHelper;
 
-	std::shared_ptr<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(
-		const std::shared_ptr<Texture<Spectrum>>& oddTexture,
-		const std::shared_ptr<Texture<Spectrum>>& evenTexture,
-		const std::shared_ptr<TextureMapping2D>& mapping,
-		const PropertyList& param) {
-		return std::make_shared<CheckeredTexture<Spectrum>>(oddTexture, evenTexture, mapping);
+	CheckeredTextureSpectraReg CheckeredTextureSpectraReg::regHelper;
+
+	namespace TextureBuild {
+		Ref<CheckeredTexture<double>> makeCheckeredFloat(const PropertyList& param) {
+			const auto& oddT = std::dynamic_pointer_cast<Texture<double>>(param.getObjectRef(0).getRef());
+			const auto& evenT = std::dynamic_pointer_cast<Texture<double>>(param.getObjectRef(1).getRef());
+			const auto& mapping = std::dynamic_pointer_cast<TextureMapping2D>(param.getObjectRef(2).getRef());
+			return std::make_shared<CheckeredTexture<double>>(oddT, evenT, mapping);
+		}
+
+		Ref<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(const PropertyList& param) {
+			const auto& oddT = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(0).getRef());
+			const auto& evenT = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(1).getRef());
+			const auto& mapping = std::dynamic_pointer_cast<TextureMapping2D>(param.getObjectRef(2).getRef());
+			return std::make_shared<CheckeredTexture<Spectrum>>(oddT, evenT, mapping);
+		}
 	}
 }
 

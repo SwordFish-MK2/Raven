@@ -4,8 +4,8 @@
 
 namespace Raven {
 	InfiniteAreaLight::InfiniteAreaLight(
-		const Transform* lightToWorld,
-		const Transform* worldToLight,
+		const Ref<Transform>& lightToWorld,
+		const Ref<Transform>& worldToLight,
 		const Spectrum& L,
 		int nSamples,
 		const std::string& mapPath) :Light(lightToWorld, worldToLight, (int)LightFlag::InfiniteLight, nSamples) {

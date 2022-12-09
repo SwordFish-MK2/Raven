@@ -26,21 +26,22 @@ namespace Raven {
 			const std::shared_ptr<Texture<Spectrum>>& ks,
 			const std::shared_ptr<Texture<double>>& roughness,
 			const std::shared_ptr<Texture<double>>& bump = nullptr);
+
+		static Ref<Material> construct(const PropertyList& param) {
+			const auto& kd = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(0).getRef());
+			const auto& ks = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(1).getRef());
+			//const auto& roughness = std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(2).getRef());
+			
+			return std::make_shared<Plastic>(kd, ks, nullptr);
+		}
 	private:
 		std::shared_ptr<Texture<Spectrum>> kd;
 		std::shared_ptr<Texture<Spectrum>> ks;
 		std::shared_ptr<Texture<double>> roughness;
 		std::shared_ptr<Texture<double>> bump;
-
-
 	};
-	inline std::shared_ptr<Plastic> makePlasticMaterial(
-		const std::shared_ptr<Texture<Spectrum>>& kd,
-		const std::shared_ptr<Texture<Spectrum>>& ks,
-		const std::shared_ptr<Texture<double>>& roughness,
-		const PropertyList& pList) {
-		return std::make_shared<Plastic>(kd, ks, roughness, nullptr);
-	}
+
+	_RAVEN_CLASS_REG_(plastic,Plastic,Plastic::construct)
 }
 
 #endif

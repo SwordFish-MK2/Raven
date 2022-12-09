@@ -41,4 +41,5 @@ namespace Raven {
 		return shape_ptr->pdf(inter, wi);
 	}
 
+	DiffuseAreaLightReg DiffuseAreaLightReg::regHelper;
 }

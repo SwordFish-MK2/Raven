@@ -1,6 +1,9 @@
 #include<Raven/textute/mapping.h>
 
 namespace Raven {
+	UVMapping2DReg UVMapping2DReg::regHelper;
+
+	SphericalMapping2DReg SphericalMapping2DReg::regHelper;
 
 	std::tuple<Point2f, Vector2f, Vector2f> UVMapping2D::map(const SurfaceInteraction& si)const {
 
@@ -31,7 +34,7 @@ namespace Raven {
 	}
 
 	Point2f SphericalMapping2D::mapSphere(const Point3f& p)const {
-		Point3f localP = worldToTexture(p);
+		Point3f localP = (*worldToTexture)(p);
 
 		//求该点在球面上的投影
 		Vector3f vec = Normalize(localP - Point3f(0.0, 0.0, 0.0));
@@ -41,17 +44,4 @@ namespace Raven {
 		double phi = SphericalPhi(vec) / (M_PI * 2);
 		return Point2f(theta, phi);
 	}
-
-	//std::shared_ptr<UVMapping2D> makeUVMapping(const PropertyList& param) {
-	//	double scaleU = param.getFloat("su");
-	//	double scaleV = param.getFloat("sv");
-	//	double uOffset = param.getFloat("du");
-	//	double vOffset = param.getFloat("dv");
-	//	return std::make_shared<UVMapping2D>(scaleU, scaleV, uOffset, vOffset);
-	//}
-
-	//std::shared_ptr<SphericalMapping2D> makeSphericalMapping2D(
-	//	const std::shared_ptr<Transform>& worldTexture, const PropertyList& param) {
-	//	return std::make_shared<SphericalMapping2D>(*worldTexture);
-	//}
 }

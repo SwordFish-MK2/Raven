@@ -36,7 +36,6 @@ namespace Raven {
 		double g = gNum * gPdf;
 		return f * f / (f * f + g * g);
 	}
-	
 
 	Spectrum EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light);
 
