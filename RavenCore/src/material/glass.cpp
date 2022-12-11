@@ -5,6 +5,8 @@ namespace Raven {
 	void Glass::computeScarttingFunctions(
 		SurfaceInteraction& record,
 		bool allowMultipleLobes)const {
+		if (bumpTex != nullptr)Bump(bumpTex, record);
+
 		//从纹理中取值
 		double eta = etaTex->evaluate(record);
 		Spectrum kd = kdTex->evaluate(record);

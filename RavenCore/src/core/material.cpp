@@ -1,4 +1,5 @@
 #include<Raven/core/material.h>
+#include<Raven/core/interaction.h>
 
 namespace Raven {
 
@@ -8,7 +9,6 @@ namespace Raven {
 	{
 		//通过bump map获取pPrime，计算dpPrime点的切线dpdu，dpdv确定新的法线方向
 
-		if (bump == nullptr)return;
 		double dis = bump->evaluate(si);
 		SurfaceInteraction d_si = si;
 
@@ -20,7 +20,7 @@ namespace Raven {
 
 		//计算bump(U+deltaU,V)
 		d_si.p = si.p + si.dpdu * deltaU;
-		d_si.uv = si.uv + Vector2f(du, 0);
+		d_si.uv = si.uv + Vector2f(deltaU, 0);
 		d_si.n = Normalize(Cross(si.shading.dpdu, si.shading.dpdv) + deltaU * si.dndu);
 		double dis_u = bump->evaluate(d_si);
 
@@ -32,12 +32,12 @@ namespace Raven {
 		//利用前向差分计算dBump_dv
 
 		//计算deltaV的长度
-		double ddeltaV = .5 * (std::abs(si.dvdx) + std::abs(si.dvdy));
+		double deltaV = .5 * (std::abs(si.dvdx) + std::abs(si.dvdy));
 		if (deltaV == 0)deltaV = 0.01;
 
 		//计算bump(U,V+deltaV)
-		d_si.p = si.p + si.dpdv + deltaV;
-		d_si.uv = si.uv + Vector2f(0.0, dv);
+		d_si.p = si.p + si.dpdv * deltaV;
+		d_si.uv = si.uv + Vector2f(0.0, deltaV);
 		d_si.n = Normalize(Cross(si.shading.dpdu, si.shading.dpdv) + deltaV * si.dndv);
 		double dis_v = bump->evaluate(d_si);
 

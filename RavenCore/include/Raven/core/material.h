@@ -12,7 +12,7 @@ namespace Raven {
 
 		virtual void computeScarttingFunctions(SurfaceInteraction& its, bool allowMultipleLobes)const = 0;
 
-		static void Bump(const Ref<Texture<double>>& bump, SurfaceInteraction& is);
+		static void Bump(const Ref<Texture<double>>& bump, SurfaceInteraction& si);
 
 	};
 

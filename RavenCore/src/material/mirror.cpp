@@ -7,6 +7,8 @@ namespace Raven {
 		SurfaceInteraction& record,
 		bool allowMultipleLobes)const
 	{
+		if (bumpTex != nullptr)Bump(bumpTex, record);
+
 		record.bsdf = std::make_shared <BSDF>(record);
 
 		std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelNoOp>();

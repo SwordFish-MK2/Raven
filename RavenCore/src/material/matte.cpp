@@ -6,6 +6,9 @@ namespace Raven {
 		SurfaceInteraction& its,
 		bool allowMultipleLobes)const {
 
+		if (bump != nullptr)
+			Bump(this->bump, its);
+
 		its.bsdf = std::make_shared <BSDF>(its);
 		//calculate values of textures 
 		double sigValue = sigma->evaluate(its);

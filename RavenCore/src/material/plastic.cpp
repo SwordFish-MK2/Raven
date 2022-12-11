@@ -8,6 +8,7 @@ namespace Raven {
 		SurfaceInteraction& hitRecord,
 		bool allowMultipleLobes)const
 	{
+		if (bump != nullptr)Bump(bump, hitRecord);
 
 		std::shared_ptr<BSDF> bsdf = std::make_shared <BSDF>(hitRecord);
 
