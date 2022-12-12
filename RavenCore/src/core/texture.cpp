@@ -9,7 +9,7 @@ namespace Raven {
 		}
 
 		Ref<Texture<Spectrum>> makeConstTextureSpectrum(const PropertyList& param) {
-			Spectrum data = param.getSpectra("data", Spectrum(1.0));
+			Spectrum data = param.getSpectra("reflectance", Spectrum(1.0));
 			return std::make_shared<ConstTexture<Spectrum>>(data);
 		}
 

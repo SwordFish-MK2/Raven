@@ -86,7 +86,7 @@ namespace Raven {
 			return mesh->vertices[index(i)];
 		}
 
-		inline int index(int num)const {
+		int index(int num)const {
 			//TODO::¼ì²énumµÄÖµ
 			return mesh->indices[i + num];
 		}

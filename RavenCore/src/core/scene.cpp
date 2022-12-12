@@ -77,9 +77,9 @@ namespace Raven {
 			std::optional<TriangleInfo> info =
 				loader.load("D:/MyWorks/Raven/models/cornellbox/", "right.obj");
 			std::shared_ptr<TriangleMesh> mesh =
-				std::make_shared<TriangleMesh>(TriangleMesh(identity, identity,
+				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
-					info->normals, info->tangants, info->uvs));
+					info->normals, info->tangants, info->uvs);
 			meshes.push_back(mesh);
 			const auto& triangles = mesh->triangles;
 
@@ -97,9 +97,9 @@ namespace Raven {
 			std::optional<TriangleInfo> info =
 				loader.load("D:/MyWorks/Raven/models/cornellbox/", "left.obj");
 			std::shared_ptr<TriangleMesh> mesh =
-				std::make_shared<TriangleMesh>(TriangleMesh(identity, identity,
+				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
-					info->normals, info->tangants, info->uvs));
+					info->normals, info->tangants, info->uvs);
 			meshes.push_back(mesh);
 			const auto& triangles = mesh->triangles;
 			//material of left wall
@@ -116,9 +116,9 @@ namespace Raven {
 			std::optional<TriangleInfo> info =
 				loader.load("D:/MyWorks/Raven/models/cornellbox/", "floorOriginal.obj");
 			std::shared_ptr<TriangleMesh> mesh =
-				std::make_shared<TriangleMesh>(TriangleMesh(identity, identity,
+				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
-					info->normals, info->tangants, info->uvs));
+					info->normals, info->tangants, info->uvs);
 			meshes.push_back(mesh);
 			const auto& triangles = mesh->triangles;
 
@@ -136,9 +136,9 @@ namespace Raven {
 			std::optional<TriangleInfo> info =
 				loader.load("D:/MyWorks/Raven/models/cornellbox/", "tallbox.obj");
 			std::shared_ptr<TriangleMesh> mesh =
-				std::make_shared<TriangleMesh>(TriangleMesh(identity, identity,
+				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
-					info->normals, info->tangants, info->uvs));
+					info->normals, info->tangants, info->uvs);
 			meshes.push_back(mesh);
 			const auto& triangles = mesh->triangles;
 
@@ -156,9 +156,9 @@ namespace Raven {
 			std::optional<TriangleInfo> info =
 				loader.load("D:/MyWorks/Raven/models/cornellbox/", "shortbox.obj");
 			std::shared_ptr<TriangleMesh> mesh =
-				std::make_shared<TriangleMesh>(TriangleMesh(identity, identity,
+				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
-					info->normals, info->tangants, info->uvs));
+					info->normals, info->tangants, info->uvs);
 			meshes.push_back(mesh);
 			const auto& triangles = mesh->triangles;
 			//material of short box
@@ -176,9 +176,9 @@ namespace Raven {
 			std::optional<TriangleInfo> info =
 				loader.load("D:/MyWorks/Raven/models/cornellbox/", "light.obj");
 			std::shared_ptr<TriangleMesh> mesh =
-				std::make_shared<TriangleMesh>(TriangleMesh(identity, identity,
+				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
-					info->normals, info->tangants, info->uvs));
+					info->normals, info->tangants, info->uvs);
 			meshes.push_back(mesh);
 			const auto& triangles = mesh->triangles;
 
@@ -334,11 +334,11 @@ namespace Raven {
 			const auto& triangles1 = mesh1->triangles;
 
 			mateballInfo = loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh000.obj");
-			
+
 			std::shared_ptr<TriangleMesh> mesh2 =
-				std::make_shared<TriangleMesh>(TriangleMesh(m2world, invm2,
+				std::make_shared<TriangleMesh>(m2world, invm2,
 					mateballInfo->numbers, mateballInfo->vertices, mateballInfo->indices,
-					mateballInfo->normals, mateballInfo->tangants, mateballInfo->uvs));
+					mateballInfo->normals, mateballInfo->tangants, mateballInfo->uvs);
 			meshes.push_back(mesh2);
 			const auto& triangles2 = mesh2->triangles;
 
@@ -389,7 +389,7 @@ namespace Raven {
 			std::shared_ptr<Transform> invm2 = std::make_shared<Transform>(m2.inverse());
 			usedTransform.push_back(m2world);
 			usedTransform.push_back(invm2);
-			const auto& sphere =std::make_shared<Sphere>(m2world, invm2, 1);
+			const auto& sphere = std::make_shared<Sphere>(m2world, invm2, 1);
 
 			//textures
 			const auto sigma = std::make_shared<ConstTexture<double>>(0.6);
@@ -438,7 +438,7 @@ namespace Raven {
 			usedTransform.push_back(worldToLight);
 			Spectrum lightScale(1.0);
 			std::string path("D:/MyWorks/Raven/models/material-testball/material-testball/textures/evnmap.hdr");
-			std::shared_ptr<InfiniteAreaLight> light = 
+			std::shared_ptr<InfiniteAreaLight> light =
 				std::make_shared<InfiniteAreaLight>(lightToWorld, worldToLight, lightScale, 2, path);
 			lights.push_back(light);
 			infAreaLights.push_back(light);

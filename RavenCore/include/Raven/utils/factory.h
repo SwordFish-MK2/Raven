@@ -17,7 +17,7 @@ namespace Raven {
 
 		bool registed(const std::string&)const;
 
-		static Factory& getInctance() {
+		static Factory& getInstance() {
 			static Factory instance;
 			return instance;
 		}

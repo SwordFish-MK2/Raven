@@ -14,9 +14,17 @@ namespace Raven {
 		const std::vector<Normal3f>& ns,
 		const std::vector<Vector3f>& ts,
 		const std::vector<Point2f> uvs)
-		:OTW(OTW), WTO(WTO),
-		nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
-		uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
+		:OTW(OTW),
+		WTO(WTO),
+		nTriangles(triNum),
+		nVertices(vs.size()),
+		vertices(vs), 
+		indices(ins),
+		normals(ns), 
+		tangants(ts),
+		uvs(uvs),
+		hasUV(uvs.size() > 0),
+		hasTan(tangants.size() > 0) {
 		//transform all vertices of triangle mesh to world space 
 		for (int i = 0; i < vertices.size(); i++) {
 			vertices[i] = (*OTW)(vertices[i]);

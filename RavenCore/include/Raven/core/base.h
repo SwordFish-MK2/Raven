@@ -43,7 +43,6 @@ namespace Raven {
 	class Scene;
 	class InfiniteAreaLight;
 	class Integrator;
-	class Renderer;
 	class VisibilityTester;
 	class Triangle;
 	class TriangleMesh;

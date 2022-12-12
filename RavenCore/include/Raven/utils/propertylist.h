@@ -45,9 +45,10 @@ namespace Raven {
 		void setNormal3f(const std::string&, const Normal3f& value);
 		void setSpectra(const std::string&, const Spectrum& value);
 		void setString(const std::string&, const std::string& value);
-		void setObjectRef(const std::string&, const Ref<RavenObject>&);
+		void setObjectRef(const std::string& type, const Ref<RavenObject>& ref);
 
-		static void setObjectRefById(const std::string&, const std::string&, const Ref<RavenObject>&, PropertyList&);
+		static void setObjectRefById(const std::string&refid, const std::string&type, 
+			const Ref<RavenObject>&ref, PropertyList&currentPropertyList);
 
 		bool getBoolean(const std::string&, const bool&)const;
 		int getInteger(const std::string&, const int&)const;
