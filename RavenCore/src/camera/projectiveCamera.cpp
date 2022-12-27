@@ -1,30 +1,47 @@
 #include<Raven/camera/projectiveCamera.h>
+#include<Raven/core/film.h>
+#include<iostream>
 
 namespace Raven {
 	ProjectiveCamera::ProjectiveCamera(
 		const Transform& CTW,
-		const Transform& STR,
+		const Transform& CTS,
+		const Vector2f& screenWindow,
 		double lensRadius,
-		double focalDistance) :
-		Camera(CTW), ScreenToRaster(STR), RasterToScreen(STR.getInverseMatrix()), RasterToCamera(Identity()),
-		CameraToScreen(Identity()),
-		lensRadius(lensRadius), focalDistance(focalDistance) {
-		//	RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
+		double focalDistance,
+		const Ref<Film>& film,
+		const Ref<Medium>& medium) :
+		Camera(CTW, film, medium),
+		CameraToScreen(CTS),
+		lensRadius(lensRadius), focalDistance(focalDistance)
+	{
+		//Raster
+		double half_width = screenWindow.x / 2;
+		double half_height = screenWindow.y / 2;
+
+		Transform t = Translate(Vector3f(half_width, -half_height, 0.0));
+		Transform s1 = Scale(Vector3f(1 / screenWindow.x, -1 / screenWindow.y, 1.0));
+		Transform s2 = Scale(Vector3f(film->xRes / 2, film->yRes / 2, 1.0));
+		std::cout << t.getMatrix() << std::endl << std::endl;
+		std::cout << s2.getMatrix() << std::endl << std::endl;
+		ScreenToRaster = t * s2;
+		std::cout << ScreenToRaster.getMatrix() << std::endl << std::endl;
+		ScreenToRaster = Raster(screenWindow.x, screenWindow.y);
+		RasterToScreen = ScreenToRaster.inverse();
+		RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
 	}
 
 	OrthographicCamera::OrthographicCamera(
 		const Transform& CTW,
-		const Transform& STR,
+		const Vector2f& screenWindow,
 		double lensRadius,
 		double focalDistance,
-		double top,
-		double bottom,
-		double left,
-		double right,
 		double near,
-		double far) :
-		ProjectiveCamera(CTW, STR, lensRadius, focalDistance) {
-		CameraToScreen = Orthographic(top, bottom, left, right, near, far);
+		double far,
+		const Ref<Film>& film,
+		const Ref<Medium>& medium) :
+		ProjectiveCamera(CTW, Orthographic(near, far), screenWindow, lensRadius, focalDistance, film, medium)
+	{
 		RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
 	}
 
@@ -32,11 +49,9 @@ namespace Raven {
 		const CameraSample& sample,
 		Ray& ray)const
 	{
-		Point3f ori(0.0f, 0.0f, 0.0f);
 		Point3f pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
 		Point3f pCamera = RasterToCamera(pRaster);
-		Vector3f dir(pCamera[0], pCamera[1], pCamera[2]);
-		RayDifferential sampleRay(ori, dir.normalized());
+		RayDifferential sampleRay(pCamera, Vector3f(0, 0, 1));
 		ray = CameraToWorld(sampleRay);
 		return 1;
 	}
@@ -45,31 +60,26 @@ namespace Raven {
 		const CameraSample& sample,
 		RayDifferential& rayDifferential)const
 	{
-		Point3f ori(0.0f, 0.0f, 0.0f);
-
 		Point3f pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
 		Point3f pCamera = RasterToCamera(pRaster);
-		Vector3f dir(pCamera[0], pCamera[1], pCamera[2]);
-		RayDifferential sampleRay(ori, dir.normalized());
-		rayDifferential = sampleRay;
+		RayDifferential sampleRay(pCamera, Vector3f(0, 0, 1));
+		rayDifferential = CameraToWorld(sampleRay);
+
 		return 1;
 	}
 
 
 	PerspectiveCamera::PerspectiveCamera(
 		const Transform& CTW,
-		const Transform& STR,
+		const Vector2f& screenWindow,
 		double lensRadius,
 		double focalDistance,
-		double near,
-		double far,
 		double fov,
-		double aspect_ratio) :
-		ProjectiveCamera(CTW, STR, lensRadius, focalDistance)
+		const Ref<Film>& film,
+		const Ref<Medium>& medium) :
+		ProjectiveCamera(CTW, Perspective(fov, 1e-2f, 1000.f), screenWindow,
+			lensRadius, focalDistance, film, medium)
 	{
-		CameraToScreen = Perspective(fov, aspect_ratio, near, far);
-		RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
-
 		//compute offset distance in camera space when sample point shift one pixel from the film
 		dxCamera = RasterToCamera(Point3f(1.f, 0.f, 0.f)).x - RasterToCamera(Point3f(0.f, 0.f, 0.f)).x;
 		dyCamera = RasterToCamera(Point3f(0.f, 1.f, 0.f)).y - RasterToCamera(Point3f(0.f, 0.f, 0.f)).y;
@@ -81,8 +91,8 @@ namespace Raven {
 	{
 		//starting the ray from the center of the lens
 		Point3f ori(0.0f, 0.0f, 0.0f);
-		Point3f pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
-		Point3f pCamera = RasterToCamera(pRaster);
+		Point3f pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);//point on film in raster space
+		Point3f pCamera = RasterToCamera(pRaster);//point on film in camera space
 		Vector3f dir(pCamera[0], pCamera[1], pCamera[2]);
 		Ray sampleRay(ori, dir.normalized());
 		//update the ray origin and properate direction from the lens sample
@@ -142,23 +152,23 @@ namespace Raven {
 	}
 
 
-	Ref<Camera> OrthographicCamera::construct(const PropertyList& param) {
-		ObjectRef CTWObj = param.getObjectRef(0);
-		ObjectRef STRObj = param.getObjectRef(1);
-		double lensRadius = param.getFloat("lensRadius", 0);
-		double focalDistance = param.getFloat("focalDis", 10);
-		double top = param.getFloat("top", 100);
-		double bottom = param.getFloat("bottom", -100);
-		double left = param.getFloat("left", -100);
-		double right = param.getFloat("right", 100);
-		double near = param.getFloat("near", 0.0001);
-		double far = param.getFloat("far", 1000);
+	//Ref<Camera> OrthographicCamera::construct(const PropertyList& param) {
+	//	ObjectRef CTWObj = param.getObjectRef(0);
+	//	ObjectRef STRObj = param.getObjectRef(1);
+	//	double lensRadius = param.getFloat("lensRadius", 0);
+	//	double focalDistance = param.getFloat("focalDis", 10);
+	//	double top = param.getFloat("top", 100);
+	//	double bottom = param.getFloat("bottom", -100);
+	//	double left = param.getFloat("left", -100);
+	//	double right = param.getFloat("right", 100);
+	//	double near = param.getFloat("near", 0.0001);
+	//	double far = param.getFloat("far", 1000);
 
-		Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
-		Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
+	//	Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
+	//	Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
 
-		return std::make_shared<OrthographicCamera>(*CTW, *STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
+	//	return std::make_shared<OrthographicCamera>(*CTW, *STR, lensRadius, focalDistance, top, bottom, left, right, near, far);
 
-	}
+	//}
 
 }

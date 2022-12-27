@@ -168,6 +168,11 @@ namespace Raven {
 
 		AABB2(const AABB2<T>& box) :pMin(box.pMin), pMax(box.pMax) {}
 
+		AABB2(const Point2<T>& p1, const Point2<T>& p2) {
+			pMin = Point2<T>(Min(p1.x, p2.x), Min(p1.y, p2.y));
+			pMax = Point2<T>(Max(p1.x, p2.x), Max(p1.y, p2.y));
+		}
+
 		const Point2<T> operator[](int i) const {
 			if (i == 0)return pMin;
 			return pMax;

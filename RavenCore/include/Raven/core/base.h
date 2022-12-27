@@ -6,6 +6,9 @@
 #include<map>
 
 namespace Raven {
+	using Float = double;
+
+
 	template<class T>
 	class Vector3;
 	template<class T>
@@ -33,6 +36,7 @@ namespace Raven {
 	class Material;
 	class Transform;
 	class BSDF;
+	class Film;
 	class BxDF;
 	class Shape;
 	class Light;

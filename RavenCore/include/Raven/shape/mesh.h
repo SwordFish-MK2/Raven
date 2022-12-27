@@ -37,7 +37,7 @@ namespace Raven {
 			const std::vector<int>& ins, const std::vector<Normal3f>& ns, const std::vector<Vector3f>& ts,
 			const std::vector<Point2f> uvs);
 
-		//static Ref<TriangleMesh> construct(const PropertyList& param);
+		static Ref<TriangleMesh> construct(const PropertyList& param);
 
 	private:
 		void generateTriangles();

@@ -29,7 +29,7 @@ namespace Raven {
 	class className##Reg{\
 	private:\
 		className##Reg(){\
-			Factory& facInstance=Factory::getInctance();\
+			Factory& facInstance=Factory::getInstance();\
 			facInstance.regClass(#regName,constructor);\
 		}\
 		static className##Reg regHelper;\

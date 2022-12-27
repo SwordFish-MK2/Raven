@@ -22,7 +22,6 @@ namespace Raven {
 
 	Transform Inverse(const Transform& T) {
 		return Transform(T.getInverseMatrix());
-
 	}
 
 	Transform Rotate(double angle, const Vector3f& axis) {
@@ -154,6 +153,7 @@ namespace Raven {
 	Transform Identity() {
 		return Transform(Eigen::Matrix4f::Identity());
 	}
+
 	//define the transform from the world to camera space
 	Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up) {
 		Vector3f viewDir = Normalize(look - pos);
@@ -168,7 +168,7 @@ namespace Raven {
 		return Transform(CameraToWorld, CameraToWorld.inverse());
 	}
 
-	Transform Perspective(double fov, double aspect_ratio, double znear, double zfar) {
+	Transform Perspective(double fov, double znear, double zfar) {
 		Eigen::Matrix4f projection;
 		projection << 1, 0, 0, 0,
 			0, 1, 0, 0,
@@ -176,36 +176,34 @@ namespace Raven {
 			0, 0, 1, 0;
 		double radiance = M_PI / 180.f;
 		double InvTanY = 1 / tan(fov / 2 * radiance);
-		double InvTanX = InvTanY / aspect_ratio;
-		return Scale(Vector3f(InvTanX, InvTanY, 1)) * Transform(projection);
+		return Scale(Vector3f(InvTanY, InvTanY, 1)) * Transform(projection);
 	}
 
-	Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
-		double centerX = (right + left) * 0.5;
-		double centerY = (top + bottom) * 0.5;
+	//Transform Orthographic(double top, double bottom, double left, double right, double near, double far) {
+	//	//double centerX = (right + left) * 0.5;
+	//	//double centerY = (top + bottom) * 0.5;
 
-		Transform T = Translate(Vector3f(-centerX, -centerY, -near));
-		double scaleX = 2 / abs(right - left);
-		double scaleY = 2 / abs(top - bottom);
-		double scaleZ = 1 / abs(far - near);
-		Transform S = Scale(Vector3f(scaleX, scaleY, scaleZ));
+	//	Transform T = Translate(Vector3f(0, 0, -near));
+	//	double scaleX = 1 / abs(right - left);
+	//	double scaleY = 1 / abs(top - bottom);
+	//	double scaleZ = 1 / abs(far - near);
+	//	Transform S = Scale(Vector3f(scaleX, scaleY, scaleZ));
 
-		return S * T;
-	}
-
-	//Transform Orthographic(double znear, double zfar) {
-
-	//	return Scale(Vector3f(1, 1, 1 / (zfar - znear))) * Translate(Vector3f(0, 0, -znear));
+	//	return S * T;
 	//}
 
+	Transform Orthographic(double znear, double zfar) {
+		return Scale(Vector3f(1, 1, 1 / (zfar - znear))) * Translate(Vector3f(0, 0, -znear));
+	}
+
 	//负责从Screen space到Raster space之间的变换
-	Transform Raster(int h, int w) {
-		//先将所有的点拉伸分辨率的一般，反转y轴，再将图像左上角平移到原点
+	Transform Raster(int w, int h) {
+		//先将所有的点拉伸分辨率的一半，反转y轴，再将图像左上角平移到原点
 		Eigen::Matrix4f screenToRaster;
 		int half_height = h / 2;
 		int half_width = w / 2;
-		screenToRaster << (double)half_width, 0, 0, (double)half_width,
-			0, -double(half_width), 0, (double)half_height,
+		screenToRaster << half_width, 0, 0, (double)half_width,
+			0, -half_height, 0, (double)half_height,
 			0, 0, 1, 0,
 			0, 0, 0, 1;
 		return Transform(screenToRaster);

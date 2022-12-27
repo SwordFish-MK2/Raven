@@ -26,20 +26,24 @@ int main(int agrc, char** argv)
 	//Raven::Scene box = Raven::Scene::buildTestScene();
 	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
-	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 5, 72 * 5);
-	Eigen::Matrix4f cw;
-	cw << 0. - 721367, -0.373123, -0.583445, -0,
-		-0, 0.842456, -0.538765, -0,
-		-0.692553, -0.388647, -0.60772, -0,
-		0.0258668, -0.29189, 5.43024, 1;
-	auto cwt = cw.transpose();
-	Raven::Transform cameraWorld(cwt);
-	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(3, 3, 3), Point3f(0, 0.25, 0), Vector3f(0, 1, 0));
+	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 3, 128 * 3);
+	//Eigen::Matrix4f cw;
+	//cw << 0. - 721367, -0.373123, -0.583445, -0,
+	//	-0, 0.842456, -0.538765, -0,
+	//	-0.692553, -0.388647, -0.60772, -0,
+	//	0.0258668, -0.29189, 5.43024, 1;
+	//auto cwt = cw.transpose();
+	//Raven::Transform cameraWorld(cwt);
+	//Raven::Transform cameraToWorld = Raven::LookAt(Point3f(3, 3, 3), Point3f(0, 0.25, 0), Vector3f(0, 1, 0));
+
+	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, -799), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
+	Vector2f viewPort{ 128 * 3,128 * 3 };
 	std::shared_ptr<Raven::Camera> cam =
-		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, screenToRaster, 0.0, 1e6, 1e-2, 1000, 40.f, 1);
+		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, viewPort, 0.0, 1e6,40.f, f, nullptr);
+
 	std::shared_ptr<Raven::Camera> ocam =
-		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, screenToRaster, 0, 10, 278, -278, -278, 278, 2, 100);
+		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, viewPort, 0, 10, 0, 1, f, nullptr);
 	Raven::PathTracingIntegrator renderer(10, 2);
 	renderer.render(box, cam, f);
 
