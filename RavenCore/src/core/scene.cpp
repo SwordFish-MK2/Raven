@@ -286,27 +286,24 @@ namespace Raven {
 		Loader loader;
 		//material ball
 		{
-			Eigen::Matrix4f m1;
-			m1 << 0.482906, 0, 0, 0.0571719,
+			Mat4f m1{ 0.482906, 0, 0, 0.0571719,
 				0, 0.482906, 0, 0.213656,
 				0, 0, 0.482906, 0.0682078,
-				0, 0, 0, 1;
+				0, 0, 0, 1 };
 			std::shared_ptr<Transform> m1world = std::make_shared<Transform>(m1);
 			std::shared_ptr<Transform> invm1 = std::make_shared<Transform>(m1.inverse());
 
-			Eigen::Matrix4f m2;
-			m2 << 0.482906, 0, 0, 0.156382,
+			Mat4f m2{ 0.482906, 0, 0, 0.156382,
 				0, 0.482906, 0, 0.777229,
 				0, 0, 0.482906, 0.161698,
-				0, 0, 0, 1;
+				0, 0, 0, 1 };
 			std::shared_ptr<Transform> m2world = std::make_shared<Transform>(m2);
 			std::shared_ptr<Transform> invm2 = std::make_shared<Transform>(m2.inverse());
 
-			Eigen::Matrix4f m0;
-			m0 << 0.482906, 0, 0, 0.110507,
+			Mat4f m0{ 0.482906, 0, 0, 0.110507,
 				0, 0.482906, 0, 0.494301,
 				0, 0, 0.482906, 0.126194,
-				0, 0, 0, 1;
+				0, 0, 0, 1 };
 			std::shared_ptr<Transform> m0world = std::make_shared<Transform>(m0);
 			std::shared_ptr<Transform> invm0 = std::make_shared<Transform>(m0.inverse());
 			usedTransform.push_back(m1world);
@@ -380,11 +377,10 @@ namespace Raven {
 
 		//sphere
 		{
-			Eigen::Matrix4f m2;
-			m2 << 0.482906, 0, 0, 0,
+			Mat4f m2{ 0.482906, 0, 0, 0,
 				0, 0.482906, 0, 2,
 				0, 0, 0.482906, 0,
-				0, 0, 0, 1;
+				0, 0, 0, 1 };
 			std::shared_ptr<Transform> m2world = std::make_shared<Transform>(m2);
 			std::shared_ptr<Transform> invm2 = std::make_shared<Transform>(m2.inverse());
 			usedTransform.push_back(m2world);
@@ -427,11 +423,10 @@ namespace Raven {
 
 		//light
 		{
-			Eigen::Matrix4f m;
-			m << -0.386527, 0, 0.922278, 0,
+			Mat4f m{ -0.386527, 0, 0.922278, 0,
 				-0.922278, 0, -0.386527, 0,
 				0, 1, 0, 0,
-				0, 0, 0, 1;
+				0, 0, 0, 1 };
 			std::shared_ptr<Transform> lightToWorld = std::make_shared<Transform>(m);
 			std::shared_ptr<Transform>worldToLight = std::make_shared<Transform>(m.inverse());
 			usedTransform.push_back(lightToWorld);

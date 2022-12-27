@@ -6,10 +6,6 @@
 #include<Raven/core/base.h>
 
 namespace Raven {
-
-
-
-
 	template<typename T>
 	using Ref = std::shared_ptr<T>;
 

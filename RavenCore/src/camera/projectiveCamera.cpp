@@ -22,13 +22,12 @@ namespace Raven {
 		Transform t = Translate(Vector3f(half_width, -half_height, 0.0));
 		Transform s1 = Scale(Vector3f(1 / screenWindow.x, -1 / screenWindow.y, 1.0));
 		Transform s2 = Scale(Vector3f(film->xRes / 2, film->yRes / 2, 1.0));
-		std::cout << t.getMatrix() << std::endl << std::endl;
-		std::cout << s2.getMatrix() << std::endl << std::endl;
+
 		ScreenToRaster = t * s2;
-		std::cout << ScreenToRaster.getMatrix() << std::endl << std::endl;
+		std::cout << ScreenToRaster << std::endl << std::endl;
 		ScreenToRaster = Raster(screenWindow.x, screenWindow.y);
 		RasterToScreen = ScreenToRaster.inverse();
-		RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
+		RasterToCamera = CameraToScreen.inverse() * RasterToScreen;
 	}
 
 	OrthographicCamera::OrthographicCamera(
