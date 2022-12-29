@@ -36,7 +36,6 @@ namespace Raven {
 		const Ref<Medium>& medium) :
 		ProjectiveCamera(CTW, Orthographic(near, far), screenWindow, lensRadius, focalDistance, film, medium)
 	{
-		RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
 	}
 
 	int OrthographicCamera::GenerateRay(

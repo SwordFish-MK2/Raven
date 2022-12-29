@@ -38,7 +38,7 @@ int main(int agrc, char** argv)
 
 	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, -799), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
-	Bound2f viewport{ Point2f(0,0),Point2f(600,600) };
+	Bound2f viewport{ Point2f(-300,-300),Point2f(300,300) };
 	std::shared_ptr<Raven::Camera> cam =
 		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, 0.0, 1e6, 40.f, f, nullptr);
 
