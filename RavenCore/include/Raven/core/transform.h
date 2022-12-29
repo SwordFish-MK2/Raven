@@ -4,7 +4,7 @@
 #define _USE_MATH_DEFINES
 
 #include<math.h>
-#include<Eigen/Dense>
+#include<array>
 #include<Raven/core/math.h>
 #include<Raven/core/base.h>
 #include<Raven/core/ray.h>
@@ -64,8 +64,8 @@ namespace Raven {
 
 		Mat4f operator*(const Mat4f& m2)const {
 			Mat4f mat;
-			for (size_t i = 0; i < 4; ++i)
-				for (size_t j = 0; j < 4; ++j)
+			for (int i = 0; i < 4; ++i)
+				for (int j = 0; j < 4; ++j)
 					mat(i, j) = this->data[i * 4 + 0] * m2.data[j] +
 					this->data[i * 4 + 1] * m2.data[j + 4] +
 					this->data[i * 4 + 2] * m2.data[j + 8] +
@@ -123,8 +123,8 @@ namespace Raven {
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Mat4f& mat) {
-		for (size_t i = 0; i < 4; i++) {
-			for (size_t j = 0; j < 3; j++)
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++)
 				os << mat(i, j) << ",";
 			os << mat(i, 3) << std::endl;
 		}
@@ -178,7 +178,7 @@ namespace Raven {
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Transform& t) {
-		os << "t=" << t.m << ", inv=" << t.invm;
+		os << "t =\n" << t.m << "inv =\n" << t.invm;
 		return os;
 	}
 

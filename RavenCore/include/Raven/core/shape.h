@@ -33,7 +33,6 @@ namespace Raven {
 	/// Shape interface, all geometrics must inherit this class
 	/// </summary>
 	class Shape :public RavenObject {
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	protected:
 		Ref<Transform> localToWorld;
 		Ref<Transform> worldToLocal;

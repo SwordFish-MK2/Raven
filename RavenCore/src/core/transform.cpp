@@ -16,14 +16,14 @@ namespace Raven {
 		Float singular = false;
 
 		//向下消元,将矩阵化为上三角矩阵
-		for (size_t i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			pivot[i] = mat(i, i);//当前列的pivot
 
 			//主元为0时，向下寻找一行交换
 			if (pivot[i] == 0) {
 
 				//向下寻找一行交换
-				for (size_t j = i + 1; j < 4; j++) {
+				for (int j = i + 1; j < 4; j++) {
 					singular = true;
 					if (mat(j, i) != 0) {
 						//找非0 pivot，交换两行
@@ -43,14 +43,14 @@ namespace Raven {
 
 			//将主元化为1
 			Float invPivot = 1.0 / pivot[i];
-			for (size_t j = 0; j < 4; j++) mat(i, j) *= invPivot;
-			for (size_t j = 0; j < 4; j++) invMat(i, j) *= invPivot;
+			for (int j = 0; j < 4; j++) mat(i, j) *= invPivot;
+			for (int j = 0; j < 4; j++) invMat(i, j) *= invPivot;
 
 			//向下消元
-			for (size_t j = i + 1; j < 4; j++) {
+			for (int j = i + 1; j < 4; j++) {
 				Float mul = mat(j, i);//当前需要消去的数为主元的mul倍
 				if (mul == 0)continue;
-				for (size_t k = 0; k < 4; k++) {
+				for (int k = 0; k < 4; k++) {
 					mat(j, k) -= mul * mat(i, k);
 					invMat(j, k) -= mul * invMat(i, k);
 				}
@@ -70,9 +70,9 @@ namespace Raven {
 		}
 
 		//将对角线化为0
-		for (size_t i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			Float invMul = 1.0 / mat(i, i);
-			for (size_t j = 0; j < 4; j++) invMat(i, j) *= invMul;
+			for (int j = 0; j < 4; j++) invMat(i, j) *= invMul;
 		}
 
 		return invMat;
@@ -158,7 +158,7 @@ namespace Raven {
 	}
 
 	Transform Transform::operator*(const Transform& t2)const {
-		return Transform(m * t2.m, invm * t2.invm);
+		return Transform(m * t2.m, t2.invm * invm);
 	}
 
 

@@ -14,7 +14,7 @@ namespace Raven {
 
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const = 0;
 
-		ProjectiveCamera(const Transform& CTW, const Transform& CTS, const Vector2f& screenWindow, double lensRadius,
+		ProjectiveCamera(const Transform& CTW, const Transform& CTS, const Bound2f& screenWindow, double lensRadius,
 			double focalDistance, const Ref<Film>& film, const Ref<Medium>& medium = nullptr);
 
 	protected:
@@ -28,7 +28,7 @@ namespace Raven {
 
 	class PerspectiveCamera :public ProjectiveCamera {
 	public:
-		PerspectiveCamera(const Transform& CTW, const Vector2f& screenWindow,
+		PerspectiveCamera(const Transform& CTW,
 			double lensRadius, double focalDistance,double fov,
 			const Ref<Film>& film, const Ref<Medium>& medium = nullptr);
 
@@ -62,7 +62,7 @@ namespace Raven {
 	class OrthographicCamera :public ProjectiveCamera {
 
 	public:
-		OrthographicCamera(const Transform& CTW, const Vector2f& screenWindow, double lensRadius, double focalDistance,
+		OrthographicCamera(const Transform& CTW, const Bound2f& screenWindow, double lensRadius, double focalDistance,
 			double near, double far, const Ref<Film>& film, const Ref<Medium>& medium = nullptr);
 
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;

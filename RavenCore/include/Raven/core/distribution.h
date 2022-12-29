@@ -230,8 +230,8 @@ namespace Raven {
 		}
 
 		double pdf(const Point2f& uv)const {
-			int iu = Clamp(int(uv[0] * conditionalU[0]->size()), 0, conditionalU[0]->size() - 1);
-			int iv = Clamp(int(uv[1] * marginalV->size()), 0, marginalV->size() - 1);
+			int iu = (int)Clamp(int(uv[0] * conditionalU[0]->size()), 0, conditionalU[0]->size() - 1);
+			int iv = (int)Clamp(int(uv[1] * marginalV->size()), 0, marginalV->size() - 1);
 			return conditionalU[iv]->function[iu] / conditionalU[iv]->funInte();
 		}
 	private:

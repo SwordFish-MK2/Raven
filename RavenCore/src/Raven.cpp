@@ -21,43 +21,43 @@ using namespace Raven;
 int main(int agrc, char** argv)
 {
 	////if (agrc == 1) {
-	//auto start = std::chrono::system_clock::now();
-	//Raven::Scene box = Raven::Scene::buildCornellBox();
-	////Raven::Scene box = Raven::Scene::buildTestScene();
-	//Raven::Scene sphere = Raven::Scene::buildTestSphere();
+	auto start = std::chrono::system_clock::now();
+	Raven::Scene box = Raven::Scene::buildCornellBox();
+	//Raven::Scene box = Raven::Scene::buildTestScene();
+	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
-	//std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 3, 128 * 3);
-	////Eigen::Matrix4f cw;
-	////cw << 0. - 721367, -0.373123, -0.583445, -0,
-	////	-0, 0.842456, -0.538765, -0,
-	////	-0.692553, -0.388647, -0.60772, -0,
-	////	0.0258668, -0.29189, 5.43024, 1;
-	////auto cwt = cw.transpose();
-	////Raven::Transform cameraWorld(cwt);
-	////Raven::Transform cameraToWorld = Raven::LookAt(Point3f(3, 3, 3), Point3f(0, 0.25, 0), Vector3f(0, 1, 0));
+	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 3, 128 * 3);
+	//Eigen::Matrix4f cw;
+	//cw << 0. - 721367, -0.373123, -0.583445, -0,
+	//	-0, 0.842456, -0.538765, -0,
+	//	-0.692553, -0.388647, -0.60772, -0,
+	//	0.0258668, -0.29189, 5.43024, 1;
+	//auto cwt = cw.transpose();
+	//Raven::Transform cameraWorld(cwt);
+	//Raven::Transform cameraToWorld = Raven::LookAt(Point3f(3, 3, 3), Point3f(0, 0.25, 0), Vector3f(0, 1, 0));
 
-	//Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, -799), Vector3f(0, 1, 0));
-	//Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
-	//Vector2f viewPort{ 128 * 3,128 * 3 };
-	//std::shared_ptr<Raven::Camera> cam =
-	//	std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, viewPort, 0.0, 1e6,40.f, f, nullptr);
+	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, -799), Vector3f(0, 1, 0));
+	Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
+	Bound2f viewport{ Point2f(0,0),Point2f(600,600) };
+	std::shared_ptr<Raven::Camera> cam =
+		std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, 0.0, 1e6, 40.f, f, nullptr);
 
-	//std::shared_ptr<Raven::Camera> ocam =
-	//	std::make_shared<Raven::OrthographicCamera>(cameraToWorld, viewPort, 0, 10, 0, 1, f, nullptr);
-	//Raven::PathTracingIntegrator renderer(10, 2);
-	//renderer.render(box, cam, f);
+	std::shared_ptr<Raven::Camera> ocam =
+		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, viewport, 0, 10, 0, 1, f, nullptr);
+	Raven::PathTracingIntegrator renderer(10, 2);
+	renderer.render(box, ocam, f);
 
-	//auto stop = std::chrono::system_clock::now();
-	//std::cout << "Render complete:\n";
-	//auto hours = std::chrono::duration_cast<std::chrono::hours>(stop - start).count();
-	//auto minutes = std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() - hours * 60;
-	//auto seconds = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() - minutes * 60;
+	auto stop = std::chrono::system_clock::now();
+	std::cout << "Render complete:\n";
+	auto hours = std::chrono::duration_cast<std::chrono::hours>(stop - start).count();
+	auto minutes = std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() - hours * 60;
+	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() - minutes * 60;
 
-	//std::cout << hours << "hours\n";
-	//std::cout << minutes << "minutes\n";
-	//std::cout << seconds << "seconds\n";
+	std::cout << hours << "hours\n";
+	std::cout << minutes << "minutes\n";
+	std::cout << seconds << "seconds\n";
 
-	//return 0;
+	return 0;
 
 	//Parser parser;
 	//parser.parse("D:/MyWorks/Raven/models/mateball/scene.xml");
@@ -82,13 +82,6 @@ int main(int agrc, char** argv)
 //	Point3f pPrime = I(p);
 //
 //}
-
-	Mat4f m;
-	m << 1, 0, 1, 0,
-		0, 1, 0, 1,
-		1, 0, 0, 1,
-		0, 0, 1, 0;
-	std::cout << m;
 }
 
 //int main() {

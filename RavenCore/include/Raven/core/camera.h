@@ -24,7 +24,6 @@ namespace Raven {
 
 	class Camera :public RavenObject {
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			Camera(const Transform& CTW,
 				const Ref<Film>& film,
 				const Ref<Medium>& medium) :

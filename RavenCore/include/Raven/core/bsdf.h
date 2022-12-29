@@ -13,7 +13,6 @@
 namespace Raven {
 
 	class BSDF {
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	public:
 
 		BSDF(const SurfaceInteraction& sits, double eta = 1);

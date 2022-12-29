@@ -6,7 +6,7 @@ namespace Raven {
 	ProjectiveCamera::ProjectiveCamera(
 		const Transform& CTW,
 		const Transform& CTS,
-		const Vector2f& screenWindow,
+		const Bound2f& screenWindow,
 		double lensRadius,
 		double focalDistance,
 		const Ref<Film>& film,
@@ -16,23 +16,18 @@ namespace Raven {
 		lensRadius(lensRadius), focalDistance(focalDistance)
 	{
 		//Raster
-		double half_width = screenWindow.x / 2;
-		double half_height = screenWindow.y / 2;
+		ScreenToRaster = Scale(Vector3f(film->xRes, film->yRes, 1)) *
+			Scale(Vector3f(1 / (screenWindow.pMax.x - screenWindow.pMin.x),
+			1 / (screenWindow.pMin.y - screenWindow.pMax.y), 1)) * 
+			Translate(-screenWindow.pMin.x, -screenWindow.pMax.y, 0.0);
 
-		Transform t = Translate(Vector3f(half_width, -half_height, 0.0));
-		Transform s1 = Scale(Vector3f(1 / screenWindow.x, -1 / screenWindow.y, 1.0));
-		Transform s2 = Scale(Vector3f(film->xRes / 2, film->yRes / 2, 1.0));
-
-		ScreenToRaster = t * s2;
-		std::cout << ScreenToRaster << std::endl << std::endl;
-		ScreenToRaster = Raster(screenWindow.x, screenWindow.y);
 		RasterToScreen = ScreenToRaster.inverse();
 		RasterToCamera = CameraToScreen.inverse() * RasterToScreen;
 	}
 
 	OrthographicCamera::OrthographicCamera(
 		const Transform& CTW,
-		const Vector2f& screenWindow,
+		const Bound2f& screenWindow,
 		double lensRadius,
 		double focalDistance,
 		double near,
@@ -70,13 +65,12 @@ namespace Raven {
 
 	PerspectiveCamera::PerspectiveCamera(
 		const Transform& CTW,
-		const Vector2f& screenWindow,
 		double lensRadius,
 		double focalDistance,
 		double fov,
 		const Ref<Film>& film,
 		const Ref<Medium>& medium) :
-		ProjectiveCamera(CTW, Perspective(fov, 1e-2f, 1000.f), screenWindow,
+		ProjectiveCamera(CTW, Perspective(fov, 1e-2f, 1000.f), Bound2f(Point2f(-1, -1), Point2f(1, 1)),
 			lensRadius, focalDistance, film, medium)
 	{
 		//compute offset distance in camera space when sample point shift one pixel from the film
