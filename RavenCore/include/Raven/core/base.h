@@ -5,7 +5,12 @@
 #include<random>
 #include<map>
 
+#define PATH std::string(RAVEN_PATH)
+
+
 namespace Raven {
+	using Float = double;
+
 	template<class T>
 	class Vector3;
 	template<class T>
@@ -33,6 +38,7 @@ namespace Raven {
 	class Material;
 	class Transform;
 	class BSDF;
+	class Film;
 	class BxDF;
 	class Shape;
 	class Light;
@@ -43,7 +49,6 @@ namespace Raven {
 	class Scene;
 	class InfiniteAreaLight;
 	class Integrator;
-	class Renderer;
 	class VisibilityTester;
 	class Triangle;
 	class TriangleMesh;

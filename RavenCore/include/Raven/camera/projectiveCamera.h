@@ -14,13 +14,12 @@ namespace Raven {
 
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const = 0;
 
-		ProjectiveCamera(const Transform& CTW, const Transform& STR, double lensRadius, double focalDistance);
+		ProjectiveCamera(const Transform& CTW, const Transform& CTS, const Bound2f& screenWindow, double lensRadius,
+			double focalDistance, const Ref<Film>& film, const Ref<Medium>& medium = nullptr);
 
 	protected:
-		Transform ScreenToRaster;//scale the scene from film space to raster space
-		Transform RasterToScreen;
-		Transform CameraToScreen;//project the scene into film space
-		Transform RasterToCamera;//transform sample point from raster space to camera space
+		Transform CameraToScreen, RasterToCamera;
+		Transform ScreenToRaster, RasterToScreen;
 
 		//properties to generate depth of field
 		double lensRadius;
@@ -29,26 +28,27 @@ namespace Raven {
 
 	class PerspectiveCamera :public ProjectiveCamera {
 	public:
-		PerspectiveCamera(const Transform& CTW, const Transform& STR, double lensRadius, double focalDistance,
-			double near, double far, double fov, double aspect_ratio);
+		PerspectiveCamera(const Transform& CTW,
+			double lensRadius, double focalDistance,double fov,
+			const Ref<Film>& film, const Ref<Medium>& medium = nullptr);
 
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;
 
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
 
-		static Ref<Camera> construct(const PropertyList& param) {
-			ObjectRef CTWObj = param.getObjectRef(0);
-			ObjectRef STRObj = param.getObjectRef(1);
-			double lensRadius = param.getFloat("lensRadius", 0);
-			double focalDistance = param.getFloat("focalDis", 10);
-			double near = param.getFloat("near", 0.001);
-			double far = param.getFloat("far", 1000.0);
-			double fov = param.getFloat("fov", 45.0);
-			double aspectRatio = param.getFloat("aspectRatio", 1.5);
-			Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
-			Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
-			return std::make_shared<PerspectiveCamera>(*CTW, *STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
-		}
+		//	static Ref<Camera> construct(const PropertyList& param) {
+			//	ObjectRef CTWObj = param.getObjectRef(0);
+			//	ObjectRef STRObj = param.getObjectRef(1);
+			//	double lensRadius = param.getFloat("lensRadius", 0);
+			//	double focalDistance = param.getFloat("focalDis", 10);
+			//	double near = param.getFloat("near", 0.001);
+			//	double far = param.getFloat("far", 1000.0);
+			//	double fov = param.getFloat("fov", 45.0);
+			//	double aspectRatio = param.getFloat("aspectRatio", 1.5);
+			//	Ref<Transform> CTW = std::dynamic_pointer_cast<Transform>(CTWObj.getRef());
+			//	Ref<Transform> STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
+			//	return std::make_shared<PerspectiveCamera>(*CTW, *STR, lensRadius, focalDistance, near, far, fov, aspectRatio);
+			//}
 
 	private:
 
@@ -57,19 +57,19 @@ namespace Raven {
 		double dyCamera;
 	};
 
-	_RAVEN_CLASS_REG_(perspective,PerspectiveCamera,PerspectiveCamera::construct)
+	//_RAVEN_CLASS_REG_(perspective, PerspectiveCamera, PerspectiveCamera::construct)
 
 	class OrthographicCamera :public ProjectiveCamera {
 
 	public:
-		OrthographicCamera(const Transform& CTW, const Transform& STR, double lensRadius, double focalDistance,
-			double top, double bottom, double left, double right, double near, double far);
+		OrthographicCamera(const Transform& CTW, const Bound2f& screenWindow, double lensRadius, double focalDistance,
+			double near, double far, const Ref<Film>& film, const Ref<Medium>& medium = nullptr);
 
 		virtual int GenerateRay(const CameraSample& sample, Ray& ray)const;
 
 		virtual int GenerateRayDifferential(const CameraSample& sample, RayDifferential& rayDifferential)const;
 
-		static Ref<Camera> construct(const PropertyList& param);
+		//	static Ref<Camera> construct(const PropertyList& param);
 
 	private:
 		//datas to compute ray differential
@@ -77,7 +77,7 @@ namespace Raven {
 		Vector3f dYOrigin;
 	};
 
-	_RAVEN_CLASS_REG_(orthographic,OrthographicCamera,OrthographicCamera::construct)
+	//_RAVEN_CLASS_REG_(orthographic, OrthographicCamera, OrthographicCamera::construct)
 
 }
 

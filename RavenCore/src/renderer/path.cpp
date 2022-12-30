@@ -35,9 +35,8 @@ namespace Raven {
 					auto fv = GetRand();
 					auto t = GetRand();
 					CameraSample sample(cu, cv, t, fu, fv);
-					RayDifferential r;
-
-					if (camera->GenerateRayDifferential(sample, r)) {
+					Ray r;
+					if (camera->GenerateRay(sample, r)) {
 						pixelColor += integrate(scene, r);
 					}
 				}

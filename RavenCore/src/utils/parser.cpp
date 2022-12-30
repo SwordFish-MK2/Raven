@@ -7,7 +7,7 @@
 //#include<Raven/core/film.h>
 //#include<Raven/core/transform.h>
 //#include<Raven/camera/projectiveCamera.h>
-//#include<Raven/core/renderer.h>
+//#include<Raven/core/integrator.h>
 //#include<Raven/textute/solidTexture.h>
 //#include<Raven/textute/imageTexture.h>
 //#include<Raven/textute/mapping.h>
@@ -22,6 +22,7 @@
 //#include<Raven/utils/loader.h>
 //#include<Raven/material/mirror.h>
 //#include<Raven/core/object.h>
+//#include<Raven/utils/factory.h>
 //
 //#define ParserErorr(x) std::cerr<< x <<std::endl
 //
@@ -31,12 +32,13 @@
 //	return;\
 //}\
 //else {\
+//	const auto& factory=Factory::getInstance();\
 //	std::string type = typeAttr->Value();\
-//	if (Generator::registed(type) == false) {\
+//	if (factory.registed(type) == false) {\
 //		std::cout << "Unknown parameter is passed to " << #myType << " type, Raven abort.\n"; \
 //		return; \
 //	}\
-//	Ref<##ClassType##> my_class=std::dynamic_pointer_cast<##ClassType##>(Generator::generateClass(type,list));\
+//	Ref<##ClassType##> my_class=std::dynamic_pointer_cast<##ClassType##>(factory.generate(type,list));\
 //	my_##myType = my_class; \
 //	break; \
 //}
@@ -71,7 +73,7 @@
 //	bool Parser::parse(const std::string& file) {
 //		Ref<Film> my_film;
 //		Ref<Camera> my_camera;
-//		Ref<Renderer>my_integrator;
+//		Ref<Integrator>my_integrator;
 //		enum RTag {
 //			//classes
 //			RScene,
@@ -216,95 +218,102 @@
 //					//	return;
 //					//}
 //					//else {
+//					//	const auto& factory = Factory::getInstance();
 //					//	std::string type = typeAttr->Value();
-//					//	if (Generator::registed(type) == false) {
+//					//	if (factory.registed(type) == false) {
 //					//		std::cout << "!!!!!!!!!!!!!!!!!!!!!";
 //					//		return;
 //					//	}
 //
-//					//	Ref<Film> f = std::dynamic_pointer_cast<Film>(Generator::generateClass(type, list));
+//					//	Ref<Film> f = std::dynamic_pointer_cast<Film>(factory.generate(type, list));
 //					//	break;
 //					//}
+//
 //					_RAVEN_PARSE_CLASS_TYPE_(film, Film)
 //				}
 //				case RCamera: {
 //					_RAVEN_PARSE_CLASS_TYPE_(camera, Camera)
 //				}
 //				case RIntegrator: {
-//					std::map<std::string, RavenRendererType> integratorMap;
-//					integratorMap["path"] = RavenRendererType::RPath;
-//
-//					_RAVEN_PARSE_CLASS_TYPE_(integrator, Renderer)
+//					_RAVEN_PARSE_CLASS_TYPE_(integrator, Integrator)
 //				}
 //				case RTexture: {
-//					std::map<std::string, RavenTextureType> texMap;
-//					texMap["constspec"] = RavenTextureType::RConstSpectrum;
-//					texMap["constfloat"] = RavenTextureType::RConstFloat;
-//					texMap["checkspec"] = RavenTextureType::RCheckerboardSpectrum;
-//					texMap["checkfloat"] = RavenTextureType::RCheckerboardFloat;
-//					texMap["mapfloat"] = RavenTextureType::RImageMapFloat;
-//					texMap["mapspec"] = RavenTextureType::RImageMapSpectrum;
-//
+//					//获取纹理的类型
 //					const tinyxml2::XMLAttribute* typeAttr = node->FindAttribute("type");
+//
+//					//输入中不包含纹理类型，出错
 //					if (!typeAttr) {
 //						std::cout << "";
 //						return;
 //					}
-//					else {
-//						std::string type = typeAttr->Value();
-//						auto texIt = texMap.find(type);
-//						if (texIt == texMap.end()) {
+//
+//					//生成纹理
+//
+//					const std::string& type = typeAttr->Value();
+//					const auto& factory = Factory::getInstance();
+//					if (!factory.registed(type))return;
+//					Ref<Texture<Spectrum>> my_object =
+//						std::dynamic_pointer_cast<Texture<Spectrum>>(factory.generate(type, list));
+//
+//					//判断纹理是否包含id属性
+//					const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
+//					//当前结点对应的对象位于其他对象内部，未指定id，直接将当前纹理加入父节点的propertylist
+//					if (!idAttr && fatherNode != nullptr)
+//						pList->setObjectRef("texture", my_object);
+//
+//					//当前纹理指定了id
+//					else if (idAttr) {
+//						std::string id = idAttr->Value();
+//						PropertyList::setObjectRefById(id, "texture", my_object, *pList);
+//					}
+//					break;
+//				}
+//				case RMaterial: {
+//					const tinyxml2::XMLAttribute* typeAttr = node->FindAttribute("type");
+//
+//					if (!typeAttr) {
+//						//输入中不包含材质类型，出错
+//						if (!typeAttr) {
 //							std::cout << "";
 //							return;
 //						}
-//						else {
-//							const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
-//							if (!idAttr && fatherNode != nullptr) {
-//								//当前结点对应的对象位于其他对象内部，未指定id
-//								//TODO:: add a reference of this instance into pList,
-//								//do not add this inference into parser::xxxProperty
-//
-//								Ref<Texture<double>> my_class =
-//									std::dynamic_pointer_cast<Texture<double>>(Generator::generateClass(type, list));
-//							}
-//							else {
-//								std::string id = idAttr->Value();
-//								std::tuple<std::string, RavenTextureType, PropertyList>tProperty =
-//									std::make_tuple(id, texIt->second, list);
-//								textureProperty.push_back(tProperty);
-//							}
-//
-//						}
 //					}
-//					break; }
-//				case RMaterial: {
-//					std::map<std::string, RavenMaterialType> mateMap;
-//					mateMap["matte"] = RavenMaterialType::RMatte;
-//					mateMap["glass"] = RavenMaterialType::RGlass;
-//					mateMap["mirror"] = RavenMaterialType::RMirror;
-//					mateMap["plastic"] = RavenMaterialType::RPlastic;
 //
-//					std::string type = node->FindAttribute("type")->Value();
-//					std::string id = node->FindAttribute("id")->Value();
-//					auto mateIt = mateMap.find(type);
+//					std::string type = typeAttr->Value();
+//					const auto& factory = Factory::getInstance();
+//					if (!factory.registed(type))return;
+//					Ref<RavenObject> my_object = factory.generate(type, list);
 //
-//					std::tuple<std::string, RavenMaterialType, PropertyList> mProperty =
-//						std::make_tuple(id, mateIt->second, list);
-//					materialProperty.push_back(mProperty);
-//					break; }
+//					const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
+//
+//					if (!idAttr)
+//						pList->setObjectRef(type, my_object);
+//
+//					else {
+//						const std::string& id = idAttr->Value();
+//						PropertyList::setObjectRefById(type, id, my_object, *pList);
+//					}
+//					break;
+//				}
 //				case RShape: {
-//					std::map<std::string, RavenShapeType> shapeMap;
-//					shapeMap["sphere"] = RavenShapeType::RSphere;
-//					shapeMap["mesh"] = RavenShapeType::RMesh;
+//					const tinyxml2::XMLAttribute* typeAttr = node->FindAttribute("type");
 //
-//					std::string type = node->FindAttribute("type")->Value();
-//					std::string id = node->FindAttribute("id")->Value();
-//					auto shapeIt = shapeMap.find(type);
+//					if (!typeAttr) {
+//						std::cout << "";
+//						return;
+//					}
 //
-//					std::tuple<std::string, RavenShapeType, PropertyList> sProperty =
-//						std::make_tuple(id, shapeIt->second, list);
-//					shapeProperty.push_back(sProperty);
-//					break; }
+//					std::string type = typeAttr->Value();
+//					const auto& factory = Factory::getInstance();
+//					if (!factory.registed(type))return;
+//					Ref<RavenObject> my_object = factory.generate(type,list);
+//					
+//					if (type == "obj") {
+//						Ref<TriangleMesh>
+//					}
+//
+//
+//				}
 //				case REmit: {
 //					std::map<std::string, RavenLightType> lightMap;
 //					lightMap["diffuseArea"] = RavenLightType::RDiffuseArea;
@@ -317,19 +326,7 @@
 //						std::make_tuple(id, lightIt->second, list);
 //					lightProperty.push_back(lProperty);
 //					break; }
-//				case RPrimitive: {
-//					std::map<std::string, RavenPrimitiveType> priMap;
-//					priMap["primitive"] = RavenPrimitiveType::RPrimitive;
-//					priMap["transprimitive"] = RavenPrimitiveType::RTransformed;
 //
-//					std::string type = node->FindAttribute("type")->Value();
-//					std::string id = node->FindAttribute("id")->Value();
-//					auto priIt = priMap.find(type);
-//
-//					std::tuple<std::string, RavenPrimitiveType, PropertyList> pProperty =
-//						std::make_tuple(id, priIt->second, list);
-//					primProperty.push_back(pProperty);
-//					break; }
 //				case RTransform: {
 //					std::map<std::string, RavenTransformType> tranMap;
 //					tranMap["identity"] = RavenTransformType::RIdentity;
@@ -441,51 +438,51 @@
 //					//父节点为Material，
 //					//此时Spectra为Material的reflectance属性，
 //					//生成ConstTexture<Spectrum>对象
-//					if (fathername == "bsdf") {
+//					if (fathername == "bsdf" && name == "reflectance") {
 //						Ref<ConstTexture<Spectrum>> spectra = std::make_shared<ConstTexture<Spectrum>>(rgb);
 //						pList->setObjectRef(name, spectra);
 //					}
 //					break;
 //				}
-//				case RSpectra: {
-//					std::string name = node->FindAttribute("name")->Value();
-//					std::string type = node->FindAttribute("type")->Value();
-//					const tinyxml2::XMLAttribute* v = node->FindAttribute("value");
-//					if (type == "rgb") {
-//						Vector3f rgbVec = toVector3f(v->Value());
-//						Spectrum rgbSpectra = Spectrum::fromRGB(rgbVec);
-//						pList->setSpectra(name, rgbSpectra);
-//					}
-//					else {
-//						//std::string vString = v->Value();
-//						//std::shared_ptr<double[]> lambda;
-//						//std::shared_ptr<double[]>spectrumValue;
-//						//int n;
-//						//getSpectrumSample(lambda, spectrumValue, &n, vString);
-//						//Spectrum sampledSpectra = Spectrum::fromSampled(&lambda[0], &spectrumValue[0], n);
-//						//pList->setSpectra(name, sampledSpectra);
-//					}
-//					break;
-//				}
-//				case RPointer: {
-//					std::map<std::string, RavenPointerType> pointerMap;
-//					pointerMap["transform"] = RavenPointerType::transform_pointer;
-//					pointerMap["mapping"] = RavenPointerType::mapping_pointer;
-//					pointerMap["shape"] = RavenPointerType::shape_pointer;
-//					pointerMap["texturefloat"] = RavenPointerType::texture_float_pointer;
-//					pointerMap["texturespectrum"] = RavenPointerType::texture_spectrum_pointer;
-//					pointerMap["emit"] = RavenPointerType::emit_pointer;
-//					pointerMap["material"] = RavenPointerType::material_pointer;
-//					pointerMap["primitive"] = RavenPointerType::primitive_pointer;
-//
-//					std::string type = node->FindAttribute("type")->Value();
-//					std::string id = node->FindAttribute("id")->Value();
-//					auto pIt = pointerMap.find(type);
-//
-//					//pList->setPointer(id, pIt->second);
-//					pList->pointerList.push_back(Pointer(id, pIt->second));
-//					break;
-//				}
+//								//case RSpectra: {
+//								//	std::string name = node->FindAttribute("name")->Value();
+//								//	std::string type = node->FindAttribute("type")->Value();
+//								//	const tinyxml2::XMLAttribute* v = node->FindAttribute("value");
+//								//	if (type == "rgb") {
+//								//		Vector3f rgbVec = toVector3f(v->Value());
+//								//		Spectrum rgbSpectra = Spectrum::fromRGB(rgbVec);
+//								//		pList->setSpectra(name, rgbSpectra);
+//								//	}
+//								//	else {
+//								//		//std::string vString = v->Value();
+//								//		//std::shared_ptr<double[]> lambda;
+//								//		//std::shared_ptr<double[]>spectrumValue;
+//								//		//int n;
+//								//		//getSpectrumSample(lambda, spectrumValue, &n, vString);
+//								//		//Spectrum sampledSpectra = Spectrum::fromSampled(&lambda[0], &spectrumValue[0], n);
+//								//		//pList->setSpectra(name, sampledSpectra);
+//								//	}
+//								//	break;
+//								//}
+//								//case RPointer: {
+//								//	std::map<std::string, RavenPointerType> pointerMap;
+//								//	pointerMap["transform"] = RavenPointerType::transform_pointer;
+//								//	pointerMap["mapping"] = RavenPointerType::mapping_pointer;
+//								//	pointerMap["shape"] = RavenPointerType::shape_pointer;
+//								//	pointerMap["texturefloat"] = RavenPointerType::texture_float_pointer;
+//								//	pointerMap["texturespectrum"] = RavenPointerType::texture_spectrum_pointer;
+//								//	pointerMap["emit"] = RavenPointerType::emit_pointer;
+//								//	pointerMap["material"] = RavenPointerType::material_pointer;
+//								//	pointerMap["primitive"] = RavenPointerType::primitive_pointer;
+//								//
+//								//	std::string type = node->FindAttribute("type")->Value();
+//								//	std::string id = node->FindAttribute("id")->Value();
+//								//	auto pIt = pointerMap.find(type);
+//								//
+//								//	//pList->setPointer(id, pIt->second);
+//								//	pList->pointerList.push_back(Pointer(id, pIt->second));
+//								//	break;
+//								//}
 //				}
 //			}
 //		};

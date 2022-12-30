@@ -16,7 +16,6 @@
 
 namespace Raven {
 	class Scene :public RavenObject {
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	private:
 		std::vector<std::shared_ptr<Transform>> transforms;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;

@@ -6,6 +6,7 @@
 #include<Raven/core/math.h>
 #include<Raven/core/spectrum.h>
 #include<optional>
+
 namespace Raven {
 
 	double FDielectric(double cosThetaI, double etaI, double etaT);

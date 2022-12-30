@@ -2,7 +2,6 @@
 #define _RAVEN_CORE_TEXTURE_H_
 
 #include<Raven/core/base.h>
-#include<Raven/core/interaction.h>
 #include<Raven/utils/propertylist.h>
 #include<Raven/core/object.h>
 #include<Raven/utils/factory.h>

@@ -9,7 +9,6 @@
 //#include<Raven/core/base.h>
 //#include<Raven/core/spectrum.h>
 //#include<Raven/core/math.h>
-//#include<Raven/core/programe.h>
 //#include<Raven/utils/propertylist.h>
 //
 //namespace Raven {
@@ -77,12 +76,12 @@
 //	class Parser {
 //	public:
 //		bool parse(const std::string& filePath);
-//		std::shared_ptr<RavenRenderingPrograme> makePrograme()const;
+//		//std::shared_ptr<RavenRenderingPrograme> makePrograme()const;
 //	private:
 //		AccelType accelerate;
 //
 //		std::shared_ptr<Camera> cam;
-//		std::shared_ptr<Renderer> renderer;
+//		std::shared_ptr<Integrator> renderer;
 //
 //		std::pair<RavenCameraType, PropertyList> cameraProperty;
 //		std::pair<RavenRendererType, PropertyList> integratorProperty;

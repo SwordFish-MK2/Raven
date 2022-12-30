@@ -56,7 +56,8 @@ namespace Raven {
 	/// </summary>
 	class AreaLight :public Light {
 	public:
-		AreaLight(const Ref<Transform>& LTW, const Ref<Transform>& WTL, int flag, int nSamples, const Ref<Shape>& shape) :
+		AreaLight(const Ref<Transform>& LTW, const Ref<Transform>& WTL, 
+			int flag, int nSamples, const Ref<Shape>& shape) :
 			Light(LTW, WTL, flag, nSamples), shape_ptr(shape), area(shape->area()) {}
 
 		//输入空间中的一个点p，在光源上随机采样，并计算出射的Radiance

@@ -14,9 +14,17 @@ namespace Raven {
 		const std::vector<Normal3f>& ns,
 		const std::vector<Vector3f>& ts,
 		const std::vector<Point2f> uvs)
-		:OTW(OTW), WTO(WTO),
-		nTriangles(triNum), nVertices(vs.size()), vertices(vs), indices(ins), normals(ns), tangants(ts),
-		uvs(uvs), hasUV(uvs.size() > 0), hasTan(tangants.size() > 0) {
+		:OTW(OTW),
+		WTO(WTO),
+		nTriangles(triNum),
+		nVertices(vs.size()),
+		vertices(vs),
+		indices(ins),
+		normals(ns),
+		tangants(ts),
+		uvs(uvs),
+		hasUV(uvs.size() > 0),
+		hasTan(tangants.size() > 0) {
 		//transform all vertices of triangle mesh to world space 
 		for (int i = 0; i < vertices.size(); i++) {
 			vertices[i] = (*OTW)(vertices[i]);
@@ -253,21 +261,21 @@ namespace Raven {
 	//	return TriangleMesh::build(LTW.get(), WTL.get(), *info);
 	//}
 
-	//Ref<TriangleMesh> TriangleMesh::construct(const PropertyList& param) {
-	//	Loader loader;
-	//	const std::string& filename = param.getString("filename", "");
-	//	auto objdata = loader.load("", filename);
-	//	const ObjectRef& otwRef = param.getObjectRef(0);
-	//	const Ref<Transform>& otw = std::dynamic_pointer_cast<Transform>(otwRef.getRef());
-	//	const Ref<Transform> wto = std::make_shared<Transform>(Inverse(*otw));
-	//	const std::vector<Point3f>& vs = objdata->vertices;
-	//	const std::vector<int>& ins = objdata->indices;
-	//	const std::vector<Normal3f>& ns = objdata->normals;
-	//	const std::vector<Vector3f>& ts = objdata->tangants;
-	//	const std::vector<Point2f>& uvs = objdata->uvs;
-	//	int num = objdata->numbers;
-	//	return std::make_shared<TriangleMesh>(otw, wto, num, vs, ins, ns, ts, uvs);
+	Ref<TriangleMesh> TriangleMesh::construct(const PropertyList& param) {
+		Loader loader;
+		const std::string& filename = param.getString("filename", "");
+		auto objdata = loader.load("", filename);
+		const ObjectRef& otwRef = param.getObjectRef(0);
+		const Ref<Transform>& otw = std::dynamic_pointer_cast<Transform>(otwRef.getRef());
+		const Ref<Transform> wto = std::make_shared<Transform>(Inverse(*otw));
+		const std::vector<Point3f>& vs = objdata->vertices;
+		const std::vector<int>& ins = objdata->indices;
+		const std::vector<Normal3f>& ns = objdata->normals;
+		const std::vector<Vector3f>& ts = objdata->tangants;
+		const std::vector<Point2f>& uvs = objdata->uvs;
+		int num = objdata->numbers;
+		return std::make_shared<TriangleMesh>(otw, wto, num, vs, ins, ns, ts, uvs);
 
-	//}
+	}
 
 }

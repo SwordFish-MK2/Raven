@@ -9,8 +9,11 @@
 namespace Raven {
 	class Material :public RavenObject {
 	public:
-		Material() {}
+
 		virtual void computeScarttingFunctions(SurfaceInteraction& its, bool allowMultipleLobes)const = 0;
+
+		static void Bump(const Ref<Texture<double>>& bump, SurfaceInteraction& si);
+
 	};
 
 	//class MaterialFactory {
