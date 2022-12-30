@@ -5,9 +5,11 @@
 #include<random>
 #include<map>
 
+#define PATH std::string(RAVEN_PATH)
+
+
 namespace Raven {
 	using Float = double;
-
 
 	template<class T>
 	class Vector3;

@@ -14,7 +14,7 @@
 #include<Raven/core/programe.h>
 #include<Raven/core/camera.h>
 #include<Raven/utils/factory.h>
-
+#include<direct.h>
 using namespace std;
 using namespace Raven;
 
@@ -22,9 +22,9 @@ int main(int agrc, char** argv)
 {
 	////if (agrc == 1) {
 	auto start = std::chrono::system_clock::now();
-	Raven::Scene box = Raven::Scene::buildCornellBox();
-	//Raven::Scene box = Raven::Scene::buildTestScene();
-	Raven::Scene sphere = Raven::Scene::buildTestSphere();
+		Raven::Scene box = Raven::Scene::buildCornellBox();
+		//Raven::Scene box = Raven::Scene::buildTestScene();
+	//	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 3, 128 * 3);
 	//Eigen::Matrix4f cw;
@@ -34,8 +34,6 @@ int main(int agrc, char** argv)
 	//	0.0258668, -0.29189, 5.43024, 1;
 	//auto cwt = cw.transpose();
 	//Raven::Transform cameraWorld(cwt);
-	//Raven::Transform cameraToWorld = Raven::LookAt(Point3f(3, 3, 3), Point3f(0, 0.25, 0), Vector3f(0, 1, 0));
-
 	Raven::Transform cameraToWorld = Raven::LookAt(Point3f(278, 273, -800), Point3f(278, 273, -799), Vector3f(0, 1, 0));
 	Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
 	Bound2f viewport{ Point2f(-300,-300),Point2f(300,300) };
@@ -45,7 +43,7 @@ int main(int agrc, char** argv)
 	std::shared_ptr<Raven::Camera> ocam =
 		std::make_shared<Raven::OrthographicCamera>(cameraToWorld, viewport, 0, 10, 0, 1, f, nullptr);
 	Raven::PathTracingIntegrator renderer(10, 2);
-	renderer.render(box, ocam, f);
+	renderer.render(box, cam, f);
 
 	auto stop = std::chrono::system_clock::now();
 	std::cout << "Render complete:\n";
