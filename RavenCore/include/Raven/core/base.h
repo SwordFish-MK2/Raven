@@ -5,8 +5,7 @@
 #include<random>
 #include<map>
 
-#define PATH std::string(RAVEN_PATH)
-
+//#define PATH std::string(RAVEN_PATH)
 
 namespace Raven {
 	using Float = double;

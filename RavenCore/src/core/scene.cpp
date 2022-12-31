@@ -77,8 +77,7 @@ namespace Raven {
 			//std::optional<TriangleInfo> info =
 			//	loader.load(PATH + "/models/cornellbox/", "cbox_greenwall.obj");
 			std::optional<TriangleInfo> info =
-				loader.load(PATH + "/models/cornellbox/", "right.obj");
-			std::cout << PATH + "/models/cornellbox/";
+				loader.load("/models/cornellbox/right.obj");
 			std::shared_ptr<TriangleMesh> mesh =
 				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
@@ -100,7 +99,7 @@ namespace Raven {
 			//std::optional<TriangleInfo> info =
 			//	loader.load(PATH + "/models/cornellbox/", "cbox_redwall.obj");
 			std::optional<TriangleInfo> info =
-				loader.load(PATH + "/models/cornellbox/", "left.obj");
+				loader.load("/models/cornellbox/left.obj");
 			std::shared_ptr<TriangleMesh> mesh =
 				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
@@ -121,7 +120,7 @@ namespace Raven {
 			//std::optional<TriangleInfo> info =
 			//	loader.load(PATH + "/models/cornellbox/", "cbox_floor.obj");
 			std::optional<TriangleInfo> info =
-				loader.load(PATH + "/models/cornellbox/", "floor.obj");
+				loader.load("/models/cornellbox/floor.obj");
 			std::shared_ptr<TriangleMesh> mesh =
 				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
@@ -183,7 +182,7 @@ namespace Raven {
 			//std::optional<TriangleInfo> info =
 			//	loader.load(PATH + "/models/cornellbox/", "cbox_largebox.obj");
 			std::optional<TriangleInfo> info =
-				loader.load(PATH + "/models/cornellbox/", "tallbox.obj");
+				loader.load("/models/cornellbox/tallbox.obj");
 			std::shared_ptr<TriangleMesh> mesh =
 				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
@@ -205,7 +204,7 @@ namespace Raven {
 			//std::optional<TriangleInfo> info =
 			//	loader.load(PATH + "/models/cornellbox/", "cbox_smallbox.obj");
 			std::optional<TriangleInfo> info =
-				loader.load(PATH + "/models/cornellbox/", "shortbox.obj");
+				loader.load("/models/cornellbox/shortbox.obj");
 			std::shared_ptr<TriangleMesh> mesh =
 				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
@@ -227,7 +226,7 @@ namespace Raven {
 			//std::optional<TriangleInfo> info =
 			//	loader.load(PATH + "/models/cornellbox/", "cbox_luminaire.obj");
 			std::optional<TriangleInfo> info =
-				loader.load(PATH + "/models/cornellbox/", "light.obj");
+				loader.load("/models/cornellbox/light.obj");
 			std::shared_ptr<TriangleMesh> mesh =
 				std::make_shared<TriangleMesh>(identity, identity,
 					info->numbers, info->vertices, info->indices,
@@ -367,7 +366,7 @@ namespace Raven {
 			usedTransform.push_back(invm0);
 
 			std::optional<TriangleInfo> mateballInfo =
-				loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh001.obj");
+				loader.load("/models/mateball/meshes/Mesh001.obj");
 			std::shared_ptr<TriangleMesh> mesh0 =
 				std::make_shared<TriangleMesh>(m0world, invm0,
 					mateballInfo->numbers, mateballInfo->vertices, mateballInfo->indices,
@@ -375,7 +374,7 @@ namespace Raven {
 			meshes.push_back(mesh0);
 			const auto& triangles0 = mesh0->triangles;
 
-			mateballInfo = loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh002.obj");
+			mateballInfo = loader.load("/models/mateball/meshes/Mesh002.obj");
 			std::shared_ptr<TriangleMesh> mesh1 =
 				std::make_shared<TriangleMesh>(m1world, invm1,
 					mateballInfo->numbers, mateballInfo->vertices, mateballInfo->indices,
@@ -383,7 +382,7 @@ namespace Raven {
 			meshes.push_back(mesh1);
 			const auto& triangles1 = mesh1->triangles;
 
-			mateballInfo = loader.load("D:/MyWorks/Raven/models/mateball/meshes/", "Mesh000.obj");
+			mateballInfo = loader.load("/models/mateball/meshes/Mesh000.obj");
 
 			std::shared_ptr<TriangleMesh> mesh2 =
 				std::make_shared<TriangleMesh>(m2world, invm2,

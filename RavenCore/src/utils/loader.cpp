@@ -9,9 +9,8 @@ namespace Raven {
 
 	std::optional<TriangleInfo> Loader::load(
 		const std::string& path,
-		const std::string& fileName,
 		const std::string& mtlBasePath) {
-		const std::string filePath = path + fileName;
+		const std::string filePath = prj_path + path;
 		tinyobj::attrib_t attrib;//´æÊý¾Ý
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
@@ -98,7 +97,7 @@ namespace Raven {
 				normals[indices[i + 2]] = n;
 			}
 		}
-		std::cout << "Successfully loaded file: "<<fileName <<", triangle number: " << faceNum <<
+		std::cout << "Successfully loaded file: " << path << ", triangle number: " << faceNum <<
 			", vertices number: " << vertices.size() << std::endl;;
 		return TriangleInfo(faceNum, vertices, normals, uvs, tangants, indices);
 	}

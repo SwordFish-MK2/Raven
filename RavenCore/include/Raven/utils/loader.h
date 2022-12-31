@@ -18,9 +18,12 @@ namespace Raven {
 	class Loader {
 	public:
 		std::optional<TriangleInfo> load(
-			const std::string& path, 
-			const std::string& fileName, 
+			const std::string& path,
 			const std::string& mtlBasePath = std::string(""));
+
+		Loader(const std::string& prj_path = RAVEN_PATH) :prj_path(prj_path) {}
+	private:
+		std::string prj_path;
 	};
 
 	Vector3f toVector(const unsigned char* data);
