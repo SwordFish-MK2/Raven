@@ -9,7 +9,8 @@ namespace Raven {
 
 	std::optional<TriangleInfo> Loader::load(
 		const std::string& path,
-		const std::string& mtlBasePath) {
+		const std::string& mtlBasePath)
+	{
 		const std::string filePath = prj_path + path;
 		tinyobj::attrib_t attrib;//´æÊý¾Ý
 		std::vector<tinyobj::shape_t> shapes;
