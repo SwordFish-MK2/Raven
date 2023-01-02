@@ -2,7 +2,7 @@
 #include<Raven/core/distribution.h>
 namespace Raven {
 
-	bool Sphere::hit(const Ray& r_in, double tMax)const {
+	bool Sphere::hit(const Ray& r_in)const {
 		//将光线从世界坐标系变换到圆的Local坐标系内
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -19,9 +19,9 @@ namespace Raven {
 			return false;
 
 		//只要两个解有一个位于0到tMax之间，说明光线与圆相交
-		if (t0 > 0.0 && t0 < tMax)
+		if (t0 > 0.0 && t0 < r_in.tMax)
 			return true;
-		else if (t1 > 0.0 && t1 < tMax)
+		else if (t1 > 0.0 && t1 < r_in.tMax)
 			return true;
 
 		return false;

@@ -4,8 +4,13 @@
 
 namespace Raven {
 
-	BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>>& primitives, size_t maxSize = 100) :
-		Accelerate(primitives), maxPrimInNode(maxSize), maxDepth(0) {
+	BVHAccel::BVHAccel(
+		const std::vector<std::shared_ptr<Primitive>>& primitives,
+		size_t maxSize = 100
+	) :
+		Accelerate(primitives),
+		maxPrimInNode(maxSize),
+		maxDepth(0) {
 
 		//初始化primitiveInfo数组
 		std::vector<PrimitiveInfo> primInfo(prims.size());
@@ -33,8 +38,8 @@ namespace Raven {
 		size_t start,
 		size_t end,
 		std::vector<std::shared_ptr<Primitive>>& ordered,
-		size_t& totalNodes, int depth) {
-
+		size_t& totalNodes, int depth)
+	{
 		depth++;
 		if (depth > maxDepth) {
 			maxDepth = depth;
@@ -198,7 +203,8 @@ namespace Raven {
 
 	int BVHAccel::flattenTree(
 		const std::shared_ptr<BVHNode>& node,
-		int* offset) {
+		int* offset)
+	{
 		//取出要赋值的linearNode
 		LinearBVHNode* lnode = &linearTree[*offset];
 		lnode->box = node->box;
@@ -218,7 +224,7 @@ namespace Raven {
 		return currentOffset;
 	}
 
-	bool BVHAccel::hit(const RayDifferential& ray, double tMax)const {
+	bool BVHAccel::hit(const RayDifferential& ray)const {
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
 		Vector3i dirIsNeg = Vector3i(invDir.x < 0, invDir.y < 0, invDir.z < 0);
 		int nodesToVisite[64];
@@ -236,7 +242,7 @@ namespace Raven {
 					for (size_t i = 0; i < node->nPrims; i++) {
 						//与节点内的Primitive求交
 						size_t index = node->firstOffset + i;
-						if (prims[index]->hit(ray, tMax))
+						if (prims[index]->hit(ray))
 							return true;
 					}
 
@@ -264,7 +270,9 @@ namespace Raven {
 		return false;
 	}
 
-	std::optional<SurfaceInteraction> BVHAccel::intersect(const RayDifferential& ray)const {
+	std::optional<SurfaceInteraction> BVHAccel::intersect(
+		const RayDifferential& ray
+	)const {
 		bool hit = false;
 		std::vector<int>flags(linearTree.size());
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
@@ -317,7 +325,6 @@ namespace Raven {
 				if (offset == 0)break;	//没有需要访问的节点
 				currentIndex = nodesToVisite[--offset];//取得下一个需要访问的节点
 			}
-
 		}
 		if (hit)
 			return prims[primHited]->setInteractionProperty(record, ray);

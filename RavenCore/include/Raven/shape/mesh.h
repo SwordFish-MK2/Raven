@@ -66,7 +66,7 @@ namespace Raven {
 		Triangle(const Ref<Transform>& LTW, const Ref<Transform>& WTL, const TriangleMesh* m, int index) :
 			Shape(LTW, WTL), mesh(m), i(3 * index) {}
 
-		bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const override;
+		bool hit(const Ray& r_in)const override;
 
 		bool intersect(const Ray& r_in, HitInfo& info)const override;
 

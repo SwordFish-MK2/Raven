@@ -38,7 +38,7 @@ namespace Raven {
 		Shape(const Ref<Transform>& LTW, const Ref<Transform>& WTL) :localToWorld(LTW), worldToLocal(WTL) {}
 
 		//intersect incident ray with shape and return whether shape is hitted
-		virtual bool hit(const Ray& r_in, double tMax)const = 0;
+		virtual bool hit(const Ray& r_in)const = 0;
 
 		//intersect incident ray with shape and compute surfaceIntersection 
 		virtual bool intersect(const Ray& r_in, HitInfo& hitInfo)const = 0;

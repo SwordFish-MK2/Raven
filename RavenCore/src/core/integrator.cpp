@@ -26,7 +26,8 @@ namespace Raven {
 				//Ray shadowRay(record.p, lSample.wi);
 				Ray shadowRay = record.scartterRay(lSample.wi);//shadow ray从交点射向光源
 				double distance = (record.p - lSample.p).length();
-				if (scene.hit(shadowRay, distance - 0.01))
+				shadowRay.tMax = distance - 0.01;
+				if (scene.hit(shadowRay))
 					Le = Spectrum(0.0);	//如果shadow ray被遮挡，返回Radiance=0
 
 				//计算此次采样的贡献

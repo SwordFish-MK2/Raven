@@ -64,7 +64,7 @@ namespace Raven {
 	public:
 		BVHAccel(const std::vector<std::shared_ptr<Primitive>>& prims, size_t maxPrim);
 
-		bool hit(const RayDifferential& r_in, double tMax = std::numeric_limits<double>::infinity())const;
+		bool hit(const RayDifferential& r_in)const override;
 
 		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
 	private:

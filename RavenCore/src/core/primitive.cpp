@@ -1,9 +1,9 @@
 #include<Raven/core/primitive.h>
 
 namespace Raven {
-	bool Primitive::hit(const Ray& r_in, double tMax)const {
+	bool Primitive::hit(const Ray& r_in)const {
 		//perform ray-geometry intersection test
-		if (!shape_ptr->hit(r_in, tMax)) {
+		if (!shape_ptr->hit(r_in)) {
 			return false;
 		}
 		return true;
@@ -46,12 +46,12 @@ namespace Raven {
 		return std::make_shared<Primitive>(s, m, l);
 	}
 
-	bool TransformedPrimitive::hit(const Ray& r_in, double tMax)const {
+	bool TransformedPrimitive::hit(const Ray& r_in)const {
 		if (!primToWorld || !worldToPrim || !prim)
 			return false;
 		//transform the incident ray to primitive space then perform ray intersection test
 		Ray transformedRay = Inverse(*primToWorld)(r_in);
-		return prim->hit(r_in, tMax);
+		return prim->hit(r_in);
 	}
 
 	SurfaceInteraction TransformedPrimitive::setInteractionProperty(const HitInfo& pHit, const RayDifferential& ray)const {

@@ -55,7 +55,7 @@ namespace Raven {
 		}
 	}
 
-	bool Triangle::hit(const Ray& r_in, double tMax)const {
+	bool Triangle::hit(const Ray& r_in)const {
 		//取从网格中取出三角形的三个顶点p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
@@ -77,7 +77,7 @@ namespace Raven {
 		double b2 = invDet * Dot(s2, r_in.dir);
 		double b0 = 1 - b1 - b2;
 
-		if (t < 0 || t >= tMax) return false;
+		if (t < 0 || t >= r_in.tMax) return false;
 
 		if (b0 <= 0 || b1 <= 0 || b2 <= 0)return false;
 

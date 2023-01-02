@@ -15,7 +15,7 @@ namespace Raven {
 				bounds = Union(prims[i]->worldBounds(), bounds);
 		}
 
-		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
+		virtual bool hit(const RayDifferential& r_in)const = 0;
 
 		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const = 0;
 
@@ -31,11 +31,9 @@ namespace Raven {
 	public:
 		PrimitiveList(const std::vector<std::shared_ptr<Primitive>>& prims) :Accelerate(prims) {}
 
-		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		bool hit(const RayDifferential& r_in)const override;
 
-		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const;
-
-		virtual Bound3f worldBounds()const;
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
 	};
 
 

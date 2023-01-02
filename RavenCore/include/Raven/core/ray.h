@@ -11,7 +11,7 @@ namespace Raven {
 
 		Ray(bool hasDifferential = false) :time(0), hasDifferential(hasDifferential) {}
 		Ray(const Point3f& o, const Vector3f& d, double t = 0) :origin(o), dir(d), time(t), hasDifferential(false) {}
-		Ray(const Ray& r) :origin(r.origin), dir(r.dir), time(r.time), hasDifferential(hasDifferential) {}
+		Ray(const Ray& r) :tMax(r.tMax), origin(r.origin), dir(r.dir), time(r.time), hasDifferential(hasDifferential) {}
 
 		Point3f position(double t)const {//t here is a parameter discribe how long the ray travals through ray direction
 			return Point3f(origin + dir * t);

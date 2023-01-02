@@ -3,23 +3,7 @@
 namespace Raven {
 
 
-	double toFloat(const std::string& str) {
-		char* end_ptr = nullptr;
-		double result = (double)strtof(str.c_str(), &end_ptr);
-		if (*end_ptr != '\0' ) {
-			std::cerr << "Failed to parse float value::" << str << std::endl;
-		}
-		return result;
-	}
 
-	int toInt(const std::string& str) {
-		char* end_ptr = nullptr;
-		int result = (int)strtof(str.c_str(), &end_ptr);
-		if (*end_ptr != '\0') {
-			std::cerr << "Fauled to parse int value" << str << std::endl;
-		}
-		return result;
-	}
 
 	Point3f toPoint3f(const std::string& str) {
 		std::vector<std::string> tokens = tokenize(str);

@@ -46,14 +46,14 @@ namespace Raven {
 
 	}
 
-	//buildNode函数递归的构造kdTree
+	//buildNode function recursively build kd-tree
 	void KdTreeAccel::buildNode(
-		int* nodeNum,	//当前节点的index
-		int depth,	//当前深度
-		const int* pIndStart, //当前节点中的primitve数组对应的index数组
-		int nPrimitives,	//当前节点中包含的primitive数目
-		const Bound3f& nodeBounds,	//当前节点的包围盒
-		const std::vector<Bound3f>& allPrimBounds,	//所有primitive对应的包围盒
+		int* nodeNum,	//index of current node
+		int depth,	//current node depth
+		const int* pIndStart, //array of indices of primitives inside current ndoe
+		int nPrimitives,	//number of primitives inside current node
+		const Bound3f& nodeBounds,	//bounding box of current node
+		const std::vector<Bound3f>& allPrimBounds,	//bounds of all primitives
 		std::shared_ptr<BoundEdge[]> edge[3],
 		int* prims0,
 		int* prims1,
@@ -195,8 +195,7 @@ namespace Raven {
 	}
 
 	bool KdTreeAccel::hit(
-		const RayDifferential& ray,
-		double tMax
+		const RayDifferential& ray
 	)const {
 		//the ray misses overall bounding box of kdTree
 		Float tMax, tMin;

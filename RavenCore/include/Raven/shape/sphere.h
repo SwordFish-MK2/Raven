@@ -13,7 +13,7 @@ namespace Raven {
 		Sphere(const Ref<Transform>& LTW, const Ref<Transform>& WTL, double radius) :
 			Shape(LTW, WTL), radius(radius) {}
 
-		bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::infinity())const override;
+		bool hit(const Ray& r_in)const override;
 
 		bool intersect(const Ray& r_in, HitInfo& info)const override;
 

@@ -18,7 +18,7 @@ namespace Raven {
 
 		~Primitive() {}
 
-		virtual bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const;
+		virtual bool hit(const Ray& r_in)const;
 
 		virtual bool intersect(const Ray& r_in, HitInfo& inter)const;
 
@@ -49,7 +49,7 @@ namespace Raven {
 
 		~TransformedPrimitive() {}
 
-		bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+		bool hit(const Ray& r_in)const override;
 
 		SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray) const override;
 

@@ -35,9 +35,7 @@ namespace Raven {
 		Scene(const Scene& s);
 
 		//测试光线是否与场景相交
-		bool hit(const RayDifferential& r, double tMax)const {
-			return objs->hit(r, tMax);
-		}
+		bool hit(const RayDifferential& r)const { return objs->hit(r); }
 
 		//void addPrimitive(const std::shared_ptr<Primitive>& pri_ptr);
 

@@ -2,9 +2,9 @@
 
 namespace Raven {
 
-	bool PrimitiveList::hit(const RayDifferential& r_in, double tMax)const {
+	bool PrimitiveList::hit(const RayDifferential& r_in)const {
 		for (size_t i = 0; i < prims.size(); i++) {
-			if (prims[i]->hit(r_in, tMax))
+			if (prims[i]->hit(r_in))
 				return true;
 		}
 		return false;
@@ -34,15 +34,4 @@ namespace Raven {
 		else
 			return std::nullopt;
 	}
-
-	Bound3f PrimitiveList::worldBounds()const {
-		bool flag = false;
-		Bound3f box;
-		for (int i = 0; i < prims.size(); i++) {
-			Bound3f b = prims[i]->worldBounds();
-			box = Union(box, prims[i]->worldBounds());
-		}
-		return box;
-	}
-
 }

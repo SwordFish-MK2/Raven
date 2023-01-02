@@ -776,9 +776,6 @@ namespace Raven {
 
 	Normal3f toNormal(const std::string& str);
 
-	double toFloat(const std::string& str);
-
-	int toInt(const std::string& str);
 }
 
 #endif

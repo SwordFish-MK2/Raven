@@ -19,9 +19,9 @@ namespace Raven {
 
 		KdTreeAccel(const KdTreeAccel& tree) = delete;
 
-		bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		bool hit(const RayDifferential& r_in)const override;
 
-		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const;
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
 
 		~KdTreeAccel() {
 			if (treeNodes)
@@ -51,17 +51,7 @@ namespace Raven {
 	/// </summary>
 	struct KdTreeNode {
 	public:
-		union {
-			float splitPos;		//if this node is interior node, record the split position along the axis
-			int onePrimitive;	//if this node is leaf node and only has one primitive inside, recode the index of primitive
-			int indexOffset;	//if this node is leaf node and has several primitives inside, record the offset of first index inside primitiveIndices array
-		};
-		union {
-			int flag;			//the lower two bits indicate whether this node is leaf node or record the split axis
-			int nPrims;			//if this node is leaf node, the upper 30 bits record the number of primitives within this node
-			int aboveChild;		//if this node is interior node, the upper 30 bits record the index of above child of this node
-		};
-
+		//functions
 		void createLeaf(int n, const int* prims, std::vector<int>* primIndices) {
 			//set flag in lower 2 bits and store nPrims in upper 30 bits
 			flag = 3;
@@ -81,34 +71,34 @@ namespace Raven {
 				}
 			}
 		}
-
 		bool isLeaf()const {
 			return (flag & 3) == 3;
 		}
-
 		void createInterior(int axis, int above, double pos) {
 			splitPos = pos;
 			aboveChild = above << 2;
 			flag |= axis;
 		}
-
-		int getAboveChild()const {
-			return aboveChild >> 2;
-		}
-
-		int getAxis()const {
-			return flag & 3;
-		}
-
-		float getSplitPos()const {
-			return splitPos;
-		}
-
+		int getAboveChild()const { return aboveChild >> 2; }
+		int getAxis()const { return flag & 3; }
+		float getSplitPos()const { return splitPos; }
 		int getPrimNum()const {
 			if ((flag & 3) != 3)
 				return -1;
 			return nPrims >> 2;
 		}
+
+		//data
+		union {
+			float splitPos;		//if this node is interior node, record the split position along the axis
+			int onePrimitive;	//if this node is leaf node and only has one primitive inside, recode the index of primitive
+			int indexOffset;	//if this node is leaf node and has several primitives inside, record the offset of first index inside primitiveIndices array
+		};
+		union {
+			int flag;			//the lower two bits indicate whether this node is leaf node or record the split axis
+			int nPrims;			//if this node is leaf node, the upper 30 bits record the number of primitives within this node
+			int aboveChild;		//if this node is interior node, the upper 30 bits record the index of above child of this node
+		};
 	};
 
 	struct BoundEdge {
@@ -120,13 +110,6 @@ namespace Raven {
 		double pos;
 		int prim;
 
-	};
-
-	struct IntersectInfo {
-		int nodeInd;
-		Bound3f bound;
-		IntersectInfo() {}
-		IntersectInfo(int index, Bound3f bound) :nodeInd(index), bound(bound) {}
 	};
 }
 
