@@ -39,7 +39,6 @@ namespace Raven {
 			objs = std::make_shared<BVHAccel>(prims, 1);
 			break;
 		}
-
 	}
 
 	Scene::Scene(const Scene& s) :transforms(s.transforms),
@@ -74,8 +73,6 @@ namespace Raven {
 
 		//right wall
 		{
-			//std::optional<TriangleInfo> info =
-			//	loader.load(PATH + "/models/cornellbox/", "cbox_greenwall.obj");
 			std::optional<TriangleInfo> info =
 				loader.load("/models/cornellbox/right.obj");
 			std::shared_ptr<TriangleMesh> mesh =

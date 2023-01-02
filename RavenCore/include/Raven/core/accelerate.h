@@ -7,19 +7,14 @@
 #include<Raven/core/interaction.h>
 #include<Raven/core/object.h>
 
-enum AccelType {
-	List, KdTree, BVH
-};
-
 namespace Raven {
-
-	class Accelerate:public RavenObject {
+	class Accelerate :public RavenObject {
 	public:
 		Accelerate(const std::vector<std::shared_ptr<Primitive>>& prims) :prims(prims) {
 			for (int i = 0; i < prims.size(); i++)
 				worldBound = Union(prims[i]->worldBounds(), worldBound);
 		}
-	
+
 		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
 
 		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
@@ -44,6 +39,11 @@ namespace Raven {
 
 		virtual Bound3f worldBounds()const;
 	};
+
+	
+enum class AccelType {
+	List, KdTree, BVH
+};
 }
 
 #endif

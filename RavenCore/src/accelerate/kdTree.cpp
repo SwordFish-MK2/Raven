@@ -1,14 +1,29 @@
 #include<Raven/accelerate/kdTree.h>
 
 namespace Raven {
-	KdTreeAccel::KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int primsThreshold)
-		:Accelerate(p), maxDepth(maxD), isectCost(it), traversalCost(tt), emptyBonus(eb), primsThreshold(primsThreshold) {
+	KdTreeAccel::KdTreeAccel(
+		const std::vector<std::shared_ptr<Primitive>>& p,
+		int maxD,
+		int it,
+		int tt,
+		double eb,
+		int primsThreshold
+	)
+		:Accelerate(p),
+		maxDepth(maxD),
+		isectCost(it),
+		traversalCost(tt),
+		emptyBonus(eb),
+		primsThreshold(primsThreshold)
+	{
 		//compute a reasonable maxDepth if its not defined by user
 		if (maxDepth <= 0)
 			maxDepth = std::round(8 + 1.3 * log2l(prims.size()));
 
 		//record bounding boxs of primitives
 		std::vector<Bound3f> primBounds(p.size());
+		for (size_t i = 0; i < p.size(); i++)
+			primBounds[i] = p[i]->worldBounds();
 
 		//generate primitive indices
 		std::vector<int> primNumbers(prims.size());
@@ -21,6 +36,7 @@ namespace Raven {
 			edge[i].reset(new BoundEdge[2 * prims.size()]);
 		std::shared_ptr<int[]> prims0(new int[prims.size()]);
 		std::shared_ptr<int[]> prims1(new int[(maxDepth + 1) * prims.size()]);
+
 		//build root node
 		std::cout << "Kd-tree start building node, primitive number: " << prims.size() << std::endl;
 		int root = 0;
@@ -30,7 +46,158 @@ namespace Raven {
 
 	}
 
-	bool KdTreeAccel::hit(const RayDifferential& r_in, double tMax)const {
+	//buildNode函数递归的构造kdTree
+	void KdTreeAccel::buildNode(
+		int* nodeNum,	//当前节点的index
+		int depth,	//当前深度
+		const int* pIndStart, //当前节点中的primitve数组对应的index数组
+		int nPrimitives,	//当前节点中包含的primitive数目
+		const Bound3f& nodeBounds,	//当前节点的包围盒
+		const std::vector<Bound3f>& allPrimBounds,	//所有primitive对应的包围盒
+		std::shared_ptr<BoundEdge[]> edge[3],
+		int* prims0,
+		int* prims1,
+		int badRefine
+	) {
+		//如果当前已经分配的内存已满，分配双倍的内存并拷贝数据
+		if (nextFreeNode == nAccelNode) {
+
+			//分配双倍大小的内存
+			int newNodeSize = std::max(512, 2 * nAccelNode);
+			KdTreeNode* newArray = new KdTreeNode[newNodeSize];
+
+			//如果原内存空间有数据，拷贝数据并释放原内存空间
+			if (nAccelNode > 0) {
+				std::memcpy(newArray, treeNodes, sizeof(KdTreeNode) * nAccelNode);
+				delete[] treeNodes;
+			}
+			nAccelNode = newNodeSize;
+			treeNodes = newArray;
+		}
+
+		//get next freeNode
+		*nodeNum = nextFreeNode++;
+		KdTreeNode* node = &treeNodes[*nodeNum];
+
+		//leaf node
+		if (nPrimitives < primsThreshold || depth >= maxDepth) {
+			node->createLeaf(nPrimitives, pIndStart, &primIndices);
+			return;
+		}
+
+		//interior node
+		else {
+			int bestAxis = -1;
+			int bestOffset = -1;
+			double bestCost = std::numeric_limits<double>::infinity();//loset cost found so far
+			int defaultAxis = nodeBounds.maxExtent();//by default,choose the axis which has the max extent
+			double unSplitCost = isectCost * nPrimitives;//
+
+			int repeat = 0;
+			//at most iterate 3 axis
+			while (repeat < 3) {
+				int axis = (defaultAxis + repeat) % 3;//switch to next axis
+				int nEdges = 2 * nPrimitives;
+
+				//generate nodeEdge array for current node
+				for (int i = 0; i < nPrimitives; i++) {
+					int primIndex = pIndStart[i];
+					Bound3f pBox = allPrimBounds[primIndex];//get bounding box of ith primitive in current node
+					edge[axis][2 * i] = { true, pBox.pMin[axis], primIndex };
+					edge[axis][2 * i + 1] = { false, pBox.pMax[axis], primIndex };
+				}
+
+				//sort BoundEdges 
+				std::sort(&edge[axis][0], &edge[axis][nEdges],
+					[](const BoundEdge& e0, const BoundEdge& e1)->bool {
+						if (e0.pos == e1.pos)
+						return (int)e0.type < (int)e1.type;
+						else
+							return e0.pos < e1.pos;
+					});
+
+				//compute cost for unsplit case
+				int primsAbove = nPrimitives;
+				int primsBelow = 0;
+				double invArea = 1.0 / nodeBounds.surfaceArea();
+
+				//iterate over candidate split position, compute cost
+				for (int i = 0; i < nEdges; i++) {
+					if (edge[axis][i].type == EdgeType::EdgeEnd) primsAbove--;
+
+					//compute surface area of box blow and box above by adding up area of their six faces
+					int otherAxis0 = (axis + 1) % 3;
+					int otherAxis1 = (axis + 2) % 3;
+					Vector3f d = nodeBounds.pMax - nodeBounds.pMin;
+					double splitPos = edge[axis][i].pos;
+					double aBelow = 2 * ((d[otherAxis0] * d[otherAxis1]) +
+						(splitPos - nodeBounds.pMin[axis]) * d[otherAxis1] +
+						(splitPos - nodeBounds.pMin[axis]) * d[otherAxis0]);
+					double aAbove = 2 * ((d[otherAxis0] * d[otherAxis1]) +
+						(nodeBounds.pMax[axis] - splitPos) * d[otherAxis1] +
+						(nodeBounds.pMax[axis] - splitPos) * d[otherAxis0]);
+
+					//compute posibilities of ray passing two subspaces 
+					double pBelow = aBelow * invArea;
+					double pAbove = aAbove * invArea;
+
+					//compute split cost
+					double eb = (primsBelow == 0 || primsAbove == 0) ? emptyBonus : 0;
+					double splitCost = traversalCost +
+						(1 - eb) * (pBelow * primsBelow * isectCost + pAbove * primsAbove * isectCost);
+					if (splitCost < bestCost) {
+						bestCost = splitCost;
+						bestOffset = i;
+					}
+					if (edge[axis][i].type == EdgeType::EdgeStart)primsBelow++;
+				}
+
+				//find a good split 
+				if (bestCost < unSplitCost) {
+					bestAxis = axis;
+					break;
+				}
+
+				//no good split, try next axis
+				repeat++;
+			}
+
+			//Do not find a good split after iterating three axes
+			if (bestCost > unSplitCost)badRefine++;
+			if (bestAxis == -1 || (nPrimitives < 16 && bestCost > 4 * unSplitCost) || badRefine == 3) {
+				node->createLeaf(nPrimitives, pIndStart, &primIndices);
+				return;
+			}
+
+			//found a good split
+
+			//classify primitives 
+			int n0 = 0, n1 = 0;
+			for (int i = 0; i < bestOffset; ++i)
+				if (edge[bestAxis][i].type == EdgeType::EdgeStart)
+					prims0[n0++] = edge[bestAxis][i].prim;
+			for (int i = bestOffset + 1; i < 2 * nPrimitives; i++)
+				if (edge[bestAxis][i].type == EdgeType::EdgeEnd)
+					prims1[n1++] = edge[bestAxis][i].prim;
+
+			//compute bounds of child nodes
+			Bound3f boundBelow = nodeBounds;
+			Bound3f boundAbove = nodeBounds;
+			boundBelow.pMax[bestAxis] = edge[bestAxis][bestOffset].pos;
+			boundAbove.pMin[bestAxis] = edge[bestAxis][bestOffset].pos;
+			//build child node and inite interior node for this node
+			int nextBelow, nextAbove;
+			buildNode(&nextBelow, depth + 1, prims0, n0, boundBelow, allPrimBounds, edge, prims0, prims1 + nPrimitives, badRefine);
+			buildNode(&nextAbove, depth + 1, prims1, n1, boundAbove, allPrimBounds, edge, prims0, prims1 + nPrimitives, badRefine);
+			node->createInterior(bestAxis, nextAbove, edge[bestAxis][bestOffset].pos);
+			return;
+		}
+	}
+
+	bool KdTreeAccel::hit(
+		const RayDifferential& r_in,
+		double tMax
+	)const {
 		double t0, t1;
 		if (worldBound.hit(r_in, &t0, &t1)) {
 			if (t0 > tMax)
@@ -40,7 +207,10 @@ namespace Raven {
 		return false;
 	}
 
-	std::optional<SurfaceInteraction> KdTreeAccel::intersect(const RayDifferential& r_in, double tMax)const {
+	std::optional<SurfaceInteraction> KdTreeAccel::intersect(
+		const RayDifferential& r_in,
+		double tMax
+	)const {
 		HitInfo hitInfo;
 		int closestIndex = 0;
 		double tMin;
@@ -127,137 +297,10 @@ namespace Raven {
 			}
 		}
 		if (flag == true) {
-			SurfaceInteraction hitRecord = prims[closestIndex]->setInteractionProperty(hitInfo,r_in);
+			SurfaceInteraction hitRecord = prims[closestIndex]->setInteractionProperty(hitInfo, r_in);
 			return std::optional<SurfaceInteraction>(hitRecord);
 		}
-			return std::nullopt;
-	}
-
-	void KdTreeAccel::buildNode(int* nodeNum, int depth, const int* pIndStart, int nPrimitives,
-		const Bound3f& nodeBounds, const std::vector<Bound3f>& allPrimBounds,
-		std::shared_ptr<BoundEdge[]> edge[3], int* prims0, int* prims1, int badRefine) {
-		//if current allocated memory is used up, allocate a double sized block of memory
-		if (nextFreeNode == nAccelNode) {
-			//allocate double sized block of memory
-			int newNodeSize = std::max(512, 2 * nAccelNode);
-			KdTreeNode* newArray = new KdTreeNode[newNodeSize];
-			if (nAccelNode > 0) {
-				//copy original arrayy and free origianl memory 
-				std::memcpy(newArray, treeNodes, sizeof(KdTreeNode) * newNodeSize);
-				nAccelNode = newNodeSize;
-				delete[] treeNodes;
-			}
-			treeNodes = newArray;
-		}
-
-		//get next freeNode
-		*nodeNum = nextFreeNode++;
-		KdTreeNode* node = &treeNodes[*nodeNum];
-		if (nPrimitives < primsThreshold || depth >= maxDepth) {
-			//create a leaf node
-			node->createLeaf(nPrimitives, pIndStart, &primIndices);
-			return;
-		}
-		else {
-			//create a interior node
-			int bestAxis = -1;
-			int bestOffset = -1;
-			double bestCost = std::numeric_limits<double>::infinity();
-			int defaultAxis = nodeBounds.maxExtent();//by default,choose the axis which has the max extent
-			double unSplitCost = isectCost * nPrimitives;
-
-			int repeat = 0;
-			//at most iterate 3 axis
-			while (repeat < 3) {
-				int axis = (defaultAxis + repeat) % 3;//switch to next axis
-				//generate nodeEdge array
-				int edgeNum = 0;
-				for (int i = 0; i < nPrimitives; i++) {
-					int primIndex = *(pIndStart + i);
-					//std::shared_ptr<Primitive> p = prims[primIndex];
-					Bound3f pBox = allPrimBounds[primIndex];//get bounding box of ith primitive in current node
-
-					BoundEdge start(1, pBox.pMin[axis], primIndex);
-					BoundEdge end(0, pBox.pMax[axis], primIndex);
-					edge[axis][edgeNum++] = start;
-					edge[axis][edgeNum++] = end;
-				}
-
-				//sort BoundEdges 
-				std::sort(&edge[axis][0], &edge[axis][edgeNum],
-					[](const BoundEdge& e0, const BoundEdge& e1)->bool {
-						if (e0.pos == e1.pos)
-							return (int)e0.type < (int)e1.type;
-						else
-							return e0.pos < e1.pos;
-					});
-
-				//compute cost for unsplit case
-				int primsAbove = nPrimitives;
-				int primsBelow = 0;
-				double invArea = 1.0 / nodeBounds.surfaceArea();
-				//iterate over candidate split position, compute cost
-				for (int i = 0; i < edgeNum; i++) {
-					if (edge[axis][i].type == EdgeEnd) primsAbove--;
-					int otherAxis0 = (axis + 1) % 3;
-					int otherAxis1 = (axis + 2) % 3;
-					Vector3f d = nodeBounds.pMax - nodeBounds.pMin;
-					double splitPos = edge[axis][i].pos;
-					double aBelow = 2 * ((d[otherAxis0] * d[otherAxis1]) +
-						(splitPos - nodeBounds.pMin[axis]) * d[otherAxis1] +
-						(splitPos - nodeBounds.pMin[axis]) * d[otherAxis0]);
-					double aAbove = 2 * ((d[otherAxis0] * d[otherAxis1]) +
-						(nodeBounds.pMax[axis] - splitPos) * d[otherAxis1] +
-						(nodeBounds.pMax[axis] - splitPos) * d[otherAxis0]);
-					double pBelow = aBelow * invArea;
-					double pAbove = aAbove * invArea;
-					double eb = (primsBelow == 0 || primsAbove == 0) ? emptyBonus : 0;
-					double splitCost = traversalCost +
-						(1 - eb) * (pBelow * primsBelow * isectCost + pAbove * primsAbove * isectCost);
-					if (splitCost < bestCost) {
-						bestCost = splitCost;
-						bestOffset = i;
-					}
-					if (edge[axis][i].type == EdgeStart)primsBelow++;
-				}
-
-				//find a good split 
-				if (bestCost < unSplitCost) {
-					bestAxis = axis;
-					break;
-				}
-				//not find a good split, try another axis
-				repeat++;
-			}
-			//not find a good split
-			if (bestCost > unSplitCost)badRefine++;
-			if (bestAxis == -1 || (nPrimitives < 16 && bestCost > 4 * unSplitCost) || badRefine == 3) {
-				node->createLeaf(nPrimitives, pIndStart, &primIndices);
-				return;
-			}
-
-			//find a good split
-
-			//classify primitives 
-			int n0 = 0, n1 = 0;
-			for (int i = 0; i < bestOffset; ++i)
-				if (edge[bestAxis][i].type == EdgeType::EdgeStart)
-					prims0[n0++] = edge[bestAxis][i].prim;
-			for (int i = bestOffset + 1; i < 2 * nPrimitives; i++)
-				if (edge[bestAxis][i].type == EdgeType::EdgeEnd)
-					prims1[n1++] = edge[bestAxis][i].prim;
-			//compute bounds of child nodes
-			Bound3f boundBelow = nodeBounds;
-			Bound3f boundAbove = nodeBounds;
-			boundBelow.pMax[bestAxis] = edge[bestAxis][bestOffset].pos;
-			boundAbove.pMin[bestAxis] = edge[bestAxis][bestOffset].pos;
-			//build child node and inite interior node for this node
-			int nextBelow, nextAbove;
-			buildNode(&nextBelow, depth++, prims0, n0, boundBelow, allPrimBounds, edge, prims0, prims1 + nPrimitives, badRefine);
-			buildNode(&nextAbove, depth++, prims1, n1, boundAbove, allPrimBounds, edge, prims0, prims1 + nPrimitives, badRefine);
-			node->createInterior(bestAxis, nextAbove, edge[bestAxis][bestOffset].pos);
-			return;
-		}
+		return std::nullopt;
 	}
 
 }

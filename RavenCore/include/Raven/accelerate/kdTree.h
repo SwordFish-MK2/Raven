@@ -1,11 +1,49 @@
 #ifndef _RAVEN_ACCELERATE_KD_TREE_H_
 #define _RAVEN_ACCELERATE_KD_TREE_H_
 
-#include"../core/accelerate.h"
-#include"../core/math.h"
-#include"../core/ray.h"
+#include<Raven/core/accelerate.h>
+#include<Raven/core/math.h>
+#include<Raven/core/ray.h>
 
 namespace Raven {
+	struct KdTreeNode;
+	struct BoundEdge;
+	struct IntersectInfo;
+	class KdTreeAccel final :public Accelerate {
+	private:
+		void buildNode(int* nodeNum, int depth, const int* pIndStart, int nPrimitives,
+			const Bound3f& nodeBounds, const std::vector<Bound3f>& allPrimBounds,
+			std::shared_ptr<BoundEdge[]> edge[3], int* prims0, int* prims1, int badRefine);
+	public:
+		KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int num);
+
+		KdTreeAccel(const KdTreeAccel& tree) = delete;
+
+		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+
+		~KdTreeAccel() {
+			if (treeNodes)
+				delete[] treeNodes;
+		}
+	private:
+		int maxDepth;				//树的最大深度
+		const int primsThreshold;	//在一个节点中拥有的最大图元个数
+		const int isectCost;		//与一个节点相交的开销，由用户指定
+		const int traversalCost;	//光线在加速结构中穿梭的开销
+		const double emptyBonus;	//bonus value between 0 and 1
+		int nextFreeNode = 0;
+		int nAccelNode = 0;
+		std::vector<int> primIndices;
+		KdTreeNode* treeNodes;
+	};
+
+	enum class EdgeType { EdgeStart, EdgeEnd };
+
+	/// <summary>
+	/// KdTreeNode,为了充分利用cache，数据压缩为8B，8个Node刚好能放入64B的cache line
+	/// </summary>
 	struct KdTreeNode {
 	public:
 		union {
@@ -37,7 +75,6 @@ namespace Raven {
 					primIndices->push_back(prims[i]);
 				}
 			}
-
 		}
 
 		bool isLeaf() {
@@ -69,20 +106,15 @@ namespace Raven {
 		}
 	};
 
-	enum EdgeType {
-		EdgeStart, EdgeEnd
-	};
-
 	struct BoundEdge {
+		BoundEdge(bool start, double pos, int prim) :pos(pos), prim(prim) {
+			type = start ? EdgeType::EdgeStart : EdgeType::EdgeEnd;
+		}
+		BoundEdge() {}
 		EdgeType type;
 		double pos;
 		int prim;
 
-		BoundEdge(bool start, double pos, int prim) :pos(pos), prim(prim) {
-			type = start ? EdgeStart : EdgeEnd;
-		}
-
-		BoundEdge() {}
 	};
 
 	struct IntersectInfo {
@@ -90,40 +122,6 @@ namespace Raven {
 		Bound3f bound;
 		IntersectInfo() {}
 		IntersectInfo(int index, Bound3f bound) :nodeInd(index), bound(bound) {}
-	};
-
-	class KdTreeAccel :public Accelerate {
-	public:
-		KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int num);
-
-		KdTreeAccel(const KdTreeAccel& tree) :Accelerate(tree.prims), maxDepth(tree.maxDepth), primsThreshold(tree.primsThreshold),
-			isectCost(tree.isectCost), traversalCost(tree.traversalCost), emptyBonus(tree.emptyBonus), nAccelNode(tree.nAccelNode),
-			nextFreeNode(tree.nextFreeNode), primIndices(tree.primIndices) {
-			treeNodes = new KdTreeNode[nAccelNode];
-			std::memcpy(treeNodes, tree.treeNodes, sizeof(KdTreeNode) * nAccelNode);
-		}
-
-		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
-
-		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
-		~KdTreeAccel() {
-			if (treeNodes)
-				delete[] treeNodes;
-		}
-	private:
-		int maxDepth;				//树的最大深度
-		const int primsThreshold;	//在一个节点中拥有的最大图元个数
-		const int isectCost;		//与一个节点相交的开销，由用户指定
-		const int traversalCost;	//光线在加速结构中穿梭的开销
-		const double emptyBonus;	//bonus value between 0 and 1
-		int nextFreeNode = 0;
-		int nAccelNode = 0;
-		std::vector<int> primIndices;
-		KdTreeNode* treeNodes;
-
-		void buildNode(int* nodeNum, int depth, const int* pIndStart, int nPrimitives,
-			const Bound3f& nodeBounds, const std::vector<Bound3f>& allPrimBounds,
-			std::shared_ptr<BoundEdge[]> edge[3], int* prims0, int* prims1, int badRefine);
 	};
 }
 

@@ -5,7 +5,6 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 3.8)
 SET(CMAKE_CXX_STANDARD 17)
 
-
 SET(CMAKE_TOOLCHAIN_FILE "D:/github repository/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 PROJECT (Raven)
@@ -20,6 +19,7 @@ FIND_PATH(STB_INCLUDE_DIRS CONFIG "stb_image_write.h" "stb_image.h")
 FIND_PACKAGE(tinyobjloader CONFIG REQUIRED)
 
 add_compile_definitions(RAVEN_PATH="${PROJECT_SOURCE_DIR}")
+
 #配置OpenMP
 FIND_PACKAGE(OpenMP REQUIRED)
 IF(OPENMP_FOUND)
@@ -31,4 +31,3 @@ ENDIF()
 
 # 包含子项目。
 ADD_SUBDIRECTORY(RavenCore)
-#ADD_SUBDIRECTORY(Interface)

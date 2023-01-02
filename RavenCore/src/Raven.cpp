@@ -14,7 +14,7 @@
 #include<Raven/core/programe.h>
 #include<Raven/core/camera.h>
 #include<Raven/utils/factory.h>
-#include<direct.h>
+
 using namespace std;
 using namespace Raven;
 
