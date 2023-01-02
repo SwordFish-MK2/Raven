@@ -37,6 +37,11 @@ namespace Raven {
 		int nAccelNode = 0;
 		std::vector<int> primIndices;
 		KdTreeNode* treeNodes;
+
+		struct NodeToProcess {
+			const KdTreeNode* node;
+			Float tMin, tMax;
+		};
 	};
 
 	enum class EdgeType { EdgeStart, EdgeEnd };
@@ -77,7 +82,7 @@ namespace Raven {
 			}
 		}
 
-		bool isLeaf() {
+		bool isLeaf()const {
 			return (flag & 3) == 3;
 		}
 
@@ -87,19 +92,19 @@ namespace Raven {
 			flag |= axis;
 		}
 
-		int getAboveChild() {
+		int getAboveChild()const {
 			return aboveChild >> 2;
 		}
 
-		int getAxis() {
+		int getAxis()const {
 			return flag & 3;
 		}
 
-		float getSplitPos() {
+		float getSplitPos()const {
 			return splitPos;
 		}
 
-		int getPrimNum() {
+		int getPrimNum()const {
 			if ((flag & 3) != 3)
 				return -1;
 			return nPrims >> 2;

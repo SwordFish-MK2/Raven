@@ -778,7 +778,7 @@ namespace Raven {
 
 	double toFloat(const std::string& str);
 
-	double toInt(const std::string& str);
+	int toInt(const std::string& str);
 }
 
 #endif

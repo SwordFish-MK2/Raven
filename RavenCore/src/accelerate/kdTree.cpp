@@ -40,7 +40,7 @@ namespace Raven {
 		//build root node
 		std::cout << "Kd-tree start building node, primitive number: " << prims.size() << std::endl;
 		int root = 0;
-		buildNode(&root, maxD, &primNumbers[0], prims.size(), worldBound, primBounds,
+		buildNode(&root, maxD, &primNumbers[0], prims.size(), bounds, primBounds,
 			edge, prims0.get(), prims1.get(), 0);
 		std::cout << "Kd-tree build finish, Number of tree nodes: " << nextFreeNode << std::endl;
 
@@ -195,109 +195,204 @@ namespace Raven {
 	}
 
 	bool KdTreeAccel::hit(
-		const RayDifferential& r_in,
+		const RayDifferential& ray,
 		double tMax
 	)const {
-		double t0, t1;
-		if (worldBound.hit(r_in, &t0, &t1)) {
-			if (t0 > tMax)
-				return false;
-			return true;
+		//the ray misses overall bounding box of kdTree
+		Float tMax, tMin;
+		if (!bounds.hit(ray, &tMin, &tMax))return false;
+
+		//prepare a stack to store nodes to visite
+		const int maxToDo = 64;
+		NodeToProcess todo[maxToDo];
+		int todoPos = 0;
+
+		//iterate kdtree to find closet intersection
+		Float invDir[3] = { 1.0 / ray.dir[0], 1.0 / ray.dir[1], 1.0 / ray.dir[2] };
+		const KdTreeNode* currentNode = &treeNodes[0];
+		while (currentNode != nullptr) {
+
+			//current node is interior node, same as KdTreeAccel::intersect function
+			if (!currentNode->isLeaf()) {
+				int splitAxis = currentNode->getAxis();
+				Float tSplitPlane = (currentNode->getSplitPos() - ray.origin[splitAxis]) * invDir[splitAxis];
+
+				//compute which child node the ray hit first
+				const KdTreeNode* firstNode;
+				const KdTreeNode* secondNode;
+				bool belowFirst = (ray.origin[splitAxis] < currentNode->getSplitPos() ||
+					(ray.origin[splitAxis] == currentNode->getSplitPos() && ray.dir[splitAxis] <= 0));
+				if (belowFirst) {
+					firstNode = currentNode + 1;
+					secondNode = &treeNodes[currentNode->getAboveChild()];
+				}
+				else {
+					firstNode = &treeNodes[currentNode->getAboveChild()];
+					secondNode = currentNode + 1;
+				}
+
+				//the ray only hits first child node
+				if (tMax < tSplitPlane || tSplitPlane <= 0)
+					currentNode = firstNode;
+
+				//the ray only hits second child node
+				else if (tMin > tSplitPlane)
+					currentNode = secondNode;
+
+				//hit both
+				else {
+
+					//press second node into todo stack
+					currentNode = firstNode;
+					todo[todoPos].node = secondNode;
+					todo[todoPos].tMin = tSplitPlane;
+					todo[todoPos].tMax = tMax;
+
+					//set properties for next node
+					todoPos++;
+					tMax = tSplitPlane;
+					currentNode = firstNode;
+				}
+			}
+
+			//current node is leaf node
+			//iterate primitives inside current node, whenever found a hit, return true
+			else {
+				int nPrimitives = currentNode->getPrimNum();
+				if (nPrimitives == 1) {
+					const auto& p = prims[currentNode->onePrimitive];
+					if (p->hit(ray))return true;
+				}
+				else {
+					for (int i = 0; i < nPrimitives; i++) {
+						int index = currentNode->splitPos + 1;
+						const auto& p = prims[index];
+						if (p->hit(ray))return true;
+					}
+				}
+
+				//get next node to process
+				if (todoPos > 0) {
+					todoPos--;
+					currentNode = todo[todoPos].node;
+					tMin = todo[todoPos].tMin;
+					tMax = todo[todoPos].tMax;
+				}
+
+				//after iterating every node in KdTree but still finding no hit, return false
+				else
+					return false;
+			}
 		}
+
+		//by default, return false
 		return false;
 	}
 
 	std::optional<SurfaceInteraction> KdTreeAccel::intersect(
-		const RayDifferential& r_in
+		const RayDifferential& ray
 	)const {
-		HitInfo hitInfo;
-		int closestIndex = 0;
-		double tMin;
-		IntersectInfo nodeInfo[64];
-		IntersectInfo root(0, worldBound);
-		nodeInfo[0] = root;
-		int head = -1;
-		int rear = 0;
-		int flag = false;
-		Vector3f invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
-		bool rayNegDir[3] = { r_in.dir[0] < 0.0, r_in.dir[1] < 0.0, r_in.dir[2] < 0.0 };
+		//the ray misses overall bounding box of kdTree
+		Float tMax, tMin;
+		if (!bounds.hit(ray, &tMin, &tMax))return std::nullopt;
 
-		//iterate over kd-tree node to find intersection
-		while (head < rear) {
-			head++;//process next node
-			double t0, t1;//parameter distances  =
-			//test if incident ray intersect with current node
-			if (nodeInfo[head].bound.hit(r_in, &t0, &t1)) {
-				if (t0 > r_in.tMax || t1 < tMin)
-					//miss
-					continue;
-				//hit 
-				KdTreeNode node = treeNodes[nodeInfo[head].nodeInd];
-				int i = nodeInfo[head].nodeInd;
-				if (!node.isLeaf()) {
-					//interior node 
+		//prepare a stack to store nodes to visite
+		const int maxToDo = 64;
+		NodeToProcess todo[maxToDo];
+		int toDoPos = 0;
 
-					//get node split info
-					int axis = node.getAxis();
-					double splitPos = (double)node.getSplitPos();
+		//iterate kdtree to find closet intersection
+		bool hit = false;
+		HitInfo info;
+		int primHited = 0;
+		Float invDir[3] = { 1.0 / ray.dir[0], 1.0 / ray.dir[1], 1.0 / ray.dir[2] };
+		const KdTreeNode* node = &treeNodes[0];
+		while (node) {
 
-					//compute intersect info of child node
-					Bound3f belowBound = nodeInfo[head].bound;
-					Bound3f aboveBound = nodeInfo[head].bound;
-					belowBound.pMax[axis] = splitPos;
-					aboveBound.pMin[axis] = splitPos;
-					int belowInd = nodeInfo[head].nodeInd + 1;
-					int aboveInd = node.getAboveChild();
-					IntersectInfo below(belowInd, belowBound);
-					IntersectInfo above(aboveInd, aboveBound);
+			//break if a closer intersection is found  
+			if (ray.tMax < tMin)break;
 
-					//decide which child node shold be processed or in what order to be processed
-					double tSplit = (splitPos - r_in.origin[axis]) * invDir[axis];
+			//current node is interior node
+			if (!node->isLeaf()) {
+				int splitAxis = node->getAxis();
+				Float tSplitPlane = (node->getSplitPos() - ray.origin[splitAxis]) * invDir[splitAxis];
 
-					//if incident ray has negative direction in split axis, the order of processed node should be reversed
-					if (rayNegDir[axis])
-						std::swap(below, above);
-					if (tSplit < t0)
-						nodeInfo[++rear] = above;
-					else if (tSplit > t1)
-						nodeInfo[++rear] = below;
-					else {
-						nodeInfo[++rear] = below;
-						nodeInfo[++rear] = above;
+				//compute which child node the ray hit first
+				const KdTreeNode* firstNode;
+				const KdTreeNode* secondNode;
+				bool belowFirst = (ray.origin[splitAxis] < node->getSplitPos() ||
+					(ray.origin[splitAxis] == node->getSplitPos() && ray.dir[splitAxis] <= 0));
+				if (belowFirst) {
+					firstNode = node + 1;
+					secondNode = &treeNodes[node->getAboveChild()];
+				}
+				else {
+					firstNode = &treeNodes[node->getAboveChild()];
+					secondNode = node + 1;
+				}
+
+				//the ray only hits first child node
+				if (tMax < tSplitPlane || tSplitPlane <= 0)
+					node = firstNode;
+
+				//the ray only hits second child node
+				else if (tMin > tSplitPlane)
+					node = secondNode;
+
+				//hit both
+				else {
+
+					//press second node into todo stack
+					node = firstNode;
+					todo[toDoPos].node = secondNode;
+					todo[toDoPos].tMin = tSplitPlane;
+					todo[toDoPos].tMax = tMax;
+
+					//set properties for next node
+					toDoPos++;
+					tMax = tSplitPlane;
+					node = firstNode;
+				}
+			}
+
+			//current node is leaf node
+			else {
+				int nPrimitives = node->getPrimNum();
+
+				//perform ray-primitive intersection test for primitives inside current leaf node
+				if (nPrimitives == 1) {
+					const auto& p = prims[node->onePrimitive];
+					if (p->intersect(ray, info) == true) {
+						hit = true;
+						primHited = node->onePrimitive;
 					}
 				}
 				else {
-					//leaf node
-					int primNum = node.getPrimNum();
-					if (primNum == 1) {
-						//only one primitive in this node
-						bool foundIntersection = prims[node.onePrimitive]->intersect(r_in, hitInfo);
-						if (foundIntersection) {
-							//incident ray hit primitive
-							flag = true;
-							closestIndex = node.onePrimitive;
-						}
-					}
-					else {
-						//a few primitives in this node
-						for (int i = 0; i < primNum; i++) {
-							int index = primIndices[node.indexOffset + i];
-							bool foundIntersection = prims[index]->intersect(r_in, hitInfo);
-							if (foundIntersection) {
-								//incident ray hit this primitive
-								flag = true;
-								closestIndex = index;
-							}
+					for (int i = 0; i < nPrimitives; i++) {
+						int index = node->indexOffset + i;
+						const auto& p = prims[index];
+						if (p->intersect(ray, info) == true) {
+							hit = true;
+							primHited = index;
 						}
 					}
 				}
+
+				//get next node to process
+				if (toDoPos > 0) {
+					toDoPos--;
+					node = todo[toDoPos].node;
+					tMin = todo[toDoPos].tMin;
+					tMax = todo[toDoPos].tMax;
+				}
+				else
+					break;
 			}
 		}
-		if (flag == true) {
-			SurfaceInteraction hitRecord = prims[closestIndex]->setInteractionProperty(hitInfo, r_in);
-			return std::optional<SurfaceInteraction>(hitRecord);
-		}
-		return std::nullopt;
-	}
 
+		if (hit)
+			return prims[primHited]->setInteractionProperty(info, ray);
+		else
+			return std::nullopt;
+	}
 }

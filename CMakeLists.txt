@@ -5,7 +5,7 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 3.8)
 SET(CMAKE_CXX_STANDARD 17)
 
-SET(CMAKE_TOOLCHAIN_FILE "D:/github repository/vcpkg/scripts/buildsystems/vcpkg.cmake")
+SET(CMAKE_TOOLCHAIN_FILE "D:/GithubRepository/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 PROJECT (Raven)
 

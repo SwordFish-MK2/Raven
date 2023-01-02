@@ -319,14 +319,10 @@ namespace Raven {
 			}
 
 		}
-		if (hit) {
-			SurfaceInteraction hitRecord = prims[primHited]->setInteractionProperty(record, ray);
-
-			return std::optional<SurfaceInteraction>(hitRecord);
-		}
-
-		//else
-		return std::nullopt;
+		if (hit)
+			return prims[primHited]->setInteractionProperty(record, ray);
+		else
+			return std::nullopt;
 	}
 
 }

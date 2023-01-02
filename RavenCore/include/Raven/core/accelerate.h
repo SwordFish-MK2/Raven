@@ -12,20 +12,18 @@ namespace Raven {
 	public:
 		Accelerate(const std::vector<std::shared_ptr<Primitive>>& prims) :prims(prims) {
 			for (int i = 0; i < prims.size(); i++)
-				worldBound = Union(prims[i]->worldBounds(), worldBound);
+				bounds = Union(prims[i]->worldBounds(), bounds);
 		}
 
 		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
 
 		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const = 0;
 
-		virtual Bound3f worldBounds()const {
-			return worldBound;
-		}
+		virtual Bound3f worldBounds()const { return bounds; }
 
 		std::vector<std::shared_ptr<Primitive>> prims;
 	protected:
-		Bound3f worldBound;
+		Bound3f bounds;
 
 	};
 

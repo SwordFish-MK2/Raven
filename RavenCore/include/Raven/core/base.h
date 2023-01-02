@@ -218,5 +218,10 @@ namespace Raven {
 		const std::string& string,
 		const std::string& delim = ",",
 		bool includeEmpty = false);
+
+
+	double toFloat(const std::string& str);
+
+	int toInt(const std::string& str);
 }
 #endif

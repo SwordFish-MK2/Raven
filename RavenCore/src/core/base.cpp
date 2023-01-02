@@ -17,7 +17,24 @@ namespace Raven {
 				pos = string.find_first_of(delim, lastPos);
 			}
 		}
-
 		return tokens;
+	}
+
+	double toFloat(const std::string& str) {
+		char* end_ptr = nullptr;
+		double result = (double)strtof(str.c_str(), &end_ptr);
+		if (*end_ptr != '\0') {
+			std::cerr << "Failed to parse float value::" << str << std::endl;
+		}
+		return result;
+	}
+
+	int toInt(const std::string& str) {
+		char* end_ptr = nullptr;
+		int result = (int)strtof(str.c_str(), &end_ptr);
+		if (*end_ptr != '\0') {
+			std::cerr << "Fauled to parse int value" << str << std::endl;
+		}
+		return result;
 	}
 }

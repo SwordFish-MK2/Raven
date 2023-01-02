@@ -12,7 +12,7 @@ namespace Raven {
 		return result;
 	}
 
-	double toInt(const std::string& str) {
+	int toInt(const std::string& str) {
 		char* end_ptr = nullptr;
 		int result = (int)strtof(str.c_str(), &end_ptr);
 		if (*end_ptr != '\0') {
