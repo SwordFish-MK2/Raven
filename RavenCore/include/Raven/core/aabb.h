@@ -101,50 +101,61 @@ namespace Raven {
 		}
 
 		//计算光线是否与该bounding box相交，如果相交，返回tMax与tMin
-		bool hit(const Ray& r_in, double* tMin, double* tMax) const {
-			//
-			//TODO:CHECK IF r_in.dir = 0
-			//
-			*tMin = 0.0;
-			*tMax = std::numeric_limits<double>::infinity();
+		bool hit(
+			const Ray& r_in,
+			double* tMin,
+			double* tMax
+		) const {
+			double t0 = 0, t1 = r_in.tMax;
 			Vector3f invDir(1.0 / r_in.dir[0], 1.0 / r_in.dir[1], 1.0 / r_in.dir[2]);
 			for (int i = 0; i < 3; i++) {
+				//
 				double tHitNear = (pMin[i] - r_in.origin[i]) * invDir[i];
 				double tHitFar = (pMax[i] - r_in.origin[i]) * invDir[i];
 				if (tHitNear > tHitFar)
 					std::swap(tHitNear, tHitFar);
-				if (tHitNear > *tMin)*tMin = tHitNear;
-				if (tHitFar < *tMax)*tMax = tHitFar;
+				t0 = (tHitNear > t0) ? tHitNear : t0;
+				t1 = (tHitFar < t1) ? tHitFar : t1;
+				if (t0 > t1)return false;
 			}
-			if (*tMin <= *tMax && *tMax > 0)
-				//hit
-				return true;
-			else
-				return false;
+
+			*tMin = t0;
+			*tMax = t1;
+			return true;
 		}
 
-		bool hit(const Ray& ray, const Vector3f& invDir, const Vector3i& isDirNeg)const {
+		bool hit(
+			const Ray& ray,
+			const Vector3f& invDir,
+			const Vector3i& isDirNeg
+		)const {
 			const Point3f& pMax = this->pMax;
 			const Point3f& pMin = this->pMin;
 
-			double tMinX = (pMin.x - ray.origin.x) * invDir.x;
+			double xMin = isDirNeg[0] ? pMin.x : pMax.x;
+			double xMax = isDirNeg[1] ? pMax.x : pMin.x;
+			double tMinX = (xMin - ray.origin.x) * invDir.x;
 			double tMaxX = (pMax.x - ray.origin.x) * invDir.x;
-			if (isDirNeg[0])
-				Swap(tMinX, tMaxX);
-			double tMinY = (pMin.y - ray.origin.y) * invDir.y;
-			double tMaxY = (pMin.y - ray.origin.y) * invDir.y;
-			if (isDirNeg[1])
-				Swap(tMinY, tMaxY);
-			double tMinZ = (pMin.z - ray.origin.z) * invDir.z;
-			double tMaxZ = (pMax.z - ray.origin.z) * invDir.z;
-			if (isDirNeg[2])
-				Swap(tMinZ, tMaxZ);
-			double tMin = Max(tMinX, tMinY, tMinZ);
-			double tMax = Min(tMaxX, tMaxY, tMaxZ);
 
-			if (tMin <= tMax && tMin > 0.0)
-				return true;
-			return false;
+			double yMin = isDirNeg[1] ? pMin.y : pMax.y;
+			double yMax = isDirNeg[1] ? pMax.y : pMin.y;
+			double tMinY = (yMin - ray.origin.y) * invDir.y;
+			double tMaxY = (yMax - ray.origin.y) * invDir.y;
+
+			if (tMinX > tMaxY || tMaxX < tMinY)return false;
+			double tMin = Min(tMinX, tMinY);
+			double tMax = Max(tMaxX, tMaxY);
+
+			double zMin = isDirNeg[2] ? pMin.z : pMax.z;
+			double zMax = isDirNeg[2] ? pMax.z : pMin.z;
+			double tMinZ = (zMin - ray.origin.z) * invDir.z;
+			double tMaxZ = (zMax - ray.origin.z) * invDir.z;
+
+			if (tMin > tMaxZ || tMax < tMinZ)return false;
+			tMin = Min(tMin, tMinZ);
+			tMax = Max(tMax, tMaxZ);
+
+			return (tMin > 0) && (tMax < ray.tMax);
 		}
 	};
 
