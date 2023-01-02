@@ -163,11 +163,11 @@ namespace Raven {
 							&info[start], &info[end - 1] + 1,
 							[=](const PrimitiveInfo& pi) {
 								int b = nBuckets *
-									centroidBound.offset(pi.centroid)[axis];
-								if (b == nBuckets) b = nBuckets - 1;
-								assert(b >= 0);
-								assert(b < nBuckets);
-								return b <= minBucket;
+								centroidBound.offset(pi.centroid)[axis];
+						if (b == nBuckets) b = nBuckets - 1;
+						assert(b >= 0);
+						assert(b < nBuckets);
+						return b <= minBucket;
 							});
 						middle = pmid - &info[0];
 					}
@@ -264,9 +264,8 @@ namespace Raven {
 		return false;
 	}
 
-	std::optional<SurfaceInteraction> BVHAccel::intersect(const RayDifferential& ray, double tMax)const {
+	std::optional<SurfaceInteraction> BVHAccel::intersect(const RayDifferential& ray)const {
 		bool hit = false;
-		double closest = tMax;
 		std::vector<int>flags(linearTree.size());
 		Vector3f invDir(1 / ray.dir.x, 1 / ray.dir.y, 1 / ray.dir.z);
 		int dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
@@ -291,10 +290,9 @@ namespace Raven {
 						//与节点内的Primitive求交
 						size_t index = node->firstOffset + i;
 						bool foundIntersection =
-							prims[index]->intersect(ray, record, closest);
+							prims[index]->intersect(ray, record);
 						if (foundIntersection) {
 							hit = true;
-							closest = record.hitTime;
 							primHited = index;
 						}
 					}

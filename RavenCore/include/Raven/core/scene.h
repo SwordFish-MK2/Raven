@@ -48,8 +48,8 @@ namespace Raven {
 		void addLight(const std::shared_ptr<Light>& light_ptr);
 
 		//判断光线是否与场景相交，如果相交，计算交点信息
-		std::optional<SurfaceInteraction> intersect(const RayDifferential& r, double tMax)const {
-			return objs->intersect(r, tMax);
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r)const {
+			return objs->intersect(r);
 		}
 
 		//const Light* chooseLight(double rand)const;

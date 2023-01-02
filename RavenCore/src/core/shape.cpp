@@ -29,7 +29,7 @@ namespace Raven {
 		Point3f origin = inter.p;
 		Ray r = inter.scartterRay(wi);
 		HitInfo hitInfo;
-		if (!intersect(r, hitInfo, std::numeric_limits<double>::max()))
+		if (!intersect(r, hitInfo))
 			return 0;
 		SurfaceInteraction lightInter = getGeoInfo(hitInfo.pHit);
 		//convert the pdf from integral of light surface to integral of the solid angle of sample point

@@ -9,7 +9,7 @@
 
 namespace Raven {
 
-	class Primitive:public RavenObject {
+	class Primitive :public RavenObject {
 	public:
 
 		Primitive(const std::shared_ptr<Shape>& shape_ptr, const std::shared_ptr<Material>& mate_ptr,
@@ -18,9 +18,9 @@ namespace Raven {
 
 		~Primitive() {}
 
-		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+		virtual bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const;
 
-		virtual bool intersect(const Ray& r_in, HitInfo& inter, double tMax = std::numeric_limits<double>::max())const;
+		virtual bool intersect(const Ray& r_in, HitInfo& inter)const;
 
 		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray)const;
 
@@ -51,7 +51,7 @@ namespace Raven {
 
 		bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
 
-		virtual SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray) const override;
+		SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray) const override;
 
 		Bound3f worldBounds()const;
 

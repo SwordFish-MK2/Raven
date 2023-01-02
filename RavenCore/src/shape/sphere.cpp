@@ -41,7 +41,7 @@ namespace Raven {
 		return localBox;
 	}
 
-	bool Sphere::intersect(const Ray& r_in, HitInfo& info, double tMax)const {
+	bool Sphere::intersect(const Ray& r_in, HitInfo& info)const {
 		//将光线变换到局部坐标系下
 		Ray localRay = (*worldToLocal)(r_in);
 
@@ -56,19 +56,22 @@ namespace Raven {
 		if (!Quadratic(a, b, c, t0, t1))
 			return false;
 
-		if (t0 >= tMax || t1 <= 0.0)
+		if (t0 >= r_in.tMax || t1 <= 0.0)
 			return false;
 		tHit = t0;
 		if (tHit < 0.0) {
 			tHit = t1;
-			if (tHit > tMax)
+			if (tHit > r_in.tMax)
 				return false;
 		}
 
 		//计算交点信息
 		Point3f pHit = localRay.position(tHit);
 		pHit *= radius / Distance(pHit, Point3f(0, 0, 0));
-		info.setInfo(pHit, tHit, -r_in.dir);
+		info.setInfo(pHit, -r_in.dir);
+
+		//set tMax
+		r_in.tMax = tHit;
 		return true;
 	}
 

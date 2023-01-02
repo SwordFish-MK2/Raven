@@ -120,13 +120,13 @@ namespace Raven {
 	Ray Transform::operator()(const Ray& r)const {
 		Point3f p = (*this)(r.origin);
 		Vector3f d = (*this)(r.dir).normalized();
-		return Ray(p, d, r.t);
+		return Ray(p, d, r.time);
 	}
 
 	RayDifferential Transform::operator()(const RayDifferential& rd)const {
 		Point3f p = (*this)(rd.origin);
 		Vector3f d = Normalize((*this)(rd.dir));
-		RayDifferential rt(p, d, rd.t);
+		RayDifferential rt(p, d, rd.time);
 		if (rd.hasDifferential) {
 			rt.hasDifferential = true;
 

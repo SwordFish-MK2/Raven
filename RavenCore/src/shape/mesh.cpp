@@ -13,7 +13,8 @@ namespace Raven {
 		const std::vector<int>& ins,
 		const std::vector<Normal3f>& ns,
 		const std::vector<Vector3f>& ts,
-		const std::vector<Point2f> uvs)
+		const std::vector<Point2f> uvs
+	)
 		:OTW(OTW),
 		WTO(WTO),
 		nTriangles(triNum),
@@ -24,7 +25,8 @@ namespace Raven {
 		tangants(ts),
 		uvs(uvs),
 		hasUV(uvs.size() > 0),
-		hasTan(tangants.size() > 0) {
+		hasTan(tangants.size() > 0)
+	{
 		//transform all vertices of triangle mesh to world space 
 		for (int i = 0; i < vertices.size(); i++) {
 			vertices[i] = (*OTW)(vertices[i]);
@@ -82,7 +84,7 @@ namespace Raven {
 		return true;
 	}
 
-	bool Triangle::intersect(const Ray& r_in, HitInfo& info, double tMax)const {
+	bool Triangle::intersect(const Ray& r_in, HitInfo& info)const {
 		//取从网格中取出三角形的三个顶点p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
@@ -106,14 +108,15 @@ namespace Raven {
 		double b0 = 1 - b1 - b2;
 
 		//光线必须沿正向传播
-		if (t <= 0 || t >= tMax)
+		if (t <= 0 || t >= r_in.tMax)
 			return false;
 
 		//重心坐标都大于0时，交点在三角形内，光线与三角形相交	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
 			return false;
 
-		info.setInfo(Point3f(b0, b1, b2), t, -r_in.dir);
+		info.setInfo(Point3f(b0, b1, b2), -r_in.dir);
+		r_in.tMax = t;
 		return true;
 	}
 
@@ -173,6 +176,7 @@ namespace Raven {
 		its.n = nHit;
 		its.p = pHit;
 		its.uv = uvHit;
+
 		return its;
 	}
 

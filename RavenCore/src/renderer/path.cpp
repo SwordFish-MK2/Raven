@@ -71,7 +71,7 @@ namespace Raven {
 		for (; bounce < maxDepth; bounce++) {
 
 			//获取场景与光线的相交信息
-			std::optional<SurfaceInteraction> record = scene.intersect(ray, std::numeric_limits<double>::max());
+			std::optional<SurfaceInteraction> record = scene.intersect(ray);
 			//光线未与场景相交
 			if (!record) {
 				if (bounce == 0 || specularBounce)

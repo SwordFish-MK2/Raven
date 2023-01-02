@@ -57,7 +57,7 @@ namespace Raven {
 
 			//出射shadow ray 判断光源是否被遮挡
 			Ray shadowRay = record.scartterRay(wi);
-			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay, std::numeric_limits<double>::max());
+			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay);
 
 			//采样的shadow ray未被遮挡，计算光源的贡献
 			Spectrum Le(0.0);

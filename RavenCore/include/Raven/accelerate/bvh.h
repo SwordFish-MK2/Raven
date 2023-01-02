@@ -64,9 +64,9 @@ namespace Raven {
 	public:
 		BVHAccel(const std::vector<std::shared_ptr<Primitive>>& prims, size_t maxPrim);
 
-		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		bool hit(const RayDifferential& r_in, double tMax = std::numeric_limits<double>::infinity())const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
 	private:
 		//将所有的BVHNode储存在BVHAccel类中
 		//std::shared_ptr<BVHNode> root;

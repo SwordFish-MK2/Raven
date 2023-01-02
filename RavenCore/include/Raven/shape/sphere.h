@@ -7,36 +7,31 @@
 #include<Raven/utils/propertylist.h>
 #include<Raven/utils/factory.h>
 namespace Raven {
-	class Sphere :public Shape {
+	class Sphere final :public Shape {
 
 	public:
 		Sphere(const Ref<Transform>& LTW, const Ref<Transform>& WTL, double radius) :
 			Shape(LTW, WTL), radius(radius) {}
 
-		virtual bool hit(const Ray& r_in, double tMax = FLT_MAX)const;
+		bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::infinity())const override;
 
-		virtual bool intersect(const Ray& r_in, HitInfo& info, double tMax = FLT_MAX)const;
+		bool intersect(const Ray& r_in, HitInfo& info)const override;
 
-		virtual SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const;
+		SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const override;
 
-		virtual Bound3f localBound()const;
+		Bound3f localBound()const override;
 
-		virtual Bound3f worldBound()const;
+		Bound3f worldBound()const override;
 
-		virtual double area()const {
-			return 4 * M_PI * radius;
+		double area()const override { return 4 * M_PI * radius; }
 
-		}
+		std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const override;
 
-		virtual std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
+		std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& inter, const Point2f& rand)const override;
 
-		virtual std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& inter, const Point2f& rand)const;
+		double pdf(const SurfaceInteraction& inter)const override { return 1 / area(); }
 
-		virtual double pdf(const SurfaceInteraction& inter)const {
-			return 1 / area();
-		}
-
-		virtual double pdf(const SurfaceInteraction& inter, const Vector3f& wi)const;
+		double pdf(const SurfaceInteraction& inter, const Vector3f& wi)const override;
 
 		static Ref<Shape> construct(const PropertyList& param) {
 			ObjectRef ltwRef = param.getObjectRef(0);

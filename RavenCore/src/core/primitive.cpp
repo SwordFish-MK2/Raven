@@ -9,9 +9,9 @@ namespace Raven {
 		return true;
 	}
 
-	bool Primitive::intersect(const Ray& ray, HitInfo& record, double tMax)const {
+	bool Primitive::intersect(const Ray& ray, HitInfo& record)const {
 		//判断光线是否与几何体相交
-		bool foundIntersection = shape_ptr->intersect(ray, record, tMax);
+		bool foundIntersection = shape_ptr->intersect(ray, record);
 		return foundIntersection;
 	}
 

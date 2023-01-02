@@ -16,15 +16,13 @@ namespace Raven {
 	};
 
 	struct HitInfo {
-		double hitTime;
 		Vector3f wo;
 		Point3f pHit;
 
 		HitInfo() {}
 
-		void setInfo(const Point3f& p, double t, const Vector3f dir) {
+		void setInfo(const Point3f& p, const Vector3f dir) {
 			pHit = p;
-			hitTime = t;
 			wo = dir;
 		}
 	};
@@ -43,7 +41,7 @@ namespace Raven {
 		virtual bool hit(const Ray& r_in, double tMax)const = 0;
 
 		//intersect incident ray with shape and compute surfaceIntersection 
-		virtual bool intersect(const Ray& r_in, HitInfo& hitInfo, double tMax)const = 0;
+		virtual bool intersect(const Ray& r_in, HitInfo& hitInfo)const = 0;
 
 		virtual SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const = 0;
 

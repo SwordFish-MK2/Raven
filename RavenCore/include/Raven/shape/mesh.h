@@ -25,8 +25,6 @@ namespace Raven {
 
 	};
 
-
-
 	/// <summary>
 	/// Triangle mesh classes stores all infomation about triangles inside and hold the instances of relative triangle array
 	/// </summary>
@@ -68,17 +66,17 @@ namespace Raven {
 		Triangle(const Ref<Transform>& LTW, const Ref<Transform>& WTL, const TriangleMesh* m, int index) :
 			Shape(LTW, WTL), mesh(m), i(3 * index) {}
 
-		virtual bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const;
+		bool hit(const Ray& r_in, double tMax = std::numeric_limits<double>::max())const override;
 
-		virtual bool intersect(const Ray& r_in, HitInfo& info, double tMax = std::numeric_limits<double>::max())const;
+		bool intersect(const Ray& r_in, HitInfo& info)const override;
 
-		virtual SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const;
+		SurfaceInteraction getGeoInfo(const Point3f& hitInfo)const override;
 
-		Bound3f localBound()const;
+		Bound3f localBound()const override;
 
-		Bound3f worldBound()const;
+		Bound3f worldBound()const override;
 
-		double area()const;
+		double area()const override;
 
 		void getUVs(Point2f uv[3])const;
 
@@ -91,9 +89,7 @@ namespace Raven {
 			return mesh->indices[i + num];
 		}
 
-		std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const;
-
-		double pdf()const { return 1 / area(); }
+		std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const override;
 
 	private:
 		const TriangleMesh* mesh;

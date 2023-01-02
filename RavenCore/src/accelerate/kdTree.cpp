@@ -208,8 +208,7 @@ namespace Raven {
 	}
 
 	std::optional<SurfaceInteraction> KdTreeAccel::intersect(
-		const RayDifferential& r_in,
-		double tMax
+		const RayDifferential& r_in
 	)const {
 		HitInfo hitInfo;
 		int closestIndex = 0;
@@ -229,7 +228,7 @@ namespace Raven {
 			double t0, t1;//parameter distances  =
 			//test if incident ray intersect with current node
 			if (nodeInfo[head].bound.hit(r_in, &t0, &t1)) {
-				if (t0 > tMax || t1 < tMin)
+				if (t0 > r_in.tMax || t1 < tMin)
 					//miss
 					continue;
 				//hit 
@@ -272,10 +271,9 @@ namespace Raven {
 					int primNum = node.getPrimNum();
 					if (primNum == 1) {
 						//only one primitive in this node
-						bool foundIntersection = prims[node.onePrimitive]->intersect(r_in, hitInfo, tMax);
+						bool foundIntersection = prims[node.onePrimitive]->intersect(r_in, hitInfo);
 						if (foundIntersection) {
 							//incident ray hit primitive
-							tMax = hitInfo.hitTime;//update tMin
 							flag = true;
 							closestIndex = node.onePrimitive;
 						}
@@ -284,10 +282,9 @@ namespace Raven {
 						//a few primitives in this node
 						for (int i = 0; i < primNum; i++) {
 							int index = primIndices[node.indexOffset + i];
-							bool foundIntersection = prims[index]->intersect(r_in, hitInfo, tMax);
+							bool foundIntersection = prims[index]->intersect(r_in, hitInfo);
 							if (foundIntersection) {
 								//incident ray hit this primitive
-								tMax = hitInfo.hitTime;
 								flag = true;
 								closestIndex = index;
 							}

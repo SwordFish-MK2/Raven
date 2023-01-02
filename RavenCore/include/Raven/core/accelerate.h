@@ -17,7 +17,7 @@ namespace Raven {
 
 		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
 
-		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const = 0;
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const = 0;
 
 		virtual Bound3f worldBounds()const {
 			return worldBound;
@@ -35,15 +35,15 @@ namespace Raven {
 
 		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const;
 
 		virtual Bound3f worldBounds()const;
 	};
 
-	
-enum class AccelType {
-	List, KdTree, BVH
-};
+
+	enum class AccelType {
+		List, KdTree, BVH
+	};
 }
 
 #endif

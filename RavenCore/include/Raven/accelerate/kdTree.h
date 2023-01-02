@@ -19,9 +19,9 @@ namespace Raven {
 
 		KdTreeAccel(const KdTreeAccel& tree) = delete;
 
-		virtual bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		bool hit(const RayDifferential& r_in, double tMax = FLT_MAX)const;
 
-		virtual std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in, double tMax = FLT_MAX)const;
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const;
 
 		~KdTreeAccel() {
 			if (treeNodes)
