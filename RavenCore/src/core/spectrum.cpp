@@ -1,8 +1,6 @@
 #include<Raven/core/spectrum.h>
 
 namespace Raven {
-
-
 	//samples from pbrt
 	const double CIEX[nXYZSamples] = {
 		// CIE X function values

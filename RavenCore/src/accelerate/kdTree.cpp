@@ -264,7 +264,7 @@ namespace Raven {
 				}
 				else {
 					for (int i = 0; i < nPrimitives; i++) {
-						int index = currentNode->splitPos + 1;
+						int index = currentNode->splitPos + i;
 						const auto& p = prims[index];
 						if (p->hit(ray))return true;
 					}

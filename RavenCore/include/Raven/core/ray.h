@@ -23,6 +23,7 @@ namespace Raven {
 		bool hasDifferential;
 		mutable double tMax = std::numeric_limits<double>::infinity();
 	};
+
 	class RayDifferential :public Ray {
 	public:
 		//rayDifferential part

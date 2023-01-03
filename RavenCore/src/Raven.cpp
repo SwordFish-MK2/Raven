@@ -22,9 +22,9 @@ int main(int agrc, char** argv)
 {
 	////if (agrc == 1) {
 	auto start = std::chrono::system_clock::now();
-		Raven::Scene box = Raven::Scene::buildCornellBox();
-		//Raven::Scene box = Raven::Scene::buildTestScene();
-	//	Raven::Scene sphere = Raven::Scene::buildTestSphere();
+	Raven::Scene box = Raven::Scene::buildCornellBox();
+	//Raven::Scene box = Raven::Scene::buildTestScene();
+//	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
 	std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 3, 128 * 3);
 	//Eigen::Matrix4f cw;

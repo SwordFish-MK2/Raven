@@ -247,7 +247,7 @@ namespace Raven {
 				prim_ptrs.push_back(p);//adding pritive 
 			}
 		}
-		return Scene(usedTransform, lights, meshes, prim_ptrs, areal, AccelType::BVH);
+		return Scene(usedTransform, lights, meshes, prim_ptrs, areal, AccelType::KdTree);
 
 	}
 
