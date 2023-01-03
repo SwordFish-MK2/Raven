@@ -1167,6 +1167,7 @@ namespace Raven {
 		xyz[1] = sum[1] * invL;
 		xyz[2] = sum[2] * invL;
 	}
+
 	RGBSpectrum RGBSpectrum::fromRGBInt(int v0, int v1, int v2) {
 		RGBSpectrum temp;
 		temp.c[0] = v0 / 255.0;
@@ -1174,7 +1175,6 @@ namespace Raven {
 		temp.c[2] = v2 / 255.0;
 		return temp;
 	}
-
 
 	RGBSpectrum RGBSpectrum::fromRGB(const double rgb[3], RGBType type) {
 		RGBSpectrum temp;
@@ -1205,7 +1205,6 @@ namespace Raven {
 		temp.c[2] = v[2];
 		return temp;
 	}
-
 
 	RGBSpectrum RGBSpectrum::fromSampled(const double* lambda, const double* v, int n) {
 		//sort samples if unsorted 
@@ -1238,6 +1237,7 @@ namespace Raven {
 		return xyz[1];
 
 	}
+
 	void RGBSpectrum::toRGB(double* rgb)const {
 		rgb[0] = c[0];
 		rgb[1] = c[1];
@@ -1267,7 +1267,7 @@ namespace Raven {
 	//	int* n,
 	//	const std::string& str) {
 	//	std::vector<std::string> tokens = tokenize(str);
-
+	//
 	//	*n = tokens.size();
 	//	lambda = std::make_shared<double[]>(tokens.size());
 	//	v = std::make_shared<double[]>(tokens.size());

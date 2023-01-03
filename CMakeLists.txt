@@ -14,7 +14,7 @@ PROJECT (Raven)
 
 FIND_PACKAGE(tinyxml2 CONFIG REQUIRED)
 
-FIND_PATH(STB_INCLUDE_DIRS CONFIG "stb_image_write.h" "stb_image.h")
+FIND_PATH(STB_INCLUDE_DIRS "stb_image_write.h" "stb_image.h")
 
 FIND_PACKAGE(tinyobjloader CONFIG REQUIRED)
 
