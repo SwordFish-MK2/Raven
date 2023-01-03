@@ -983,7 +983,7 @@ namespace Raven {
 		}
 		return sum / (lamdaStart, lamdaEnd);
 	}
-	//
+	
 	bool SampleSorted(const double* lambda, const double* v, int n) {
 		for (int i = 0; i < n - 1; i++)
 			if (lambda[i] > lambda[i + 1])
