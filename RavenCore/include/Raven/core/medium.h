@@ -27,13 +27,19 @@ namespace Raven {
 		Ref<Medium> outside;
 		Ref<Medium> inside;
 	};
-
+	
+	/// <summary>
+	/// PhaseFunction接口
+	/// </summary>
 	class PhaseFunction {
 	public:
 		//计算Phase Function 的值
 		virtual double p(const Vector3f& wi, const Vector3f& wo)const = 0;
 	};
 
+	/// <summary>
+	/// 由Henyey Greenstein提出的各项同性phase funcion模型
+	/// </summary>
 	class HenyeyGreensteinPhaseFunction :public PhaseFunction {
 	public:
 		double p(const Vector3f& wi, const Vector3f& wo)const override;
@@ -41,6 +47,9 @@ namespace Raven {
 		double g;
 	};
 
+	/// <summary>
+	/// 介质接口
+	/// </summary>
 	class Medium {
 	public:
 		//假设传入该函数的光线在传播过程中未被遮挡并且完全包围在当前介质中，计算光线的beam transmittance
