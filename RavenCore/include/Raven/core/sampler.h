@@ -12,20 +12,20 @@ namespace Raven {
 	/// </summary>
 	class Sampler :public RavenObject {
 	public:
-		Sampler(int64_t spp) :samplePerPixel(spp) {}
+		Sampler(int64_t spp) :samplesPerPixel(spp) {}
 
-		virtual void startPixel(const Point2f& p);
+		virtual void startPixel(const Point2i& p);
 
 		//获取样本
 		virtual Float get1D() = 0;
-		virtual Float get2D() = 0;
+		virtual Point2f get2D() = 0;
 
 		//CameraSample getCameraSample(const Point2f& pRaster);
 
 		void request1DArray(int n);
 		void request2DArray(int n);
 
-		virtual roundCount(int n)const { return n; }
+		virtual int roundCount(int n)const { return n; }
 
 		const Float* get1DArray(int n);
 		const Point2f* get2DArray(int n);
@@ -38,7 +38,7 @@ namespace Raven {
 		virtual bool setSampleNumber(int num);
 
 	protected:
-		const int64_t samplePerPixel;
+		const int64_t samplesPerPixel;
 		Point2i currentPixel;					//当前采样的像素
 		int64_t currentPixelSampleIndex;		//当前像素内的第i个样本向量
 		std::vector<int>arraySize1D;
@@ -54,6 +54,15 @@ namespace Raven {
 	class PixelSampler :public Sampler {
 	public:
 		PixelSampler(int64_t spp, int nDimensions);
+
+		virtual void startPixel(const Point2i& p)override;
+
+		virtual bool startNextSample()override;
+
+		virtual bool setSampleNumber(int num) override;
+
+		virtual Float get1D() override;
+		virtual Point2f get2D() override;
 
 	protected:
 		std::vector<std::vector<Float>> samples1D;

@@ -1,7 +1,7 @@
 #include<Raven/core/sampler.h>
 
 namespace Raven {
-	void Sampler::startPixel(const Point2f& p) {
+	void Sampler::startPixel(const Point2i& p) {
 		currentPixel = p;
 		currentPixelSampleIndex = 0;
 		array1DOffset = 0;
@@ -40,7 +40,7 @@ namespace Raven {
 	const Point2f* Sampler::get2DArray(int n) {
 		if (array2DOffset == array2D.size())
 			return nullptr;
-		return &array2D[array2DOffset++][n * currentPixelSampleIndex);
+		return &array2D[array2DOffset++][n * currentPixelSampleIndex];
 	}
 
 	PixelSampler::PixelSampler(
@@ -48,7 +48,7 @@ namespace Raven {
 		int nDimensions
 	) :
 		Sampler(spp),
-		this->nDimensions(nDimensions)
+		nDimensions(nDimensions)
 	{
 		for (int i = 0; i < nDimensions; i++) {
 			samples1D.push_back(std::vector<Float>(samplesPerPixel));
@@ -56,7 +56,7 @@ namespace Raven {
 		}
 	}
 
-	bool PixelSampler::startPixel(const Point2i& p) {
+	void PixelSampler::startPixel(const Point2i& p) {
 		current1DDimension = 0;
 		current2DDimension = 0;
 		return Sampler::startPixel(p);
@@ -68,14 +68,20 @@ namespace Raven {
 		return Sampler::startNextSample();
 	}
 
-	Float get1D() {
+	bool PixelSampler::setSampleNumber(int num) {
+		current1DDimension = 0;
+		current2DDimension = 0;
+		return Sampler::setSampleNumber(num);
+	}
+
+	Float PixelSampler::get1D() {
 		if (current1DDimension < samples1D.size())
 			return samples1D[current1DDimension++][currentPixelSampleIndex];
 		else
 			return GetRand();
 	}
 
-	Point2f get2D() {
+	Point2f PixelSampler::get2D() {
 		if (current2DDimension < samples2D.size())
 			return samples2D[current2DDimension++][currentPixelSampleIndex];
 		else
