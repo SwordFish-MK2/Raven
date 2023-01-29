@@ -77,13 +77,15 @@ namespace Raven {
 	}
 
 	inline double Lerp(double t, double x1, double x2) { return (1 - t) * x1 + t * x2; }
-	inline double Clamp(double v, double min, double max) {
+
+	inline Float Clamp(Float v, Float min, Float max) {
 		if (v > max)
 			return max;
 		else if (v < min)
 			return min;
 		return v;
 	}
+
 	//solve quadratic function ,return to solutions in tmin and tmax if exist
 	inline bool Quadratic(double a, double b, double c, double& tmin, double& tmax) {
 		double discrim = b * b - 4 * a * c;
@@ -141,6 +143,8 @@ namespace Raven {
 			return value / 12.92;
 		return pow((value + 0.055) * 1.0 / 1.055, 2.4);
 	}
+
+	//获取[0,1]之间的随机数
 	inline double GetRand() {
 		static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 		static std::mt19937 generator;

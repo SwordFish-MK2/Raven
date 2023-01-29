@@ -7,6 +7,8 @@
 
 namespace Raven {
 
+	static const Float OneMinusEpsilon = 0x1.fffffffffffffp-1;
+
 	/// <summary>
 	/// 采样器接口
 	/// </summary>
