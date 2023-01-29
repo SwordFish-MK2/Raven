@@ -51,6 +51,9 @@ namespace Raven {
 		size_t array2DOffset;
 	};
 
+	/// <summary>
+	/// Pixel Sampler,总是在一个像素内生成所有的sample vector后再移动到下一个像素
+	/// </summary>
 	class PixelSampler :public Sampler {
 	public:
 		PixelSampler(int64_t spp, int nDimensions);
@@ -71,6 +74,24 @@ namespace Raven {
 		int current2DDimension = 0;
 	private:
 		const int nDimensions;
+	};
+
+	class GlobalSampler :public Sampler {
+	public:
+		GlobalSampler(int64_t nSamples) :samplesPerPixel(nSamples) {}
+
+		//给出位于当前像素的第n个样本的index
+		virtual int64_t getSampleIndex(int64_t n)const = 0;
+
+		//获取目标样本在指定维度的值
+		virtual Float getSampleDimension(int64_t index, int dimension)const = 0;
+
+		virtual bool startPixel(const Point2i& p)override;
+	private:
+		int dimension;					//采样器将要生成的样本的下一维度
+		int64_t currentSampleIndex;		//当前
+		static const int arrayStartDim = 5;
+		int arrayEndDim;
 	};
 }
 #endif

@@ -87,4 +87,14 @@ namespace Raven {
 		else
 			return Point2f(GetRand(), GetRand());
 	}
+
+	bool GlobalSampler::startPixel(const Point2i& p) {
+		Sampler::startPixel(p);
+		dimension = 0;
+		
+		//设置当前样本的index为落在此像素中的第一个sample的index
+		currentSampleIndex = getSampleIndex(0);
+
+		arrayEndDim = arrayStartDim + array1D.size() + 2 * array2D.size;
+	}
 }
