@@ -14,7 +14,7 @@ namespace Raven {
 		return ++currentPixelSampleIndex < samplesPerPixel;
 	}
 
-	bool Sampler::setSampleNumber(int num) {
+	bool Sampler::setSampleNumber(int64_t num) {
 		array1DOffset = 0;
 		array2DOffset = 0;
 		currentPixelSampleIndex = num;
@@ -68,7 +68,7 @@ namespace Raven {
 		return Sampler::startNextSample();
 	}
 
-	bool PixelSampler::setSampleNumber(int num) {
+	bool PixelSampler::setSampleNumber(int64_t num) {
 		current1DDimension = 0;
 		current2DDimension = 0;
 		return Sampler::setSampleNumber(num);
@@ -88,13 +88,71 @@ namespace Raven {
 			return Point2f(GetRand(), GetRand());
 	}
 
-	bool GlobalSampler::startPixel(const Point2i& p) {
+	void GlobalSampler::startPixel(const Point2i& p) {
 		Sampler::startPixel(p);
 		dimension = 0;
-		
+
 		//设置当前样本的index为落在此像素中的第一个sample的index
 		currentSampleIndex = getSampleIndex(0);
 
-		arrayEndDim = arrayStartDim + array1D.size() + 2 * array2D.size;
+		arrayEndDim = arrayStartDim + array1D.size() + 2 * array2D.size();
+
+		for (size_t i = 0; i < arraySize1D.size(); i++) {
+			int currentDimensionSampleNumber = samplesPerPixel * arraySize1D[i];
+			for (size_t j = 0; j < currentDimensionSampleNumber; j++) {
+				int64_t index = getSampleIndex(j);
+				array1D[i][j] = sampleDimension(index, arrayStartDim + i);
+			}
+		}
+
+		//2维样本数组的起始维度在一位样本数组之后
+		int dim = arrayStartDim + arraySize1D.size();
+		for (size_t i = 0; i < arraySize2D.size(); i++) {
+			int currentDimensionSampleNumber = samplesPerPixel * arraySize2D[i];
+			for (size_t j = 0; j < currentDimensionSampleNumber; j++) {
+				int64_t index = getSampleIndex(j);
+				array2D[i][j].x = sampleDimension(index, dim);
+				array2D[i][j].y = sampleDimension(index, dim + 1);
+			}
+			dim += 2;
+		}
+
+	}
+
+	/// <summary>
+	/// 开始采样一个新的样本时，设置维度为0并且重新获取该样本的索引
+	/// currentSampleIndex：当前采样的样本在所有样本中的索引
+	/// currentPixelSampleIndex：当前正在采样当前像素的第i个样本
+	/// </summary>
+	/// <returns></returns>
+	bool GlobalSampler::startNextSample() {
+		dimension = 0;
+		currentSampleIndex = getSampleIndex(currentPixelSampleIndex + 1);
+		return Sampler::startNextSample();
+	}
+
+	bool GlobalSampler::setSampleNumber(int64_t num) {
+		dimension = 0;
+		currentSampleIndex = getSampleIndex(num);
+		return Sampler::setSampleNumber(num);
+	}
+
+	/// <summary>
+	/// 获取1D或者2D的非数组样本时，直接跳过样本数组所在维度，从更高维度采样
+	/// </summary>
+	/// <returns></returns>
+	Float GlobalSampler::get1D() {
+		if (dimension >= arrayStartDim && dimension < arrayEndDim)
+			dimension = arrayEndDim;
+		return sampleDimension(currentSampleIndex, dimension++);
+	}
+
+	Point2f GlobalSampler::get2D() {
+		if (dimension >= arrayStartDim && dimension < arrayEndDim)
+			dimension = arrayEndDim;
+		Point2f sample(sampleDimension(currentSampleIndex, dimension),
+			sampleDimension(currentSampleIndex, dimension + 1));
+		dimension += 2;
+		return sample;
 	}
 }

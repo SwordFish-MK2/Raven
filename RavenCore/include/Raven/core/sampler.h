@@ -35,7 +35,7 @@ namespace Raven {
 
 		virtual std::unique_ptr<Sampler> clone(int seed) = 0;
 
-		virtual bool setSampleNumber(int num);
+		virtual bool setSampleNumber(int64_t num);
 
 	protected:
 		const int64_t samplesPerPixel;
@@ -62,7 +62,7 @@ namespace Raven {
 
 		virtual bool startNextSample()override;
 
-		virtual bool setSampleNumber(int num) override;
+		virtual bool setSampleNumber(int64_t num) override;
 
 		virtual Float get1D() override;
 		virtual Point2f get2D() override;
@@ -78,18 +78,27 @@ namespace Raven {
 
 	class GlobalSampler :public Sampler {
 	public:
-		GlobalSampler(int64_t nSamples) :samplesPerPixel(nSamples) {}
+		GlobalSampler(int64_t nSamples) :Sampler(nSamples) {}
 
 		//给出位于当前像素的第n个样本的index
 		virtual int64_t getSampleIndex(int64_t n)const = 0;
 
 		//获取目标样本在指定维度的值
-		virtual Float getSampleDimension(int64_t index, int dimension)const = 0;
+		virtual Float sampleDimension(int64_t index, int dimension)const = 0;
 
-		virtual bool startPixel(const Point2i& p)override;
+		virtual void startPixel(const Point2i& p)override;
+
+		virtual bool startNextSample()override;
+
+		virtual bool setSampleNumber(int64_t num)override;
+
+		virtual Float get1D()override;
+
+		virtual Point2f get2D()override;
+
 	private:
 		int dimension;					//采样器将要生成的样本的下一维度
-		int64_t currentSampleIndex;		//当前
+		int64_t currentSampleIndex;		//采样器在当前像素生成第i个样本在所有样本向量中的index
 		static const int arrayStartDim = 5;
 		int arrayEndDim;
 	};
