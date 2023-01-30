@@ -4,6 +4,7 @@
 
 #include<Raven/core/base.h>
 #include<Raven/core/math.h>
+#include <limits>
 #include<tuple>
 
 namespace Raven {
@@ -143,7 +144,7 @@ namespace Raven {
 			return c[i];
 		}
 
-		CoefficientSpectrum Clamp(double min = 0.F, double max = FLT_MAX)const {
+		CoefficientSpectrum Clamp(double min = 0.F, double max = std::numeric_limits<Float>::max())const {
 			CoefficientSpectrum temp;
 			for (int i = 0; i < sampleNumber; i++) {
 				temp.c[i] = Clamp(c[i], min, max);
@@ -178,9 +179,9 @@ namespace Raven {
 		friend inline std::ostream& operator<<(std::ostream& out, const CoefficientSpectrum& s) {
 			out << "[";
 			for (int i = 0; i < sampleNumber; i++) {
-				out << c[i];
+				out << s.c[i];
 				if (i < sampleNumber - 1)
-					out << ","
+					out << ",";
 			}
 			out << "]";
 			return out;

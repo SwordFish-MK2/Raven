@@ -17,7 +17,7 @@
 namespace Raven {
 
 	/// <summary>
-	/// ¾ØÕóÀà£¬Ê¹ÓÃĞĞÏòÁ¿ÓÅÏÈ´æ´¢
+	/// ï¿½ï¿½ï¿½ï¿½ï¿½à£¬Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´æ´¢
 	/// </summary>
 	class Mat4f {
 	private:
@@ -47,7 +47,7 @@ namespace Raven {
 
 		Mat4f(const std::array<Float, 16>& d) :index(0), data(d) {}
 
-		CommaWapper& operator<<(Float val) {
+		CommaWapper operator<<(Float val) {
 			data[index++] = val;
 			return CommaWapper(this);
 		}
@@ -76,29 +76,28 @@ namespace Raven {
 		template<class T>
 		Normal3<T> operator*(const Normal3<T>& n)const {
 			Mat4f invm = this->inverse();
-			return Normal3<T>{v.x* invm.data[0] + v.y * invm.data[4] + v.z * invm.data[8],
-				v.x* invm.data[1] + v.y * invm.data[5] + v.z * invm.data[9],
-				v.x* invm.data[2] + v.y * invm.data[6] + v.z * invm.data[10]};
+			return Normal3<T>{n.x* invm.data[0] + n.y * invm.data[4] + n.z * invm.data[8],
+				n.x* invm.data[1] + n.y * invm.data[5] + n.z * invm.data[9],
+				n.x* invm.data[2] + n.y * invm.data[6] + n.z * invm.data[10]};
 		}
 
 		template<class T>
 		Vector3<T> operator*(const Vector3<T>& v)const {
-			Vector3<T> v{ v.x * data[0] + v.y * data[1] + v.z * data[2],
+			return Vector3<T>{ v.x * data[0] + v.y * data[1] + v.z * data[2],
 			v.x * data[4] + v.y * data[5] + v.z * data[6],
 			v.x * data[8] + v.y * data[9] + v.z * data[10] };
-			return v;
 		}
 
 		template<class T>
 		Point3<T> operator*(const Point3<T>& p)const {
-			Point3<T> p{ p.x * data[0] + p.y * data[1] + p.z * data[2] + data[3],
+			Point3<T> resultP{ p.x * data[0] + p.y * data[1] + p.z * data[2] + data[3],
 			p.x * data[4] + p.y * data[5] + p.z * data[6] + data[7],
 			p.x * data[8] + p.y * data[9] + p.z * data[10] + data[11] };
 			T w = p.x * data[12] + p.y * data[13] + p.z * data[14] + data[15];
 
-			//ÈıÎ¬µãµÄw·ÖÁ¿±ØĞëÎª1
-			if (w == 1)return p;
-			else return p /= w;
+			//ï¿½ï¿½Î¬ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª1
+			if (w == 1)return resultP;
+			else return resultP /= w;
 		}
 
 		Mat4f transpose()const {

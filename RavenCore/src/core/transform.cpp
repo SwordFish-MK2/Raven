@@ -1,5 +1,5 @@
 #include<Raven/core/transform.h>
-
+#include<assert.h>
 namespace Raven {
 #define Radiance M_PI/180.f
 
@@ -12,21 +12,21 @@ namespace Raven {
 
 		Float pivot[4] = { 0,0,0,0 };
 
-		//¸ßË¹ÏûÔª
+		//ï¿½ï¿½Ë¹ï¿½ï¿½Ôª
 		Float singular = false;
 
-		//ÏòÏÂÏûÔª,½«¾ØÕó»¯ÎªÉÏÈý½Ç¾ØÕó
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôª,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½
 		for (int i = 0; i < 4; i++) {
-			pivot[i] = mat(i, i);//µ±Ç°ÁÐµÄpivot
+			pivot[i] = mat(i, i);//ï¿½ï¿½Ç°ï¿½Ðµï¿½pivot
 
-			//Ö÷ÔªÎª0Ê±£¬ÏòÏÂÑ°ÕÒÒ»ÐÐ½»»»
+			//ï¿½ï¿½ÔªÎª0Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ°ï¿½ï¿½Ò»ï¿½Ð½ï¿½ï¿½ï¿½
 			if (pivot[i] == 0) {
 
-				//ÏòÏÂÑ°ÕÒÒ»ÐÐ½»»»
+				//ï¿½ï¿½ï¿½ï¿½Ñ°ï¿½ï¿½Ò»ï¿½Ð½ï¿½ï¿½ï¿½
 				for (int j = i + 1; j < 4; j++) {
 					singular = true;
 					if (mat(j, i) != 0) {
-						//ÕÒ·Ç0 pivot£¬½»»»Á½ÐÐ
+						//ï¿½Ò·ï¿½0 pivotï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						for (size_t k = 0; k < 4; k++) {
 							std::swap(mat.data[j * 4 + k], mat.data[i * 4 + k]);
 							std::swap(invMat.data[j * 4 + k], mat.data[i * 4 + k]);
@@ -37,18 +37,18 @@ namespace Raven {
 					}
 				}
 
-				//ÆæÒì¾ØÕó£¬²»¿ÉÇóÄæ
-				assert(!singular, "Tried to invert a singular Matrix.");
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó£¬²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				assert(!singular);
 			}
 
-			//½«Ö÷Ôª»¯Îª1
+			//ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½Îª1
 			Float invPivot = 1.0 / pivot[i];
 			for (int j = 0; j < 4; j++) mat(i, j) *= invPivot;
 			for (int j = 0; j < 4; j++) invMat(i, j) *= invPivot;
 
-			//ÏòÏÂÏûÔª
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôª
 			for (int j = i + 1; j < 4; j++) {
-				Float mul = mat(j, i);//µ±Ç°ÐèÒªÏûÈ¥µÄÊýÎªÖ÷ÔªµÄmul±¶
+				Float mul = mat(j, i);//ï¿½ï¿½Ç°ï¿½ï¿½Òªï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ôªï¿½ï¿½mulï¿½ï¿½
 				if (mul == 0)continue;
 				for (int k = 0; k < 4; k++) {
 					mat(j, k) -= mul * mat(i, k);
@@ -57,7 +57,7 @@ namespace Raven {
 			}
 		}
 
-		//ÏòÉÏ·´ÏòÏûÔª
+		//ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½Ôª
 		for (int i = 0; i < 4; i++) {
 			for (int j = i - 1; j >= 0; j--) {
 				Float mul = mat(j, i);
@@ -69,7 +69,7 @@ namespace Raven {
 			}
 		}
 
-		//½«¶Ô½ÇÏß»¯Îª0
+		//ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ß»ï¿½Îª0
 		for (int i = 0; i < 4; i++) {
 			Float invMul = 1.0 / mat(i, i);
 			for (int j = 0; j < 4; j++) invMat(i, j) *= invMul;
@@ -92,7 +92,7 @@ namespace Raven {
 			p.x * m.data[8] + p.y * m.data[9] + p.z * m.data[10] + m.data[11] };
 		T w = p.x * m.data[12] + p.y * m.data[13] + p.z * m.data[14] + m.data[15];
 
-		//ÈýÎ¬µãµÄw·ÖÁ¿±ØÐëÎª1
+		//ï¿½ï¿½Î¬ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª1
 		if (w == 1)return p2;
 		else return p2 /= w;
 	}
@@ -240,9 +240,9 @@ namespace Raven {
 		return Scale(Vector3f(1, 1, 1 / (zfar - znear))) * Translate(Vector3f(0, 0, -znear));
 	}
 
-	//¸ºÔð´ÓScreen spaceµ½Raster spaceÖ®¼äµÄ±ä»»
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Screen spaceï¿½ï¿½Raster spaceÖ®ï¿½ï¿½Ä±ä»»
 	Transform Raster(int w, int h) {
-		//ÏÈ½«ËùÓÐµÄµãÀ­Éì·Ö±æÂÊµÄÒ»°ë£¬·´×ªyÖá£¬ÔÙ½«Í¼Ïñ×óÉÏ½ÇÆ½ÒÆµ½Ô­µã
+		//ï¿½È½ï¿½ï¿½ï¿½ï¿½ÐµÄµï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Êµï¿½Ò»ï¿½ë£¬ï¿½ï¿½×ªyï¿½á£¬ï¿½Ù½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Ï½ï¿½Æ½ï¿½Æµï¿½Ô­ï¿½ï¿½
 
 		int half_height = h / 2;
 		int half_width = w / 2;

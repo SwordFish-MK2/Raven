@@ -492,9 +492,8 @@ namespace Raven {
 			return x != n.x || y != n.y || z != n.z;
 		}
 
-		template<class T>
 		Normal3<T> operator()(T i, const Normal3<T>& n)const {
-			return Normal3(n.x * i, n.y * i, n.z * i);
+			return Normal3<T>(n.x * i, n.y * i, n.z * i);
 		}
 
 		double length() const {
@@ -541,8 +540,8 @@ namespace Raven {
 	}
 	template<class T>
 	inline std::ostream& operator<<(std::ostream& os, const Normal3<T>& n) {
-		os << "[ " << v.x << ", " << v.y << ", " << v.z << " ]";
-		return out;
+		os << "[ " << n.x << ", " << n.y << ", " << n.z << " ]";
+		return os;
 	}
 
 	//Vector related functions
@@ -622,11 +621,11 @@ namespace Raven {
 	}
 
 	//TODO::Try template<class T> Vector3<T>
-//输入一个向量，以该向量为z轴建立一个左手系
+//锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷锟皆革拷锟斤拷锟斤拷为z锟结建锟斤拷一锟斤拷锟斤拷锟斤拷系
 	inline std::tuple<Vector3f, Vector3f> genTBN(const Vector3f& v1) {
 		Vector3f v2, v3;
-		//首先通过将输入向量的一个分量置为零，交换剩下的两个分量并将其中一个分量取负值来求得一个与输入向量垂直的向量v2
-		//再通过向量积取得垂直于v1与v2的向量v3
+		//锟斤拷锟斤拷通锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷为锟姐，锟斤拷锟斤拷剩锟铰碉拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷取锟斤拷值锟斤拷锟斤拷锟揭伙拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟街憋拷锟斤拷锟斤拷锟絭2
+		//锟斤拷通锟斤拷锟斤拷锟斤拷锟斤拷取锟矫达拷直锟斤拷v1锟斤拷v2锟斤拷锟斤拷锟斤拷v3
 		if (std::abs(v1.x) > std::abs(v1.y))
 			v2 = Vector3f(-v1.z, 0, v1.x) /
 			std::sqrt(v1.x * v1.x + v1.z * v1.z);

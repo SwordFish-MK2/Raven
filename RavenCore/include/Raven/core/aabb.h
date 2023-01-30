@@ -3,6 +3,7 @@
 
 #include<Raven/core/base.h>
 #include<Raven/core/math.h>
+#include<Raven/core/ray.h>
 
 namespace Raven {
 	using Bound3f = AABB3<double>;
@@ -79,11 +80,11 @@ namespace Raven {
 				return 2;
 		}
 
-		inline Point3<T> lerp(const Point3<T>& t)const {
+		Point3<T> lerp(const Point3<T>& t)const {
 			return Point3<T>(
-				::lerp(t.x, pMax.x, pMin.x),
-				::lerp(t.y, pMax.y, pMin.y),
-				::lerp(t.x, pMax.z, pMin.z)
+				Lerp(t.x, pMax.x, pMin.x),
+				Lerp(t.y, pMax.y, pMin.y),
+				Lerp(t.x, pMax.z, pMin.z)
 				);
 		}
 
@@ -100,7 +101,7 @@ namespace Raven {
 			radius = (pMax - center).length();
 		}
 
-		//¼ÆËã¹âÏßÊÇ·ñÓë¸Ãbounding boxÏà½»£¬Èç¹ûÏà½»£¬·µ»ØtMaxÓëtMin
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½bounding boxï¿½à½»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à½»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tMaxï¿½ï¿½tMin
 		bool hit(
 			const Ray& r_in,
 			double* tMin,
@@ -160,7 +161,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// 2Î¬°üÎ§ºÐ
+	/// 2Î¬ï¿½ï¿½Î§ï¿½ï¿½
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	template<class T>

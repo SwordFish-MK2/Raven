@@ -4,6 +4,7 @@
 #include<iostream>
 #include<random>
 #include<map>
+#include<memory>
 
 //#define PATH std::string(RAVEN_PATH)
 
@@ -144,7 +145,7 @@ namespace Raven {
 		return pow((value + 0.055) * 1.0 / 1.055, 2.4);
 	}
 
-	//获取[0,1]之间的随机数
+	//锟斤拷取[0,1]之锟斤拷锟斤拷锟斤拷锟斤拷
 	inline double GetRand() {
 		static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 		static std::mt19937 generator;
