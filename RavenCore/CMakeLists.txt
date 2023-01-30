@@ -4,7 +4,7 @@ add_executable(RavenCore ${srcs})
 
 target_include_directories(RavenCore PUBLIC include)
 
-target_include_directories(RavenCore PUBLIC ${STB_INCLUDE_DIRS})
+target_include_directories(RavenCore PUBLIC ${Stb_INCLUDE_DIR})
 
 target_link_libraries(RavenCore PUBLIC tinyobjloader::tinyobjloader)
 
