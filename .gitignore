@@ -3,6 +3,7 @@
 build/
 doc/
 /models
+.vscode
 #files
 CMakeSettings.json
 notation.md
