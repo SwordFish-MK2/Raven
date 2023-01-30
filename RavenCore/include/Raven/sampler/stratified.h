@@ -23,7 +23,7 @@ namespace Raven {
 
 	void StratifiedSample1D(Float* sample, int nSamples, bool jitter);
 
-	void StratifiedSampled2D(Point2f* sample, int xSamples, int ySamples, bool jitter);
+	void StratifiedSample2D(Point2f* sample, int xSamples, int ySamples, bool jitter);
 
 	template<class T>
 	void Shuffle(T* samples, int count, int nDimension);

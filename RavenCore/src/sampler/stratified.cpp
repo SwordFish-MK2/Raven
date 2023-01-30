@@ -8,11 +8,11 @@ namespace Raven {
 		int nDimensions
 	) :
 		PixelSampler(xSample* ySample, nDimensions),
-		xPixelSample(xSample),
-		yPixelSample(ySample),
+		xPixelSamples(xSample),
+		yPixelSamples(ySample),
 		jitter(jitter) {  }
 
-	bool StratifiedSampler::startPixel(const Point2i& p)
+	void StratifiedSampler::startPixel(const Point2i& p)
 	{
 
 		//遍历所有1D分量，为每个1D向量分层采样n个样本
@@ -22,8 +22,8 @@ namespace Raven {
 		}
 
 		//遍历所有2D分量，为每个2D分量分层采样n个样本
-		for (size_t i = 0; i < sample2D.size(); i++) {
-			StratifiedSample2D(&samples2D[i][0], samplesPerPixel, jitter);
+		for (size_t i = 0; i < samples2D.size(); i++) {
+			StratifiedSample2D(&samples2D[i][0], xPixelSamples, yPixelSamples, jitter);
 			Shuffle(&samples2D[i][0], samplesPerPixel, 1);
 		}
 	}
@@ -40,7 +40,7 @@ namespace Raven {
 		}
 	}
 
-	void StratifiedSampled2D(
+	void StratifiedSample2D(
 		Point2f* samples,
 		int xSamples,
 		int ySamples,
