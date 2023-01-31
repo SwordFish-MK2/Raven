@@ -1,4 +1,4 @@
-#include<Raven/sampler/stratified.h>
+ï»¿#include<Raven/sampler/stratified.h>
 
 namespace Raven {
 	StratifiedSampler::StratifiedSampler(
@@ -15,13 +15,13 @@ namespace Raven {
 	void StratifiedSampler::startPixel(const Point2i& p)
 	{
 
-		//±éÀúËùÓĞ1D·ÖÁ¿£¬ÎªÃ¿¸ö1DÏòÁ¿·Ö²ã²ÉÑùn¸öÑù±¾
+		//éå†æ‰€æœ‰1Dåˆ†é‡ï¼Œä¸ºæ¯ä¸ª1Då‘é‡åˆ†å±‚é‡‡æ ·nä¸ªæ ·æœ¬
 		for (size_t i = 0; i < samples1D.size(); i++) {
 			StratifiedSample1D(&samples1D[i][0], samplesPerPixel, jitter);
 			Shuffle(&samples1D[i][0], samplesPerPixel, 1);
 		}
 
-		//±éÀúËùÓĞ2D·ÖÁ¿£¬ÎªÃ¿¸ö2D·ÖÁ¿·Ö²ã²ÉÑùn¸öÑù±¾
+		//éå†æ‰€æœ‰2Dåˆ†é‡ï¼Œä¸ºæ¯ä¸ª2Dåˆ†é‡åˆ†å±‚é‡‡æ ·nä¸ªæ ·æœ¬
 		for (size_t i = 0; i < samples2D.size(); i++) {
 			StratifiedSample2D(&samples2D[i][0], xPixelSamples, yPixelSamples, jitter);
 			Shuffle(&samples2D[i][0], samplesPerPixel, 1);
@@ -33,9 +33,9 @@ namespace Raven {
 		int nSamples,
 		bool jitter)
 	{
-		Float invStrata = 1.0 / (Float)nSamples;//Õ¤¸ñµÄ¿í¶È
+		Float invStrata = 1.0 / (Float)nSamples;//æ …æ ¼çš„å®½åº¦
 		for (int i = 0; i < nSamples; i++) {
-			Float delta = jitter ? GetRand() : 0.5;//Ñù±¾ÔÚÕ¤¸ñÄÚµÄÆ«ÒÆÁ¿
+			Float delta = jitter ? GetRand() : 0.5;//æ ·æœ¬åœ¨æ …æ ¼å†…çš„åç§»é‡
 			sample[i] = Min((i + delta) * invStrata, OneMinusEpsilon);
 		}
 	}
@@ -61,7 +61,7 @@ namespace Raven {
 
 
 	/// <summary>
-	/// Ëæ»úÖÃ»»´òÂÒµ±Ç°Î¬¶ÈµÄÑù±¾£¬might be buggy
+	/// éšæœºç½®æ¢æ‰“ä¹±å½“å‰ç»´åº¦çš„æ ·æœ¬ï¼Œmight be buggy
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="samples"></param>
