@@ -1,4 +1,4 @@
-
+ï»¿
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include<tiny_obj_loader.h>
@@ -12,7 +12,7 @@ namespace Raven {
 		const std::string& mtlBasePath)
 	{
 		const std::string filePath = prj_path + path;
-		tinyobj::attrib_t attrib;//´æÊı¾İ
+		tinyobj::attrib_t attrib;//å­˜æ•°æ®
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
 
@@ -36,7 +36,7 @@ namespace Raven {
 			return std::nullopt;
 		}
 
-		//³É¹¦¶ÁÈ¡ObjÎÄ¼ş
+		//æˆåŠŸè¯»å–Objæ–‡ä»¶
 		std::vector<Point3f> vertices;
 		std::vector<Normal3f> normals;
 		std::vector<Point2f> uvs;
@@ -67,11 +67,11 @@ namespace Raven {
 
 		for (size_t s = 0; s < shapes.size(); s++) {
 			size_t indexOffset = 0;
-			//¶ÔÓÚÃ¿¸öÃæ
+			//å¯¹äºæ¯ä¸ªé¢
 			for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-				const int verticesNum = shapes[s].mesh.num_face_vertices[f];//Õâ¸öÃæÓĞ¶àÉÙ¸ö¶¥µã
+				const int verticesNum = shapes[s].mesh.num_face_vertices[f];//è¿™ä¸ªé¢æœ‰å¤šå°‘ä¸ªé¡¶ç‚¹
 				for (int i = 0; i < verticesNum; i++) {
-					tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + i];//¸ÃÃæµÚi¸ö¶¥µãµÄË÷ÒıĞÅÏ¢
+					tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + i];//è¯¥é¢ç¬¬iä¸ªé¡¶ç‚¹çš„ç´¢å¼•ä¿¡æ¯
 					int vertexIndex = idx.vertex_index;
 					int normalIndex = idx.normal_index;
 					int uvIndex = idx.texcoord_index;
@@ -115,9 +115,9 @@ namespace Raven {
 	//	unsigned char* data = stbi_load(filename, &w, &h, &c, 0);
 	//	*resolution = Point2i(w, h);
 	//	std::unique_ptr<Vector3f[]> convertedData = std::make_unique<Vector3f[]>(w * h);
-	//	//TODO::Î´¶ÁÈ¡µ½Í¼Æ¬
-	//	//TODO::ÅĞ¶ÏÍ¼Æ¬µÄÍ¨µÀÊı
-	//	//Èç¹ûÍ¼Æ¬ÎªÈıÍ¨µÀ
+	//	//TODO::æœªè¯»å–åˆ°å›¾ç‰‡
+	//	//TODO::åˆ¤æ–­å›¾ç‰‡çš„é€šé“æ•°
+	//	//å¦‚æœå›¾ç‰‡ä¸ºä¸‰é€šé“
 	//	for (int i = 0; i < w * h; i++) {
 	//		convertedData[i] = toVector(&data[i * 3]);
 

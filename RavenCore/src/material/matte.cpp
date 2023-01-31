@@ -1,4 +1,4 @@
-#include<Raven/material/matte.h>
+ï»¿#include<Raven/material/matte.h>
 
 namespace Raven {
 	//determing bump effect and generate BSDF
@@ -14,7 +14,7 @@ namespace Raven {
 		double sigValue = sigma->evaluate(its);
 		Spectrum kdValue = kd->evaluate(its);
 		if (sigValue == 0.f) {
-			// if sigma = 0£¬generate lambertian reflection
+			// if sigma = 0ï¼Œgenerate lambertian reflection
 			its.bsdf->addBxDF(std::make_shared<LambertainReflection>(kdValue));
 		}
 		else {

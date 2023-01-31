@@ -1,4 +1,4 @@
-#include<Raven/core/scene.h>
+ï»¿#include<Raven/core/scene.h>
 #include<Raven/material/glass.h>
 #include<Raven/material/matte.h>
 #include<Raven/material/mirror.h>
@@ -44,17 +44,17 @@ namespace Raven {
 	Scene::Scene(const Scene& s) :transforms(s.transforms),
 		lights(s.lights), meshes(s.meshes), objs(s.objs) {}
 
-	//ÔÚ³¡¾°ÖĞÌí¼ÓÍø¸ñ
+	//åœ¨åœºæ™¯ä¸­æ·»åŠ ç½‘æ ¼
 	void Scene::addMesh(const std::shared_ptr<TriangleMesh>& mesh_ptr) {
 		meshes.push_back(mesh_ptr);
 	}
 
-	//ÔÚ³¡¾°ÖĞÌí¼Ó¾ØÕó
+	//åœ¨åœºæ™¯ä¸­æ·»åŠ çŸ©é˜µ
 	void Scene::addTransform(const std::shared_ptr<Transform>& trans_ptr) {
 		transforms.push_back(trans_ptr);
 	}
 
-	//ÔÚ³¡¾°ÖĞÌí¼Ó¹âÔ´
+	//åœ¨åœºæ™¯ä¸­æ·»åŠ å…‰æº
 	void Scene::addLight(const std::shared_ptr<Light>& light_ptr) {
 		lights.push_back(light_ptr);
 	}

@@ -1,4 +1,4 @@
-#include<Raven/core/bsdf.h>
+ï»¿#include<Raven/core/bsdf.h>
 
 namespace Raven {
 	BSDF::BSDF(const SurfaceInteraction& sits, double eta)
@@ -24,9 +24,9 @@ namespace Raven {
 		bxdfNumber++;
 	}
 
-	//¸ø¶¨ÈëÉäÓë³öÉä·½Ïò£¬¼ÆËãbrdf
+	//ç»™å®šå…¥å°„ä¸å‡ºå°„æ–¹å‘ï¼Œè®¡ç®—brdf
 	Spectrum BSDF::f(const Vector3f& wo, const Vector3f& wi)const {
-		Vector3f woLocal = worldToLocal(wo);//½«ÈëÉä¹â±ä»»µ½BSDF×ø±êÏµÏÂ²¢Ê¹ÈëÉä¹â³¯ÏòÆ½ÃæÍâ²à
+		Vector3f woLocal = worldToLocal(wo);//å°†å…¥å°„å…‰å˜æ¢åˆ°BSDFåæ ‡ç³»ä¸‹å¹¶ä½¿å…¥å°„å…‰æœå‘å¹³é¢å¤–ä¾§
 		Vector3f wiLocal = worldToLocal(wi);
 		Spectrum result = Spectrum(0.0);
 		bool reflect = Dot(wi, n) * Dot(wo, n) > 0;
@@ -39,23 +39,23 @@ namespace Raven {
 		return result /= (double)bxdfs.size();
 	}
 
-	//¸ø¶¨ÈëÉä·½Ïò£¬¸ù¾İBRDF·Ö²¼²ÉÑù³öÉä·½Ïò²¢¼ÆËãbrdfµÄÖµ
+	//ç»™å®šå…¥å°„æ–¹å‘ï¼Œæ ¹æ®BRDFåˆ†å¸ƒé‡‡æ ·å‡ºå°„æ–¹å‘å¹¶è®¡ç®—brdfçš„å€¼
 	std::tuple<Spectrum, Vector3f, double, BxDFType> BSDF::sample_f(
 		const Vector3f& wo,
 		const Point2f& sample,
 		BxDFType type)const {
 
-		int nMatch = nMatchComponents(type);//n¸ö·ûºÏÌõ¼şµÄBxDF
+		int nMatch = nMatchComponents(type);//nä¸ªç¬¦åˆæ¡ä»¶çš„BxDF
 
 		if (nMatch == 0) {
-			//Ã»ÓĞ·ûºÏÌõ¼şµÄBxdf
+			//æ²¡æœ‰ç¬¦åˆæ¡ä»¶çš„Bxdf
 			return std::tuple<Spectrum, Vector3f, double, BxDFType>(Spectrum(0.0), Vector3f(0.0), 0.0, BxDFType(0));
 		}
 
-		//´Ó·ûºÏÌõ¼şµÄBxDFÖĞ²ÉÑùÒ»¸öBxDF
+		//ä»ç¬¦åˆæ¡ä»¶çš„BxDFä¸­é‡‡æ ·ä¸€ä¸ªBxDF
 		int compIndex = Min(nMatch - 1, (int)std::floor(nMatch * sample[0]));
 
-		//»ñÈ¡ÓÃÓÚ²ÉÑùµÄBxDFµÄIndex
+		//è·å–ç”¨äºé‡‡æ ·çš„BxDFçš„Index
 		int sampleIndex = 0;
 		for (size_t i = 0; i < bxdfs.size(); i++) {
 			if (bxdfs[i]->matchType(type) && compIndex-- == 0) {
@@ -66,7 +66,7 @@ namespace Raven {
 
 		BxDFType sampledType = bxdfs[sampleIndex]->type;
 
-		//²ÉÑùÑ¡ÖĞµÄBxDF
+		//é‡‡æ ·é€‰ä¸­çš„BxDF
 		Vector3f woLocal = Normalize(worldToLocal(wo));
 		Vector3f wiLocal = Vector3f(0.0);
 
@@ -79,7 +79,7 @@ namespace Raven {
 
 		bool reflect = bxdfs[sampleIndex]->type & BxDFType::Reflection;
 
-		//¼ÆËã»ìºÏ²ÉÑùµÄpdf
+		//è®¡ç®—æ··åˆé‡‡æ ·çš„pdf
 		for (int i = 0; i < bxdfs.size(); ++i) {
 			if (i != sampleIndex) {
 				if (reflect && bxdfs[i]->type & BxDFType::Reflection ||
@@ -88,9 +88,9 @@ namespace Raven {
 				}
 			}
 		}
-		pdf /= (int)nMatch;//¸ù¾İMonte Carlo»ı·Ö³ıÒÔ³éÈ¡²ÉÑùBxDFµÄ¸ÅÂÊ
+		pdf /= (int)nMatch;//æ ¹æ®Monte Carloç§¯åˆ†é™¤ä»¥æŠ½å–é‡‡æ ·BxDFçš„æ¦‚ç‡
 
-		//¸ù¾İ²ÉÑùµÄ·½Ïò¼ÆËãËùÓĞµÄBxDFµÄÖµ
+		//æ ¹æ®é‡‡æ ·çš„æ–¹å‘è®¡ç®—æ‰€æœ‰çš„BxDFçš„å€¼
 		for (int i = 0; i < bxdfs.size(); ++i) {
 			if (i != sampleIndex) {
 				if (reflect && bxdfs[i]->type & BxDFType::Reflection ||

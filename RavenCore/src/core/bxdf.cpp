@@ -1,11 +1,11 @@
-#include<Raven/core/bxdf.h>
+ï»¿#include<Raven/core/bxdf.h>
 
 namespace Raven {
 
 	double FDielectric(double cosThetaI, double etaI, double etaT) {
 		cosThetaI = Clamp(cosThetaI, -1.0, 1.0);
 
-		//Èç¹ûcosThetaĞ¡ÓÚ0£¬ÔòËµÃ÷´ËÊ±¹âÏßÎª³öÉä£¬Òò´Ë½»»»etaIÓëetaT
+		//å¦‚æœcosThetaå°äº0ï¼Œåˆ™è¯´æ˜æ­¤æ—¶å…‰çº¿ä¸ºå‡ºå°„ï¼Œå› æ­¤äº¤æ¢etaIä¸etaT
 		if (cosThetaI <= 0.f) {
 			std::swap(etaI, etaT);
 			cosThetaI = abs(cosThetaI);
@@ -14,7 +14,7 @@ namespace Raven {
 		double sinThetaI = sqrt(Max(0.0, 1.0 - cosThetaI * cosThetaI));
 		double sinThetaT = sinThetaI * etaI / etaT;
 
-		//È«·´Éä
+		//å…¨åå°„
 		if (sinThetaT >= 1) return 1;
 
 		double cosThetaT = sqrt(Max(0.0, 1.0 - sinThetaT * sinThetaT));

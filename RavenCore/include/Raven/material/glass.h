@@ -1,4 +1,4 @@
-#ifndef _RAVEN_MATERIAL_GLASS_H_
+﻿#ifndef _RAVEN_MATERIAL_GLASS_H_
 #define _RAVEN_MATERIAL_GLASS_H_
 
 #include<Raven/core/base.h>

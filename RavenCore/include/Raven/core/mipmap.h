@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_MIPMAP_H_
+ï»¿#ifndef _RAVEN_CORE_MIPMAP_H_
 #define _RAVEN_CORE_MIPMAP_H_
 
 #include<Raven/core/spectrum.h>
@@ -28,7 +28,7 @@ namespace Raven {
 			return maxLevel;
 		}
 
-		//·µ»ØµÚi²ãµÄÍ¼Ïñ
+		//è¿”å›ç¬¬iå±‚çš„å›¾åƒ
 		Image<T>* getLevel(int i) {
 			i = Clamp(i, 0, (int64_t)maxLevel - 1);
 			return pyramid[i].get();

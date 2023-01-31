@@ -1,4 +1,4 @@
-#include<Raven/textute/solidTexture.h>
+﻿#include<Raven/textute/solidTexture.h>
 
 namespace Raven {
 	CheckeredTextureFloatReg CheckeredTextureFloatReg::regHelper;

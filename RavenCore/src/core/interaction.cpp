@@ -1,4 +1,4 @@
-#include<Raven/core/interaction.h>
+ï»¿#include<Raven/core/interaction.h>
 #include<Raven/core/light.h>
 namespace Raven {
 	Interaction::Interaction(
@@ -69,7 +69,7 @@ namespace Raven {
 		dndu(dndu),
 		dndv(dndv) {
 
-		//Éú³Éshading geometry
+		//ç”Ÿæˆshading geometry
 		shading.n = n;
 		shading.dndu = dndu;
 		shading.dndv = dndv;
@@ -87,9 +87,9 @@ namespace Raven {
 		Interaction(p, wo, time, t, MediumInterface(medium)),
 		phase(phase) {}
 
-	//¸ù¾İÎ¢·Ö¹âÏß¼ÆËã½»µãµÄ²ÎÊı×ø±ê(u,v)·Ö±ğ¹ØÓÚÆÁÄ»¿Õ¼ä×ø±ê(x,y)µÄÆ«µ¼Êı
+	//æ ¹æ®å¾®åˆ†å…‰çº¿è®¡ç®—äº¤ç‚¹çš„å‚æ•°åæ ‡(u,v)åˆ†åˆ«å…³äºå±å¹•ç©ºé—´åæ ‡(x,y)çš„åå¯¼æ•°
 	void SurfaceInteraction::computeDifferential(const RayDifferential& rd) {
-		//¹âÏß²»º¬ÓĞÎ¢·Ö¹âÏß£¬ÔòÎÆÀíÓë·¨ÏßµÄÆ«µ¼ÊıÈ«²¿ÖÃÁã
+		//å…‰çº¿ä¸å«æœ‰å¾®åˆ†å…‰çº¿ï¼Œåˆ™çº¹ç†ä¸æ³•çº¿çš„åå¯¼æ•°å…¨éƒ¨ç½®é›¶
 		if (!rd.hasDifferential) {
 			dudx = 0;
 			dudy = 0;
@@ -99,18 +99,18 @@ namespace Raven {
 			dpdy = Vector3f(0.0);
 		}
 		else {
-			//¼ÆËãÎ¢·Ö¹âÏßÓë³¡¾°µÄ½»µã px, py
+			//è®¡ç®—å¾®åˆ†å…‰çº¿ä¸åœºæ™¯çš„äº¤ç‚¹ px, py
 			double d = -Dot(Vector3f(n), Vector3f(p));
 			double tx = (-Dot(n, Vector3f(rd.originX)) - d) / Dot(n, rd.directionX);
 			Point3f px = rd.originX + rd.directionX * tx;
 			double ty = (-Dot(n, Vector3f(rd.originY)) - d) / Dot(n, rd.directionY);
 			Point3f py = rd.originY + rd.directionY * ty;
 
-			//¼ÆËãdpdx,dpdy,ÓÉÓÚdx¡¢dyÎª1,dpdx = dp,dpdy = dy
+			//è®¡ç®—dpdx,dpdy,ç”±äºdxã€dyä¸º1,dpdx = dp,dpdy = dy
 			dpdx = px - p;
 			dpdy = py - p;
 
-			//Ñ¡ÔñÏà¹ØĞÔ½ÏÇ¿µÄÁ½¸öÎ¬¶ÈÇó½âÏßĞÔ·½³Ì×é
+			//é€‰æ‹©ç›¸å…³æ€§è¾ƒå¼ºçš„ä¸¤ä¸ªç»´åº¦æ±‚è§£çº¿æ€§æ–¹ç¨‹ç»„
 			int dim[2];
 			if (std::abs(n.x) > std::abs(n.y) && std::abs(n.x) > std::abs(n.z)) {
 				dim[0] = 1;
@@ -128,7 +128,7 @@ namespace Raven {
 			double bx[] = { dpdx[dim[0]],dpdx[dim[1]] };
 			double by[] = { dpdy[dim[0]],dpdy[dim[1]] };
 
-			//Çó½âÏßĞÔ·½³Ì×é½âµÃdudx¡¢dvdx¡¢dudy¡¢dvdy
+			//æ±‚è§£çº¿æ€§æ–¹ç¨‹ç»„è§£å¾—dudxã€dvdxã€dudyã€dvdy
 			if (!solve2x2LinearSystem(m, bx, &dudx, &dvdx)) {
 				dudx = 0;
 				dvdx = 0;

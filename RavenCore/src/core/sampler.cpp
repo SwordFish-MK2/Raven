@@ -1,4 +1,4 @@
-#include<Raven/core/sampler.h>
+ï»¿#include<Raven/core/sampler.h>
 
 namespace Raven {
 	void Sampler::startPixel(const Point2i& p) {
@@ -92,7 +92,7 @@ namespace Raven {
 		Sampler::startPixel(p);
 		dimension = 0;
 
-		//ÉèÖÃµ±Ç°Ñù±¾µÄindexÎªÂäÔÚ´ËÏñËØÖĞµÄµÚÒ»¸ösampleµÄindex
+		//è®¾ç½®å½“å‰æ ·æœ¬çš„indexä¸ºè½åœ¨æ­¤åƒç´ ä¸­çš„ç¬¬ä¸€ä¸ªsampleçš„index
 		currentSampleIndex = getSampleIndex(0);
 
 		arrayEndDim = arrayStartDim + array1D.size() + 2 * array2D.size();
@@ -105,7 +105,7 @@ namespace Raven {
 			}
 		}
 
-		//2Î¬Ñù±¾Êı×éµÄÆğÊ¼Î¬¶ÈÔÚÒ»Î»Ñù±¾Êı×éÖ®ºó
+		//2ç»´æ ·æœ¬æ•°ç»„çš„èµ·å§‹ç»´åº¦åœ¨ä¸€ä½æ ·æœ¬æ•°ç»„ä¹‹å
 		int dim = arrayStartDim + arraySize1D.size();
 		for (size_t i = 0; i < arraySize2D.size(); i++) {
 			int currentDimensionSampleNumber = samplesPerPixel * arraySize2D[i];
@@ -120,9 +120,9 @@ namespace Raven {
 	}
 
 	/// <summary>
-	/// ¿ªÊ¼²ÉÑùÒ»¸öĞÂµÄÑù±¾Ê±£¬ÉèÖÃÎ¬¶ÈÎª0²¢ÇÒÖØĞÂ»ñÈ¡¸ÃÑù±¾µÄË÷Òı
-	/// currentSampleIndex£ºµ±Ç°²ÉÑùµÄÑù±¾ÔÚËùÓĞÑù±¾ÖĞµÄË÷Òı
-	/// currentPixelSampleIndex£ºµ±Ç°ÕıÔÚ²ÉÑùµ±Ç°ÏñËØµÄµÚi¸öÑù±¾
+	/// å¼€å§‹é‡‡æ ·ä¸€ä¸ªæ–°çš„æ ·æœ¬æ—¶ï¼Œè®¾ç½®ç»´åº¦ä¸º0å¹¶ä¸”é‡æ–°è·å–è¯¥æ ·æœ¬çš„ç´¢å¼•
+	/// currentSampleIndexï¼šå½“å‰é‡‡æ ·çš„æ ·æœ¬åœ¨æ‰€æœ‰æ ·æœ¬ä¸­çš„ç´¢å¼•
+	/// currentPixelSampleIndexï¼šå½“å‰æ­£åœ¨é‡‡æ ·å½“å‰åƒç´ çš„ç¬¬iä¸ªæ ·æœ¬
 	/// </summary>
 	/// <returns></returns>
 	bool GlobalSampler::startNextSample() {
@@ -138,7 +138,7 @@ namespace Raven {
 	}
 
 	/// <summary>
-	/// »ñÈ¡1D»òÕß2DµÄ·ÇÊı×éÑù±¾Ê±£¬Ö±½ÓÌø¹ıÑù±¾Êı×éËùÔÚÎ¬¶È£¬´Ó¸ü¸ßÎ¬¶È²ÉÑù
+	/// è·å–1Dæˆ–è€…2Dçš„éæ•°ç»„æ ·æœ¬æ—¶ï¼Œç›´æ¥è·³è¿‡æ ·æœ¬æ•°ç»„æ‰€åœ¨ç»´åº¦ï¼Œä»æ›´é«˜ç»´åº¦é‡‡æ ·
 	/// </summary>
 	/// <returns></returns>
 	Float GlobalSampler::get1D() {

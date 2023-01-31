@@ -1,4 +1,4 @@
-#include<Raven/shading/specular.h>
+ï»¿#include<Raven/shading/specular.h>
 
 namespace Raven {
 
@@ -19,10 +19,10 @@ namespace Raven {
 		const Point2f& sample,
 		double& pdf)const
 	{
-		//ÅĞ¶Ï¹âÏßÎªÈëÉä»¹ÊÇ³öÉä
+		//åˆ¤æ–­å…‰çº¿ä¸ºå…¥å°„è¿˜æ˜¯å‡ºå°„
 		bool enter = wo.z > 0;
 
-		//Èç¹û¹âÏßÎª³öÉä£¬½»»»½éÖÊÁ½±ßµÄÕÛÉäÂÊÓë·¨Ïß
+		//å¦‚æœå…‰çº¿ä¸ºå‡ºå°„ï¼Œäº¤æ¢ä»‹è´¨ä¸¤è¾¹çš„æŠ˜å°„ç‡ä¸æ³•çº¿
 		double etai = enter ? etaA : etaB;
 		double etat = enter ? etaB : etaA;
 		double eta = etai / etat;
@@ -33,7 +33,7 @@ namespace Raven {
 
 		wi = *wt;
 		pdf = 1.0;
-		Spectrum tau = t * (1 - fresnel.evaluate(CosTheta(*wt)));//ÕÛÉä½øÈë½éÖÊµÄÄÜÁ¿
+		Spectrum tau = t * (1 - fresnel.evaluate(CosTheta(*wt)));//æŠ˜å°„è¿›å…¥ä»‹è´¨çš„èƒ½é‡
 
 		return eta * eta * tau / AbsCosTheta(*wt);
 	}
@@ -54,10 +54,10 @@ namespace Raven {
 		else {
 			Spectrum ft = (1 - F) * T;
 
-			//ÅĞ¶Ï¹âÏßÎªÈëÉä»¹ÊÇ³öÉä
+			//åˆ¤æ–­å…‰çº¿ä¸ºå…¥å°„è¿˜æ˜¯å‡ºå°„
 			bool enter = wo.z > 0;
 
-			//Èç¹û¹âÏßÎª³öÉä£¬½»»»½éÖÊÁ½±ßµÄÕÛÉäÂÊÓë·¨Ïß
+			//å¦‚æœå…‰çº¿ä¸ºå‡ºå°„ï¼Œäº¤æ¢ä»‹è´¨ä¸¤è¾¹çš„æŠ˜å°„ç‡ä¸æ³•çº¿
 			double etai = enter ? etaA : etaB;
 			double etat = enter ? etaB : etaA;
 			double eta = etai / etat;

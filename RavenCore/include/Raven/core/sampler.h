@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_SAMPLER_H_
+ï»¿#ifndef _RAVEN_CORE_SAMPLER_H_
 #define _RAVEN_CORE_SAMPLER_H_
 
 #include<Raven/core/base.h>
@@ -10,7 +10,7 @@ namespace Raven {
 	static const Float OneMinusEpsilon = 0x1.fffffffffffffp-1;
 
 	/// <summary>
-	/// ²ÉÑùÆ÷½Ó¿Ú
+	/// é‡‡æ ·å™¨æ¥å£
 	/// </summary>
 	class Sampler :public RavenObject {
 	public:
@@ -18,7 +18,7 @@ namespace Raven {
 
 		virtual void startPixel(const Point2i& p);
 
-		//»ñÈ¡Ñù±¾
+		//è·å–æ ·æœ¬
 		virtual Float get1D() = 0;
 		virtual Point2f get2D() = 0;
 
@@ -32,7 +32,7 @@ namespace Raven {
 		const Float* get1DArray(int n);
 		const Point2f* get2DArray(int n);
 
-		//Ö±µ½×î³õ±»ÇëÇóµÄnÎ¬Ñù±¾±»È«²¿Éú³ÉÍê±ÏÇ°£¬¸Ãº¯Êı¶¼return true
+		//ç›´åˆ°æœ€åˆè¢«è¯·æ±‚çš„nç»´æ ·æœ¬è¢«å…¨éƒ¨ç”Ÿæˆå®Œæ¯•å‰ï¼Œè¯¥å‡½æ•°éƒ½return true
 		virtual bool startNextSample();
 
 		virtual std::unique_ptr<Sampler> clone(int seed) = 0;
@@ -41,8 +41,8 @@ namespace Raven {
 
 	protected:
 		const int64_t samplesPerPixel;
-		Point2i currentPixel;					//µ±Ç°²ÉÑùµÄÏñËØ
-		int64_t currentPixelSampleIndex;		//µ±Ç°ÏñËØÄÚµÄµÚi¸öÑù±¾ÏòÁ¿
+		Point2i currentPixel;					//å½“å‰é‡‡æ ·çš„åƒç´ 
+		int64_t currentPixelSampleIndex;		//å½“å‰åƒç´ å†…çš„ç¬¬iä¸ªæ ·æœ¬å‘é‡
 		std::vector<int>arraySize1D;
 		std::vector<int>arraySize2D;
 		std::vector<std::vector<Float>> array1D;
@@ -54,7 +54,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// Pixel Sampler,×ÜÊÇÔÚÒ»¸öÏñËØÄÚÉú³ÉËùÓĞµÄsample vectorºóÔÙÒÆ¶¯µ½ÏÂÒ»¸öÏñËØ
+	/// Pixel Sampler,æ€»æ˜¯åœ¨ä¸€ä¸ªåƒç´ å†…ç”Ÿæˆæ‰€æœ‰çš„sample vectoråå†ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªåƒç´ 
 	/// </summary>
 	class PixelSampler :public Sampler {
 	public:
@@ -82,10 +82,10 @@ namespace Raven {
 	public:
 		GlobalSampler(int64_t nSamples) :Sampler(nSamples) {}
 
-		//¸ø³öÎ»ÓÚµ±Ç°ÏñËØµÄµÚn¸öÑù±¾µÄindex
+		//ç»™å‡ºä½äºå½“å‰åƒç´ çš„ç¬¬nä¸ªæ ·æœ¬çš„index
 		virtual int64_t getSampleIndex(int64_t n)const = 0;
 
-		//»ñÈ¡Ä¿±êÑù±¾ÔÚÖ¸¶¨Î¬¶ÈµÄÖµ
+		//è·å–ç›®æ ‡æ ·æœ¬åœ¨æŒ‡å®šç»´åº¦çš„å€¼
 		virtual Float sampleDimension(int64_t index, int dimension)const = 0;
 
 		virtual void startPixel(const Point2i& p)override;
@@ -99,8 +99,8 @@ namespace Raven {
 		virtual Point2f get2D()override;
 
 	private:
-		int dimension;					//²ÉÑùÆ÷½«ÒªÉú³ÉµÄÑù±¾µÄÏÂÒ»Î¬¶È
-		int64_t currentSampleIndex;		//²ÉÑùÆ÷ÔÚµ±Ç°ÏñËØÉú³ÉµÚi¸öÑù±¾ÔÚËùÓĞÑù±¾ÏòÁ¿ÖĞµÄindex
+		int dimension;					//é‡‡æ ·å™¨å°†è¦ç”Ÿæˆçš„æ ·æœ¬çš„ä¸‹ä¸€ç»´åº¦
+		int64_t currentSampleIndex;		//é‡‡æ ·å™¨åœ¨å½“å‰åƒç´ ç”Ÿæˆç¬¬iä¸ªæ ·æœ¬åœ¨æ‰€æœ‰æ ·æœ¬å‘é‡ä¸­çš„index
 		static const int arrayStartDim = 5;
 		int arrayEndDim;
 	};

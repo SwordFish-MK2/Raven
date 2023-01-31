@@ -1,15 +1,15 @@
-#include<Raven/shape/sphere.h>
+ï»¿#include<Raven/shape/sphere.h>
 #include<Raven/core/distribution.h>
 namespace Raven {
 
 	bool Sphere::hit(const Ray& r_in)const {
-		//½«¹âÏß´ÓÊÀ½ç×ø±êÏµ±ä»»µ½Ô²µÄLocal×ø±êÏµÄÚ
+		//å°†å…‰çº¿ä»ä¸–ç•Œåæ ‡ç³»å˜æ¢åˆ°åœ†çš„Localåæ ‡ç³»å†…
 		Ray localRay = (*worldToLocal)(r_in);
 
 		const Point3f& ori = localRay.origin;
 		const Vector3f& dir = localRay.dir;
 
-		//Çó½âÔ²Óë¹âÏßÁªÁ¢µÄ·½³Ì
+		//æ±‚è§£åœ†ä¸å…‰çº¿è”ç«‹çš„æ–¹ç¨‹
 		double a = Dot(dir, dir);
 		double b = 2.0 * Dot(Vector3f(ori), dir);
 		double c = Dot(Vector3f(ori), Vector3f(ori)) - radius * radius;
@@ -18,7 +18,7 @@ namespace Raven {
 		if (!Quadratic(a, b, c, t0, t1))
 			return false;
 
-		//Ö»ÒªÁ½¸ö½âÓĞÒ»¸öÎ»ÓÚ0µ½tMaxÖ®¼ä£¬ËµÃ÷¹âÏßÓëÔ²Ïà½»
+		//åªè¦ä¸¤ä¸ªè§£æœ‰ä¸€ä¸ªä½äº0åˆ°tMaxä¹‹é—´ï¼Œè¯´æ˜å…‰çº¿ä¸åœ†ç›¸äº¤
 		if (t0 > 0.0 && t0 < r_in.tMax)
 			return true;
 		else if (t1 > 0.0 && t1 < r_in.tMax)
@@ -42,13 +42,13 @@ namespace Raven {
 	}
 
 	bool Sphere::intersect(const Ray& r_in, HitInfo& info)const {
-		//½«¹âÏß±ä»»µ½¾Ö²¿×ø±êÏµÏÂ
+		//å°†å…‰çº¿å˜æ¢åˆ°å±€éƒ¨åæ ‡ç³»ä¸‹
 		Ray localRay = (*worldToLocal)(r_in);
 
 		const Point3f& ori = localRay.origin;
 		const Vector3f& dir = localRay.dir;
 
-		//ÅĞ¶Ï¹âÏßÊÇ·ñÓëÔ²Ïà½»
+		//åˆ¤æ–­å…‰çº¿æ˜¯å¦ä¸åœ†ç›¸äº¤
 		double a = Dot(dir, dir);
 		double b = 2.0 * Dot(Vector3f(ori), dir);
 		double c = Dot(Vector3f(ori), Vector3f(ori)) - radius * radius;
@@ -65,7 +65,7 @@ namespace Raven {
 				return false;
 		}
 
-		//¼ÆËã½»µãĞÅÏ¢
+		//è®¡ç®—äº¤ç‚¹ä¿¡æ¯
 		Point3f pHit = localRay.position(tHit);
 		pHit *= radius / Distance(pHit, Point3f(0, 0, 0));
 		info.setInfo(pHit, -r_in.dir);
@@ -85,7 +85,7 @@ namespace Raven {
 
 		Normal3f nHit = (Normal3f)(pHit - Point3f(0.0)).normalized();
 
-		//¼ÆËãÆ«µ¼dpdu£¬dpdv
+		//è®¡ç®—åå¯¼dpduï¼Œdpdv
 		double zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
 		double invR = 1. / zRadius;
 		double cosPhi = pHit.x * invR;
@@ -93,7 +93,7 @@ namespace Raven {
 		Vector3f dpdu = (2 * M_PI) * Vector3f(pHit.z, 0.0, -pHit.x);
 		Vector3f dpdv = M_PI * Vector3f(pHit.y * cosPhi, -sin(theta) * radius, -pHit.y * sinPhi);
 
-		//¼ÆËãÆ«µ¼dndu£¬dndv
+		//è®¡ç®—åå¯¼dnduï¼Œdndv
 		double pi2 = M_PI * M_PI;
 		Vector3f d2pduu = -4 * pi2 * Vector3f(pHit.x, 0.0, pHit.z);
 		Vector3f d2pduv = -2 * pi2 * pHit.y * Vector3f(sin(phi), 0.0, cos(phi));
@@ -113,7 +113,7 @@ namespace Raven {
 		Vector3f dndv = (g * F - f * G) * dpdu * temp +
 			(f * F - g * E) * dpdv * temp;
 
-		//¼ÇÂ¼Ïà½»ĞÅÏ¢²¢±ä»»µ½ÊÀ½ç×ø±êÏµ
+		//è®°å½•ç›¸äº¤ä¿¡æ¯å¹¶å˜æ¢åˆ°ä¸–ç•Œåæ ‡ç³»
 		SurfaceInteraction record;
 		record.p = pHit;
 		record.n = nHit;
@@ -127,14 +127,14 @@ namespace Raven {
 
 	}
 
-	//ÔÚÔ²ÉÏ¾ùÔÈ²ÉÑùÒ»¸öµã
+	//åœ¨åœ†ä¸Šå‡åŒ€é‡‡æ ·ä¸€ä¸ªç‚¹
 	std::tuple<SurfaceInteraction, double> Sphere::sample(const Point2f& uv)const {
-		//²ÉÑùµãpÓë·¨Ïßn
+		//é‡‡æ ·ç‚¹pä¸æ³•çº¿n
 		Point3f p = UniformSampleSphere(uv);
 		Normal3f n(p);
 
 		p *= radius;
-		//½«nÓëp±ä»»µ½ÊÀ½ç×ø±ê
+		//å°†nä¸på˜æ¢åˆ°ä¸–ç•Œåæ ‡
 		p = (*localToWorld)(p);
 		n = (*localToWorld)(n);
 
@@ -142,21 +142,21 @@ namespace Raven {
 		inter.p = p;
 		inter.n = n;
 
-		//¼ÆËãpdf
+		//è®¡ç®—pdf
 		double pdf = 1 / area();
 		return std::tuple<SurfaceInteraction, double>(inter, pdf);
 	}
 
-	//»ùÓÚµãp²ÉÑùÔ²ÉÏµÄÒ»¸öµã£¬·µ»ØµÄpdfÎª¶ÔÁ¢Ìå½ÇµÄ»ı·Ö
+	//åŸºäºç‚¹pé‡‡æ ·åœ†ä¸Šçš„ä¸€ä¸ªç‚¹ï¼Œè¿”å›çš„pdfä¸ºå¯¹ç«‹ä½“è§’çš„ç§¯åˆ†
 	std::tuple<SurfaceInteraction, double> Sphere::sample(const SurfaceInteraction& inter, const Point2f& uv)const {
-		Point3f pCenter = (*localToWorld)(Point3f(0.0));//Ô²ĞÄµÄÊÀ½ç×ø±ê
+		Point3f pCenter = (*localToWorld)(Point3f(0.0));//åœ†å¿ƒçš„ä¸–ç•Œåæ ‡
 
-		//ÈôpµãÔÚÔ²ÄÚ£¬¾ùÔÈ²ÉÑù
+		//è‹¥pç‚¹åœ¨åœ†å†…ï¼Œå‡åŒ€é‡‡æ ·
 		double distanceSquared = DistanceSquared(pCenter, inter.p);
 		if (distanceSquared < radius * radius) {
 			auto [lightInter, pdf] = sample(uv);
 
-			//½«²ÉÑùµÄpdf×ªÎª¶ÔÁ¢Ìå½ÇµÄ»ı·Ö
+			//å°†é‡‡æ ·çš„pdfè½¬ä¸ºå¯¹ç«‹ä½“è§’çš„ç§¯åˆ†
 			Vector3f wi = lightInter.p - inter.p;
 			double dis2 = wi.lengthSquared();
 			if (dis2 == 0.0)
@@ -170,25 +170,25 @@ namespace Raven {
 			return std::tuple<SurfaceInteraction, double>(lightInter, pdf);
 		}
 
-		//²ÉÑùpµã¿É¼ûÔ²×¶
+		//é‡‡æ ·pç‚¹å¯è§åœ†é”¥
 		else {
-			//¼ÆËãĞÂµÄ×ø±êÏµ£¬Ê¹µÃµãpÓëÔ²ĞÄµÄÁ¬ÏßÎ»ÓÚĞÄ×ø±êÏµµÄzÖá
-			Vector3f z = Normalize(pCenter - inter.p);//ÓÉ²Î¿¼µãÎªÔ­µã£¬zÖáÖ¸ÏòÔ²ĞÄ
+			//è®¡ç®—æ–°çš„åæ ‡ç³»ï¼Œä½¿å¾—ç‚¹pä¸åœ†å¿ƒçš„è¿çº¿ä½äºå¿ƒåæ ‡ç³»çš„zè½´
+			Vector3f z = Normalize(pCenter - inter.p);//ç”±å‚è€ƒç‚¹ä¸ºåŸç‚¹ï¼Œzè½´æŒ‡å‘åœ†å¿ƒ
 			auto [x, y] = genTBN(z);
 
-			//ÔÚÒÔpµãÓëÔ²µÄÔ²×¶ÉÏ²ÉÑùÒ»¸öÏòÁ¿
-			//¼ÆËãcosThetaMax
+			//åœ¨ä»¥pç‚¹ä¸åœ†çš„åœ†é”¥ä¸Šé‡‡æ ·ä¸€ä¸ªå‘é‡
+			//è®¡ç®—cosThetaMax
 			double dc = Distance(inter.p, pCenter);
 			double sinThetaMax = radius / dc;
 			double sinThetaMax2 = sinThetaMax * sinThetaMax;
 			double cosThetaMax = sqrt(Max(0.0, 1 - sinThetaMax2));
-			//²ÉÑù´ÓPµã³öÉäµÄ¹âÏßµÄ·½Ïò
+			//é‡‡æ ·ä»Pç‚¹å‡ºå°„çš„å…‰çº¿çš„æ–¹å‘
 			double cosTheta = (1 - uv[0]) + uv[0] * cosThetaMax;
 			double sinTheta2 = 1 - cosTheta * cosTheta;
 			double phi = 2 * uv[1] * M_PI;
 
-			//¸ø¶¨´Ópµã³öÉäµÄÏòÁ¿£¬¼ÆËã¸ÃÏòÁ¿ÓëÔ²µÄ½»µãpL
-			//¼ÆËã¶ÔÓÚpL¶ÔÓÚÔ²ĞÄµÄ½Ç¶Èalpha
+			//ç»™å®šä»pç‚¹å‡ºå°„çš„å‘é‡ï¼Œè®¡ç®—è¯¥å‘é‡ä¸åœ†çš„äº¤ç‚¹pL
+			//è®¡ç®—å¯¹äºpLå¯¹äºåœ†å¿ƒçš„è§’åº¦alpha
 			double ds = dc * cosTheta - std::sqrt(Max(0.0, radius * radius - dc * sinTheta2));
 			double cosAlpha = (dc * dc + radius * radius - ds * ds) /
 				(2 * dc * radius);
@@ -212,10 +212,10 @@ namespace Raven {
 		double dc2 = DistanceSquared(pCenter, inter.p);
 
 		if (dc2 < radius * radius)
-			//µãÔÚÔ²ÄÚ£¬¾ùÔÈ²ÉÑùÕû¸öÔ²²¢±ä»»pdfÎª¶ÔÁ¢Ìå½ÇµÄ»ı·Ö
+			//ç‚¹åœ¨åœ†å†…ï¼Œå‡åŒ€é‡‡æ ·æ•´ä¸ªåœ†å¹¶å˜æ¢pdfä¸ºå¯¹ç«‹ä½“è§’çš„ç§¯åˆ†
 			return Shape::pdf(inter, wi);
 
-		//µãÔÚÔ²Íâ£¬¼ÆËãcosThetaMax£¬Ö±½Ó¼ÆËãpdf
+		//ç‚¹åœ¨åœ†å¤–ï¼Œè®¡ç®—cosThetaMaxï¼Œç›´æ¥è®¡ç®—pdf
 		double sinThetaMax2 = radius * radius / dc2;
 		double cosThetaMax = std::sqrt(1 - sinThetaMax2);
 		return UniformConePdf(cosThetaMax);

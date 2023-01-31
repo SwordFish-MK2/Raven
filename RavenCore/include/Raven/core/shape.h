@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_SHAPE_H_
+ï»¿#ifndef _RAVEN_CORE_SHAPE_H_
 #define _RAVEN_CORE_SHAPE_H_
 
 #include<Raven/core/base.h>
@@ -54,16 +54,16 @@ namespace Raven {
 		//return area of shape surface
 		virtual double area()const = 0;
 
-		//¾ùÔÈµÄÔÚ¼¸ºÎÌå±íÃæ²ÉÑù£¬·µ»Ø¼¸ºÎÌå±íÃæµÄÒ»¸öµã£¬pdfÎª¶ÔÃæ»ı»ı·ÖµÄpdf
+		//å‡åŒ€çš„åœ¨å‡ ä½•ä½“è¡¨é¢é‡‡æ ·ï¼Œè¿”å›å‡ ä½•ä½“è¡¨é¢çš„ä¸€ä¸ªç‚¹ï¼Œpdfä¸ºå¯¹é¢ç§¯ç§¯åˆ†çš„pdf
 		virtual std::tuple<SurfaceInteraction, double> sample(const Point2f& rand)const = 0;
 
-		//¸ø¶¨¿Õ¼äÖĞµÄÒ»¸öµã£¬ÔÚ¼¸ºÎÌåÌå±íÃæ²ÉÑùÒ»¸öµã£¬pdfÎª¶ÔÁ¢Ìå½ÇµÄ»ı·Ö
+		//ç»™å®šç©ºé—´ä¸­çš„ä¸€ä¸ªç‚¹ï¼Œåœ¨å‡ ä½•ä½“ä½“è¡¨é¢é‡‡æ ·ä¸€ä¸ªç‚¹ï¼Œpdfä¸ºå¯¹ç«‹ä½“è§’çš„ç§¯åˆ†
 		virtual std::tuple<SurfaceInteraction, double> sample(const SurfaceInteraction& ref, const Point2f& rand)const;
 
-		//ÔÚ¼¸ºÎÌåÉÏ¾ùÔÈ²ÉÑùµÄpdf£¬¶ÔÃæ»ı»ı·Ö
+		//åœ¨å‡ ä½•ä½“ä¸Šå‡åŒ€é‡‡æ ·çš„pdfï¼Œå¯¹é¢ç§¯ç§¯åˆ†
 		virtual double pdf(const SurfaceInteraction&)const { return 1 / area(); }
 
-		//ÔÚ¿Õ¼äÖĞ¸ø¶¨µã²ÉÑùµÄpdf£¬¶ÔÁ¢Ìå½Ç»ı·Ö
+		//åœ¨ç©ºé—´ä¸­ç»™å®šç‚¹é‡‡æ ·çš„pdfï¼Œå¯¹ç«‹ä½“è§’ç§¯åˆ†
 		virtual double pdf(const SurfaceInteraction& inter, const Vector3f& wi)const;
 	};
 }

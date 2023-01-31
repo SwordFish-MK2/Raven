@@ -1,4 +1,4 @@
-#ifndef _RAVEN_UTILS_FACTORY_H_
+﻿#ifndef _RAVEN_UTILS_FACTORY_H_
 #define _RAVEN_UTILS_FACTORY_H_
 
 #include<Raven/core/base.h>

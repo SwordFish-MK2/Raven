@@ -1,4 +1,4 @@
-#include<Raven/core/accelerate.h>
+ï»¿#include<Raven/core/accelerate.h>
 
 namespace Raven {
 
@@ -15,7 +15,7 @@ namespace Raven {
 		HitInfo hitInfo;
 		int index;
 
-		//Çó×î½üµÄ½»µã
+		//æ±‚æœ€è¿‘çš„äº¤ç‚¹
 		for (int i = 0; i < prims.size(); i++) {
 			bool foundIntersection = prims[i]->intersect(r_in, hitInfo);
 			if (foundIntersection) {
@@ -24,9 +24,9 @@ namespace Raven {
 			}
 		}
 
-		//Èç¹ûÏà½»
+		//å¦‚æžœç›¸äº¤
 		if (flag) {
-			//Éú³É×î½ü½»µãµÄSurfaceInteraction
+			//ç”Ÿæˆæœ€è¿‘äº¤ç‚¹çš„SurfaceInteraction
 			SurfaceInteraction hitRecord = prims[index]->setInteractionProperty(hitInfo, r_in);
 			return hitRecord;
 		}

@@ -1,4 +1,4 @@
-#ifndef _RAVEN_LIGHT_AREA_LIGHT_H_
+ï»¿#ifndef _RAVEN_LIGHT_AREA_LIGHT_H_
 #define _RAVEN_LIGHT_AREA_LIGHT_H_
 
 
@@ -9,7 +9,7 @@
 
 namespace Raven {
 	/// <summary>
-	/// DiffuseAreaLightÊµÏÖÀà£¬¸Ã¹âÔ´ÉÏµÄÈÎÒâÒ»µãÏò¿Õ¼äÖĞµÄÈÎÒâ·½Ïò·øÉäÍ¬µÈ´óĞ¡µÄRadiance
+	/// DiffuseAreaLightå®ç°ç±»ï¼Œè¯¥å…‰æºä¸Šçš„ä»»æ„ä¸€ç‚¹å‘ç©ºé—´ä¸­çš„ä»»æ„æ–¹å‘è¾å°„åŒç­‰å¤§å°çš„Radiance
 	/// </summary>
 	class DiffuseAreaLight :public AreaLight {
 	public:

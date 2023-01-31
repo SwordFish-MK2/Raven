@@ -1,4 +1,4 @@
-#include<Raven/shading/oren_nayar.h>
+ï»¿#include<Raven/shading/oren_nayar.h>
 #include<Raven/core/distribution.h>
 namespace Raven {
 	//Spectrum OrenNayar::f(const vectorf3& wo,const  vectorf3& wi)const {
@@ -35,7 +35,7 @@ namespace Raven {
 	Spectrum OrenNayar::f(const Vector3f& wo, const  Vector3f& wi)const {
 		double sinThetaI = SinTheta(wi);
 		double sinThetaO = SinTheta(wo);
-		//¼ÆËãcos(phiI-phiO)
+		//è®¡ç®—cos(phiI-phiO)
 		double cosDelta = 0;
 		if (sinThetaI > 1e-4 || sinThetaO > 1e-4) {
 			double sinPhiI = SinPhi(wi);
@@ -45,7 +45,7 @@ namespace Raven {
 			cosDelta = Max(0.0, cosPhiI * cosPhiO + sinPhiI * sinPhiO);
 
 		}
-		//¼ÆËãsinAlphaÓëtanBeta
+		//è®¡ç®—sinAlphaä¸ŽtanBeta
 		double cosThetaI = abs(CosTheta(wi));
 		double cosThetaO = abs(CosTheta(wo));
 

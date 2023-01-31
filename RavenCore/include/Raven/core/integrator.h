@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_RENDERER_H_
+ï»¿#ifndef _RAVEN_CORE_RENDERER_H_
 #define _RAVEN_CORE_RENDERER_H_
 
 #include<Raven/core/base.h>
@@ -18,9 +18,9 @@ namespace Raven {
 			int spp = 100,
 			double epsilon = 0.0001) : spp(spp), epsilon(epsilon) {}
 
-		//ÀûÓÃ´«ÈëµÄCameraäÖÈ¾³¡¾°
-		//äÖÈ¾µÄ½á¹ûÊä³ö´«ÈëµÄµ½FilmÖĞ£¬
-		//´«ÈëµÄcameraÓëfilmÎªÖ¸ÕëÒÔÊµÏÖ¶àÌ¬
+		//åˆ©ç”¨ä¼ å…¥çš„Cameraæ¸²æŸ“åœºæ™¯
+		//æ¸²æŸ“çš„ç»“æœè¾“å‡ºä¼ å…¥çš„åˆ°Filmä¸­ï¼Œ
+		//ä¼ å…¥çš„cameraä¸filmä¸ºæŒ‡é’ˆä»¥å®ç°å¤šæ€
 		virtual void render(const Scene&, const Ref<Camera>&, Ref<Film>&)const = 0;
 
 	protected:
@@ -30,7 +30,7 @@ namespace Raven {
 		const int spp;
 	};
 
-	//¼ÆËãMIS weight
+	//è®¡ç®—MIS weight
 	inline double PowerHeuristic(int fNum, double fPdf, int gNum, double gPdf) {
 		double f = fNum * fPdf;
 		double g = gNum * gPdf;

@@ -1,4 +1,4 @@
-#include<Raven/core/mipmap.h>
+ï»¿#include<Raven/core/mipmap.h>
 #include<omp.h>
 #include<sstream>
 
@@ -12,12 +12,12 @@ namespace Raven {
 		Image<T> resampledImage(resolution.x, resolution.y);
 		Point2i resampledRes = resolution;
 
-		//Èç¹ûÍ¼Æ¬µÄ·Ö±æÂÊ²»ÊÇ2µÄÖ¸Êı£¬½«Æä·Å´óµ½2µÄÖ¸Êı±¶
+		//å¦‚æœå›¾ç‰‡çš„åˆ†è¾¨ç‡ä¸æ˜¯2çš„æŒ‡æ•°ï¼Œå°†å…¶æ”¾å¤§åˆ°2çš„æŒ‡æ•°å€
 		if (!IsPowerOf2(resampledRes.x) || !IsPowerOf2(resampledRes.y)) {
 			resampledRes = Point2i(RoundUpPower2(resampledRes.x), RoundUpPower2(resampledRes.y));
 			resampledImage.resize(resampledRes.x, resampledRes.y);
 
-			//ÔÚx·½ÏòÀ­ÉìÍ¼Ïñ
+			//åœ¨xæ–¹å‘æ‹‰ä¼¸å›¾åƒ
 			Image<T> xResampled(resampledRes.x, resolution.y);
 			std::vector<ResampleWeight> xWeights = resampleWeights(resolution.x, resampledRes.x);
 #pragma omp parallel for
@@ -42,7 +42,7 @@ namespace Raven {
 				}
 			}
 
-			//ÔÚy·½ÏòÀ­ÉìÍ¼Ïñ
+			//åœ¨yæ–¹å‘æ‹‰ä¼¸å›¾åƒ
 			std::vector<ResampleWeight> yWeights = resampleWeights(resolution.y, resampledRes.y);
 #pragma omp parallel for
 			for (int s = 0; s < resampledRes.x; s++) {
@@ -68,25 +68,25 @@ namespace Raven {
 			resampledImage = imageData;
 		}
 
-		//³õÊ¼»¯Í¼Ïñ½ğ×ÖËş
+		//åˆå§‹åŒ–å›¾åƒé‡‘å­—å¡”
 		maxLevel = 1 + static_cast<int>(Log2(Max(resampledRes.x, resampledRes.y)));
 		pyramid.resize(maxLevel);
 
-		//½ğ×ÖËşµ×²ãÎªÀ­ÉìºóµÄÔ­Í¼Ïñ
+		//é‡‘å­—å¡”åº•å±‚ä¸ºæ‹‰ä¼¸åçš„åŸå›¾åƒ
 		pyramid[0].reset(new Image<T>(resampledRes.x, resampledRes.y, &resampledImage[0]));
 
 
 		int sRes = resampledRes.x;
 		int tRes = resampledRes.y;
 
-		//Éú³ÉµÚi²ãÍ¼Ïñ
+		//ç”Ÿæˆç¬¬iå±‚å›¾åƒ
 		for (int i = 1; i < maxLevel; i++) {
-			//¼ÆËãµÚi²ãÍ¼ÏñµÄ·Ö±æÂÊ
+			//è®¡ç®—ç¬¬iå±‚å›¾åƒçš„åˆ†è¾¨ç‡
 			sRes = Max(1, sRes / 2);
 			tRes = Max(1, tRes / 2);
 			pyramid[i].reset(new Image<T>(sRes, tRes));
 
-			//ÓÃbox filter´¦ÀíÉÏÒ»²ãµÄÎÆËØµÃµ½¸Ã²ãÎÆËØµÄÖµ
+			//ç”¨box filterå¤„ç†ä¸Šä¸€å±‚çš„çº¹ç´ å¾—åˆ°è¯¥å±‚çº¹ç´ çš„å€¼
 #pragma omp parallel for
 			for (int t = 0; t < tRes; t++) {
 				for (int s = 0; s < sRes; s++) {
@@ -131,21 +131,21 @@ namespace Raven {
 		return weights;
 	}
 
-	//ÊäÈëÎÆÀí×ø±êstÓëfilterµÄ¿í¶È£¬´ÓMipmapÖĞÈ¡Ò»¸öÖµ
+	//è¾“å…¥çº¹ç†åæ ‡stä¸filterçš„å®½åº¦ï¼Œä»Mipmapä¸­å–ä¸€ä¸ªå€¼
 	template<class T>
 	T Mipmap<T>::lookup(const Point2f& st, double width)const {
-		//¸ù¾İfilter¿í¶È¼ÆËãÒ»¸ö¸¡µãÊı±íÊ¾µÄ²ãÊı
+		//æ ¹æ®filterå®½åº¦è®¡ç®—ä¸€ä¸ªæµ®ç‚¹æ•°è¡¨ç¤ºçš„å±‚æ•°
 		double level = pyramid.size() - 1 + Log2(Max(width, 1e-8));
 
 		if (level < 0)
-			return triangle(0, st);//·µ»ØÔÚÔ­Í¼ÏñstÎÆÀí×ø±êÏÂµÄÖµ
+			return triangle(0, st);//è¿”å›åœ¨åŸå›¾åƒstçº¹ç†åæ ‡ä¸‹çš„å€¼
 
 		else if (level > (int64_t)maxLevel - 1)
-			return texel(maxLevel - 1, 0, 0);//×î´ó²ãµÄMipmapÖ»ÓĞÒ»¸ö¹Ì¶¨Öµ
+			return texel(maxLevel - 1, 0, 0);//æœ€å¤§å±‚çš„Mipmapåªæœ‰ä¸€ä¸ªå›ºå®šå€¼
 
 		else {
 			//triangle filter both image level beside and linear interpolate two filtered value
-			//ÔÚÁÚ½üµÄÁ½²ãÖĞÓÃÈı½ÇÂË²¨ÇóµÃstÎÆÀí×ø±êÏÂµÄÖµ²¢²åÖµ
+			//åœ¨é‚»è¿‘çš„ä¸¤å±‚ä¸­ç”¨ä¸‰è§’æ»¤æ³¢æ±‚å¾—stçº¹ç†åæ ‡ä¸‹çš„å€¼å¹¶æ’å€¼
 			int levelFlr = (int)std::floor(level);
 			double delta = level - levelFlr;
 			T vLastLevel = triangle(levelFlr, st);
@@ -154,11 +154,11 @@ namespace Raven {
 		}
 	}
 
-	//ÊäÈëÎÆÀí×ø±êstÓëÆ«µ¼Êı£¬´ÓMipmapÖĞÈ¡Ò»¸öÖµ
+	//è¾“å…¥çº¹ç†åæ ‡stä¸åå¯¼æ•°ï¼Œä»Mipmapä¸­å–ä¸€ä¸ªå€¼
 	template<class T>
 	T Mipmap<T>::lookup(const Point2f& st, const Vector2f& dstdx, const Vector2f& dstdy)const {
 
-		//ÎÆÀíÂË²¨µÄ¿í¶ÈÎªËÄ¸öÆ«µ¼ÊıµÄ×î´óÖµ
+		//çº¹ç†æ»¤æ³¢çš„å®½åº¦ä¸ºå››ä¸ªåå¯¼æ•°çš„æœ€å¤§å€¼
 		double filterWidth = Max(Max(abs(dstdx.x), abs(dstdx.y)),
 			Max(abs(dstdy.x), abs(dstdy.y)));
 		return lookup(st, filterWidth);
@@ -180,7 +180,7 @@ namespace Raven {
 		}
 	}
 
-	// Ë«ÏßĞÔ²åÖµ
+	// åŒçº¿æ€§æ’å€¼
 	template<class T>
 	T Mipmap<T>::triangle(int level, const Point2f& st)const {
 		level = Clamp(level, 0, (int64_t)maxLevel - 1);

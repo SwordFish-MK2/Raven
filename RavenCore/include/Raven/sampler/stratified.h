@@ -1,4 +1,4 @@
-#ifndef _RAVEN_SAMPELR_STRATIFIED_H_
+ï»¿#ifndef _RAVEN_SAMPELR_STRATIFIED_H_
 #define _RAVEN_SAMPLER_STRATIFIED_H_
 
 #include<Raven/core/base.h>
@@ -6,7 +6,7 @@
 
 namespace Raven {
 	/// <summary>
-	/// ·Ö²ã²ÉÑù
+	/// åˆ†å±‚é‡‡æ ·
 	/// </summary>
 	class StratifiedSampler final :public PixelSampler {
 	public:

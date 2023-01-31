@@ -1,4 +1,4 @@
-#ifndef _RAVEN_MATERIAL_PLASTIC_H_
+﻿#ifndef _RAVEN_MATERIAL_PLASTIC_H_
 #define _RAVEN_MATERIAL_PLASTIC_H_
 
 #include<Raven/core/material.h>

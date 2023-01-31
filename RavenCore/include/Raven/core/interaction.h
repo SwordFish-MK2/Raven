@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_INTERACTION_H_
+ï»¿#ifndef _RAVEN_CORE_INTERACTION_H_
 #define _RAVEN_CORE_INTERACTION_H_
 
 #include<Raven/core/base.h>
@@ -29,20 +29,20 @@ namespace Raven {
 
 		bool isMediumInteraction() { return !isSurfaceInteraction(); }
 
-		//getMediumº¯ÊıÖ»ÔÚ´æÔÚmediumµÄ³¡¾°Ê±Ê¹ÓÃ
-		//¶ÔÓÚSurfaceInteraction£¬µ÷ÓÃ¸Ãº¯Êı´«ÈëÉ¢Éä¹âÏßµÄ·½Ïò
-		//·µ»ØÉ¢Éä¹âÏßËùÔÚ½éÖÊµÄÖ¸Õë
+		//getMediumå‡½æ•°åªåœ¨å­˜åœ¨mediumçš„åœºæ™¯æ—¶ä½¿ç”¨
+		//å¯¹äºSurfaceInteractionï¼Œè°ƒç”¨è¯¥å‡½æ•°ä¼ å…¥æ•£å°„å…‰çº¿çš„æ–¹å‘
+		//è¿”å›æ•£å°„å…‰çº¿æ‰€åœ¨ä»‹è´¨çš„æŒ‡é’ˆ
 		const Ref<Medium> getMedium(const Vector3f& w)const;
 
-		//¶ÔÓÚMediumIntraction,µ÷ÓÃ¸ÃÖØÔØÖ±½Ó·µ»ØËù´¦½éÖÊµÄÖ¸Õë
+		//å¯¹äºMediumIntraction,è°ƒç”¨è¯¥é‡è½½ç›´æ¥è¿”å›æ‰€å¤„ä»‹è´¨çš„æŒ‡é’ˆ
 		const Ref<Medium> getMedium()const;
 	public:
-		Point3f p;//½»µã
-		double t;//¹âÏß´«²¥µÄ¾àÀë²ÎÊı
-		double time;//¹âÏßÓÉÏà»ú³öÉäµÄÊ±¼ä
-		Vector3f wo;//¹âÏßµÄ·´·½Ïò
-		Normal3f n;//¼¸ºÎ·¨Ïß
-		MediumInterface mediumInterface;//±íÃæÁ½±ßµÄ½éÖÊ
+		Point3f p;//äº¤ç‚¹
+		double t;//å…‰çº¿ä¼ æ’­çš„è·ç¦»å‚æ•°
+		double time;//å…‰çº¿ç”±ç›¸æœºå‡ºå°„çš„æ—¶é—´
+		Vector3f wo;//å…‰çº¿çš„åæ–¹å‘
+		Normal3f n;//å‡ ä½•æ³•çº¿
+		MediumInterface mediumInterface;//è¡¨é¢ä¸¤è¾¹çš„ä»‹è´¨
 	};
 
 	struct SurfaceInteraction :public Interaction {
@@ -60,7 +60,7 @@ namespace Raven {
 		void setShadingGeometry(const Vector3f& dpdu, const Vector3f& dpdv,
 			const Vector3f& dndu, const Vector3f& dndv);
 
-		//¼ÆËãdudx dudy dvdx dvdy
+		//è®¡ç®—dudx dudy dvdx dvdy
 		void computeDifferential(const RayDifferential& rd);
 
 		Spectrum Le(const Vector3f& wi)const;
@@ -75,13 +75,13 @@ namespace Raven {
 		const AreaLight* light;
 		Vector3f emit;
 
-		Point2f uv;//½»µãµÄuv×ø±ê
+		Point2f uv;//äº¤ç‚¹çš„uvåæ ‡
 
-		//½»µãËùÔÚÆ½ÃæµÄÆ«µ¼Êı
+		//äº¤ç‚¹æ‰€åœ¨å¹³é¢çš„åå¯¼æ•°
 		Vector3f dpdu, dpdv;
 		Vector3f dndu, dndv;
 
-		//¹ØÓÚÏñËØµÄÆ«µ¼£¬ÓÃÓÚ¼ÆËãImageTexture filterµÄ´óĞ¡
+		//å…³äºåƒç´ çš„åå¯¼ï¼Œç”¨äºè®¡ç®—ImageTexture filterçš„å¤§å°
 		mutable Vector3f dpdx, dpdy;
 		mutable double dudx, dudy, dvdx, dvdy;
 

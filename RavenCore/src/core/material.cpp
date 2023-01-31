@@ -1,4 +1,4 @@
-#include<Raven/core/material.h>
+ï»¿#include<Raven/core/material.h>
 #include<Raven/core/interaction.h>
 
 namespace Raven {
@@ -7,41 +7,41 @@ namespace Raven {
 		const Ref<Texture<double>>& bump,
 		SurfaceInteraction& si)
 	{
-		//Í¨¹ýbump map»ñÈ¡pPrime£¬¼ÆËãdpPrimeµãµÄÇÐÏßdpdu£¬dpdvÈ·¶¨ÐÂµÄ·¨Ïß·½Ïò
+		//é€šè¿‡bump mapèŽ·å–pPrimeï¼Œè®¡ç®—dpPrimeç‚¹çš„åˆ‡çº¿dpduï¼Œdpdvç¡®å®šæ–°çš„æ³•çº¿æ–¹å‘
 
 		double dis = bump->evaluate(si);
 		SurfaceInteraction d_si = si;
 
-		//ÀûÓÃÇ°Ïò²î·Ö¼ÆËãdBump_du
+		//åˆ©ç”¨å‰å‘å·®åˆ†è®¡ç®—dBump_du
 
-		//¼ÆËãdeltaUµÄ³¤¶È
+		//è®¡ç®—deltaUçš„é•¿åº¦
 		double deltaU = .5 * (std::abs(si.dudx) + std::abs(si.dudy));
 		if (deltaU == 0)deltaU = 0.01;
 
-		//¼ÆËãbump(U+deltaU,V)
+		//è®¡ç®—bump(U+deltaU,V)
 		d_si.p = si.p + si.dpdu * deltaU;
 		d_si.uv = si.uv + Vector2f(deltaU, 0);
 		d_si.n = Normalize(Cross(si.shading.dpdu, si.shading.dpdv) + deltaU * si.dndu);
 		double dis_u = bump->evaluate(d_si);
 
-		//¼ÆËãdBump_du
+		//è®¡ç®—dBump_du
 		Vector3f dpdu = si.shading.dpdu +
 			(dis_u - dis) / deltaU * Vector3f(si.shading.n) +
 			dis * si.shading.dndu;
 
-		//ÀûÓÃÇ°Ïò²î·Ö¼ÆËãdBump_dv
+		//åˆ©ç”¨å‰å‘å·®åˆ†è®¡ç®—dBump_dv
 
-		//¼ÆËãdeltaVµÄ³¤¶È
+		//è®¡ç®—deltaVçš„é•¿åº¦
 		double deltaV = .5 * (std::abs(si.dvdx) + std::abs(si.dvdy));
 		if (deltaV == 0)deltaV = 0.01;
 
-		//¼ÆËãbump(U,V+deltaV)
+		//è®¡ç®—bump(U,V+deltaV)
 		d_si.p = si.p + si.dpdv * deltaV;
 		d_si.uv = si.uv + Vector2f(0.0, deltaV);
 		d_si.n = Normalize(Cross(si.shading.dpdu, si.shading.dpdv) + deltaV * si.dndv);
 		double dis_v = bump->evaluate(d_si);
 
-		//¼ÆËãdBump_dv
+		//è®¡ç®—dBump_dv
 		Vector3f dpdv = si.shading.dpdv +
 			(dis_v - dis) / deltaV * Vector3f(si.shading.n) +
 			dis * si.shading.dndv;

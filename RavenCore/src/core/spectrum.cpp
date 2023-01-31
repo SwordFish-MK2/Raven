@@ -1,4 +1,4 @@
-#include<Raven/core/spectrum.h>
+﻿#include<Raven/core/spectrum.h>
 
 namespace Raven {
 	//samples from pbrt

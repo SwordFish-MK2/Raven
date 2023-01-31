@@ -1,4 +1,4 @@
-#include<Raven/core/texture.h>
+﻿#include<Raven/core/texture.h>
 
 namespace Raven {
 	namespace RConstTexture {

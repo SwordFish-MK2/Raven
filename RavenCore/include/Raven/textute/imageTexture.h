@@ -1,4 +1,4 @@
-#ifndef _RAVEN_TEXTURE_IMAGE_TEXTURE_H_
+ï»¿#ifndef _RAVEN_TEXTURE_IMAGE_TEXTURE_H_
 #define _RAVEN_TEXTURE_IMAGE_TEXTURE_H_
 
 #include<Raven/core/base.h>
@@ -29,9 +29,9 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// Í¼ÏñÎÆÀí
-	/// µ¥Í¨µÀÎÆÀí£º TMemory = double, TReturn = double
-	/// ÈıÍ¨µÀÎÆÀí£º TMemory = RGBSpectrum, TReturn = Spectrum
+	/// å›¾åƒçº¹ç†
+	/// å•é€šé“çº¹ç†ï¼š TMemory = double, TReturn = double
+	/// ä¸‰é€šé“çº¹ç†ï¼š TMemory = RGBSpectrum, TReturn = Spectrum
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	template<class TMemory, class TReturn>

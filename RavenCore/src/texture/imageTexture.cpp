@@ -1,4 +1,4 @@
-#include<Raven/textute/imageTexture.h>
+ï»¿#include<Raven/textute/imageTexture.h>
 #include<Raven/utils/loader.h>
 #include<Raven/core/mipmap.h>
 namespace Raven {
@@ -18,7 +18,7 @@ namespace Raven {
 		return result;
 	}
 
-	//¶ÁÈ¡Ò»ÕÅÎÆÀí£¬»ñÈ¡ÆäMipmap
+	//è¯»å–ä¸€å¼ çº¹ç†ï¼Œè·å–å…¶Mipmap
 	template<class TMemory, class TReturn>
 	Mipmap<TMemory>* ImageTexture<TMemory, TReturn>::getTexture(
 		const std::string& path,
@@ -26,17 +26,17 @@ namespace Raven {
 		ImageWrap wrap,
 		bool gamma) {
 
-		//Èç¹ûÏµÍ³ÒÑ¼ÓÔØ¸ÃÍ¼Ïñ£¬·µ»Ø¸ÃÍ¼ÏñµÄMipmap
+		//å¦‚æœç³»ç»Ÿå·²åŠ è½½è¯¥å›¾åƒï¼Œè¿”å›è¯¥å›¾åƒçš„Mipmap
 		TextureInfo info(path, doTrilinear, wrap, gamma);
 		if (textureMap.find(info) != textureMap.end())
 			return textureMap[info].get();
 
-		//Èç¹ûÏµÍ³ÉĞÎ´¼ÓÔØ¸ÃÍ¼Ïñ£¬¶ÁÈ¡Í¼Æ¬²¢Éú³ÉMipmap
+		//å¦‚æœç³»ç»Ÿå°šæœªåŠ è½½è¯¥å›¾åƒï¼Œè¯»å–å›¾ç‰‡å¹¶ç”ŸæˆMipmap
 		else {
-			//¶ÁÈ¡Í¼Æ¬²¢´¢´æÍ¼Æ¬µÄRGBÖµ
+			//è¯»å–å›¾ç‰‡å¹¶å‚¨å­˜å›¾ç‰‡çš„RGBå€¼
 			Image<RGBSpectrum> imageData = ReadImage(path);
 
-			//½«Í¼ÏñµÄyÖá·´×ª£¨Í¼Ïñ¿Õ¼äÏÂÍ¼ÏñµÄÔ­µãÎ»ÓÚ×óÉÏ½Ç£¬yÖáÏòÏÂ£¬ÎÆÀí×ø±êµÄÔ­µãÎ»ÓÚ×óÏÂ½Ç£¬tÖáÏòÉÏ£©
+			//å°†å›¾åƒçš„yè½´åè½¬ï¼ˆå›¾åƒç©ºé—´ä¸‹å›¾åƒçš„åŸç‚¹ä½äºå·¦ä¸Šè§’ï¼Œyè½´å‘ä¸‹ï¼Œçº¹ç†åæ ‡çš„åŸç‚¹ä½äºå·¦ä¸‹è§’ï¼Œtè½´å‘ä¸Šï¼‰
 			for (int x = 0; x < imageData.uSize(); x++) {
 				for (int y = 0; y < imageData.vSize(); y++) {
 					int invY = imageData.vSize() - 1 - y;
@@ -46,13 +46,13 @@ namespace Raven {
 
 			//TODO::!imageData
 
-			//½«Í¼Ïñ´ÓRGB¸ñÊ½×ª»¯ÎªÎÆÀíÖ¸¶¨µÄ´æ´¢¸ñÊ½(RGBSpectrum»òÕßDouble)
+			//å°†å›¾åƒä»RGBæ ¼å¼è½¬åŒ–ä¸ºçº¹ç†æŒ‡å®šçš„å­˜å‚¨æ ¼å¼(RGBSpectrumæˆ–è€…Double)
 			Image<TMemory> convertedImage(imageData.uSize(), imageData.vSize());
 			for (int i = 0; i < imageData.uSize() * imageData.vSize(); i++) {
 				convertIn(imageData[i], convertedImage[i], gamma);
 			}
 
-			//Ê¹ÓÃ¶ÁÈ¡µÄÍ¼ÏñÉú³ÉMipmap²¢´æ´¢ÔÚtextureMapÖĞ
+			//ä½¿ç”¨è¯»å–çš„å›¾åƒç”ŸæˆMipmapå¹¶å­˜å‚¨åœ¨textureMapä¸­
 			Mipmap<TMemory>* mipmap = new Mipmap<TMemory>(convertedImage, doTrilinear, wrap);
 			textureMap[info].reset(mipmap);
 			return mipmap;
@@ -112,9 +112,9 @@ namespace Raven {
 
 	ImageTextureSpectraReg ImageTextureSpectraReg::regHelper;
 
-	//ImageTextureÓĞÁ½ÖÖĞÎÊ½
-	template class ImageTexture<RGBSpectrum, Spectrum>;//ÒÔRGB¸ñÊ½´æ´¢£¬·µ»ØRavenÕıÔÚÊ¹ÓÃµÄ¹âÆ×¸ñÊ½
-	template class ImageTexture<double, double>;//ÒÔ¸¡µãÊıµÄ¸ñÊ½´æ´¢£¬·µ»Ø¸¡µãÊı¸ñÊ½
+	//ImageTextureæœ‰ä¸¤ç§å½¢å¼
+	template class ImageTexture<RGBSpectrum, Spectrum>;//ä»¥RGBæ ¼å¼å­˜å‚¨ï¼Œè¿”å›Ravenæ­£åœ¨ä½¿ç”¨çš„å…‰è°±æ ¼å¼
+	template class ImageTexture<double, double>;//ä»¥æµ®ç‚¹æ•°çš„æ ¼å¼å­˜å‚¨ï¼Œè¿”å›æµ®ç‚¹æ•°æ ¼å¼
 }
 
 

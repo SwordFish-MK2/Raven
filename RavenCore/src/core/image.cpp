@@ -1,4 +1,4 @@
-#include<Raven/core/image.h>
+ï»¿#include<Raven/core/image.h>
 #include<Raven/core/spectrum.h>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -41,7 +41,7 @@ namespace Raven {
 	void WriteImage(const Image<RGBSpectrum>& image, const std::string& filename) {
 		unsigned char* colorData = (unsigned char*)malloc(sizeof(unsigned char) * 3 * image.uSize() * image.vSize());
 
-		//±éÀúÃ¿¸öÏñËØ
+		//éå†æ¯ä¸ªåƒç´ 
 		for (int y = 0; y < image.vSize(); y++) {
 			for (int x = 0; x < image.uSize(); x++) {
 				const RGBSpectrum& pixelValue = image(x, y);
@@ -59,7 +59,7 @@ namespace Raven {
 	void WriteImage(const Image<double>& image, const std::string& filename) {
 		unsigned char* colorData = (unsigned char*)malloc(sizeof(unsigned char) * 3 * image.uSize() * image.vSize());
 
-		//±éÀúÃ¿¸öÏñËØ
+		//éå†æ¯ä¸ªåƒç´ 
 		for (int y = 0; y < image.uSize(); y++) {
 			for (int x = 0; x < image.vSize(); x++) {
 				const RGBSpectrum& pixelValue = RGBSpectrum(image(x, y));

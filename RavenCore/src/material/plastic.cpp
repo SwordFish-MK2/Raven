@@ -1,4 +1,4 @@
-#include<Raven/material/plastic.h>
+ï»¿#include<Raven/material/plastic.h>
 #include<Raven/shading/lambertain.h>
 #include<Raven/shading/microfacet.h>
 
@@ -17,7 +17,7 @@ namespace Raven {
 		Spectrum ksValue = ks->evaluate(hitRecord);
 		double roughValue = roughness->evaluate(hitRecord);
 
-		//Ìí¼Óshading models
+		//æ·»åŠ shading models
 
 		//diffuse
 		if (kdValue != Spectrum(0.0)) {

@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_OBJECT_H_
+ï»¿#ifndef _RAVEN_CORE_OBJECT_H_
 #define _RAVEN_CORE_OBJECT_H_
 
 #include<string>
@@ -22,7 +22,7 @@ namespace Raven {
 
 		RavenClass(const ObjectConstructor& cons) :constructor(cons) {}
 
-		//¹¹½¨¶ÔÏó
+		//æž„å»ºå¯¹è±¡
 		virtual Ref<RavenObject> constructObject()const;
 	private:
 

@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_BSDF_H_
+﻿#ifndef _RAVEN_CORE_BSDF_H_
 #define _RAVEN_CORE_BSDF_H_
 
 #include<vector>

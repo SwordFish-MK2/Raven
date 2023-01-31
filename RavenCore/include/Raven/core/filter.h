@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_FILTER_H_
+ï»¿#ifndef _RAVEN_CORE_FILTER_H_
 #define _RAVEN_CORE_FILTER_H_
 
 #include<Raven/core/math.h>
@@ -8,11 +8,11 @@
 namespace Raven {
 	class Filter:RavenObject {
 	public:
-		//ÊäÈëÒª´¦ÀíµÄµã¾àÀëÂË²¨ºËµÄ¾àÀë
+		//è¾“å…¥è¦å¤„ç†çš„ç‚¹è·ç¦»æ»¤æ³¢æ ¸çš„è·ç¦»
 		virtual double evaluate(const Point2f& p)const = 0;
 		Filter(const Vector2f& r) :radius(r), invRadius(Vector2f(1 / r.x, 1 / r.y)) {}
 	protected:
-		Vector2f radius, invRadius;//radiusÎªÂË²¨ÔÚx£¬y·½ÏòÉÏµÄ°ë¾¶
+		Vector2f radius, invRadius;//radiusä¸ºæ»¤æ³¢åœ¨xï¼Œyæ–¹å‘ä¸Šçš„åŠå¾„
 	};
 
 	class Filter1D {
