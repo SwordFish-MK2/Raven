@@ -53,7 +53,7 @@ namespace Raven {
 
 		SurfaceInteraction setInteractionProperty(const HitInfo& p, const RayDifferential& ray) const override;
 
-		Bound3f worldBounds()const;
+		Bound3f worldBounds()const override;
 
 		static std::shared_ptr<TransformedPrimitive> build(
 			const Transform* ptw,

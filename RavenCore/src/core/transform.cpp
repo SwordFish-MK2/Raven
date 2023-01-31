@@ -1,5 +1,5 @@
 #include<Raven/core/transform.h>
-#include<assert.h>
+
 namespace Raven {
 #define Radiance M_PI/180.f
 
@@ -81,31 +81,31 @@ namespace Raven {
 		return invMat;
 	}
 
-	template<class T>
-	Vector3<T> Transform::operator()(const Vector3<T>& v)const {
-		return Vector3<T>{ v.x* m.data[0] + v.y * m.data[1] + v.z * m.data[2],
-			v.x* m.data[4] + v.y * m.data[5] + v.z * m.data[6],
-			v.x* m.data[8] + v.y * m.data[9] + v.z * m.data[10] };
-	}
+	// template<class T>
+	// Vector3<T> Transform::operator()(const Vector3<T>& v)const {
+	// 	return Vector3<T>{ v.x* m.data[0] + v.y * m.data[1] + v.z * m.data[2],
+	// 		v.x* m.data[4] + v.y * m.data[5] + v.z * m.data[6],
+	// 		v.x* m.data[8] + v.y * m.data[9] + v.z * m.data[10] };
+	// }
 
-	template<class T>
-	Point3<T> Transform::operator()(const Point3<T>& p)const {
-		Point3<T> p2{ p.x * m.data[0] + p.y * m.data[1] + p.z * m.data[2] + m.data[3],
-			p.x * m.data[4] + p.y * m.data[5] + p.z * m.data[6] + m.data[7],
-			p.x * m.data[8] + p.y * m.data[9] + p.z * m.data[10] + m.data[11] };
-		T w = p.x * m.data[12] + p.y * m.data[13] + p.z * m.data[14] + m.data[15];
+	// template<class T>
+	// Point3<T> Transform::operator()(const Point3<T>& p)const {
+	// 	Point3<T> p2{ p.x * m.data[0] + p.y * m.data[1] + p.z * m.data[2] + m.data[3],
+	// 		p.x * m.data[4] + p.y * m.data[5] + p.z * m.data[6] + m.data[7],
+	// 		p.x * m.data[8] + p.y * m.data[9] + p.z * m.data[10] + m.data[11] };
+	// 	T w = p.x * m.data[12] + p.y * m.data[13] + p.z * m.data[14] + m.data[15];
 
-		//make sure the w component of point is 1
-		if (w == 1)return p2;
-		else return p2 /= w;
-	}
+	// 	//make sure the w component of point is 1
+	// 	if (w == 1)return p2;
+	// 	else return p2 /= w;
+	// }
 
-	template<class T>
-	Normal3<T> Transform::operator()(const Normal3<T>& v)const {
-		return Normal3<T>{v.x* invm.data[0] + v.y * invm.data[4] + v.z * invm.data[8],
-			v.x* invm.data[1] + v.y * invm.data[5] + v.z * invm.data[9],
-			v.x* invm.data[2] + v.y * invm.data[6] + v.z * invm.data[10]};
-	}
+	// template<class T>
+	// Normal3<T> Transform::operator()(const Normal3<T>& v)const {
+	// 	return Normal3<T>{v.x* invm.data[0] + v.y * invm.data[4] + v.z * invm.data[8],
+	// 		v.x* invm.data[1] + v.y * invm.data[5] + v.z * invm.data[9],
+	// 		v.x* invm.data[2] + v.y * invm.data[6] + v.z * invm.data[10]};
+	// }
 
 	Bound3f Transform::operator()(const Bound3f& b)const {
 		const Transform& m = *this;

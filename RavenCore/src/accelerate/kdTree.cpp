@@ -66,7 +66,7 @@ namespace Raven {
 			int newNodeSize = std::max(512, 2 * nAccelNode);
 			KdTreeNode* newArray = new KdTreeNode[newNodeSize];
 
-			//���ԭ�ڴ�ռ������ݣ��������ݲ��ͷ�ԭ�ڴ�ռ�
+			//copy nodes
 			if (nAccelNode > 0) {
 				std::memcpy(newArray, treeNodes, sizeof(KdTreeNode) * nAccelNode);
 				delete[] treeNodes;

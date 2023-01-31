@@ -15,7 +15,7 @@ namespace Raven {
 			int spp = 100,
 			int maxDepth = 64,
 			double epslion = 1e-6) :
-			Integrator(spp, epsilon), maxDepth(maxDepth) {}
+			Integrator(spp, epslion), maxDepth(maxDepth) {}
 		void render(const Scene&, const Ref<Camera>&, Ref<Film>&)const override;
 
 		static Ref<PathTracingIntegrator> construct(const PropertyList& param);

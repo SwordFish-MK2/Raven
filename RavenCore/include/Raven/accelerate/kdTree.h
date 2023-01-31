@@ -9,42 +9,6 @@ namespace Raven {
 	struct KdTreeNode;
 	struct BoundEdge;
 	struct IntersectInfo;
-	class KdTreeAccel final :public Accelerate {
-	private:
-		void buildNode(int* nodeNum, int depth, const int* pIndStart, int nPrimitives,
-			const Bound3f& nodeBounds, const std::vector<Bound3f>& allPrimBounds,
-			std::shared_ptr<BoundEdge[]> edge[3], int* prims0, int* prims1, int badRefine);
-	public:
-		KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int num);
-
-		KdTreeAccel(const KdTreeAccel& tree) = delete;
-
-		bool hit(const RayDifferential& r_in)const override;
-
-		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
-
-		~KdTreeAccel() {
-			if (treeNodes)
-				delete[] treeNodes;
-		}
-	private:
-		int maxDepth;				//树的最大深度
-		const int primsThreshold;	//在一个节点中拥有的最大图元个数
-		const int isectCost;		//与一个节点相交的开销，由用户指定
-		const int traversalCost;	//光线在加速结构中穿梭的开销
-		const double emptyBonus;	//bonus value between 0 and 1
-		int nextFreeNode = 0;
-		int nAccelNode = 0;
-		std::vector<int> primIndices;
-		KdTreeNode* treeNodes;
-
-		struct NodeToProcess {
-			const KdTreeNode* node;
-			Float tMin, tMax;
-		};
-	};
-
-	enum class EdgeType { EdgeStart, EdgeEnd };
 
 	/// <summary>
 	/// KdTreeNode,为了充分利用cache，数据压缩为8B，8个Node刚好能放入64B的cache line
@@ -100,6 +64,45 @@ namespace Raven {
 			int aboveChild;		//if this node is interior node, the upper 30 bits record the index of above child of this node
 		};
 	};
+
+	class KdTreeAccel final :public Accelerate {
+	private:
+		void buildNode(int* nodeNum, int depth, const int* pIndStart, int nPrimitives,
+			const Bound3f& nodeBounds, const std::vector<Bound3f>& allPrimBounds,
+			std::shared_ptr<BoundEdge[]> edge[3], int* prims0, int* prims1, int badRefine);
+	public:
+		KdTreeAccel(const std::vector<std::shared_ptr<Primitive>>& p, int maxD, int it, int tt, double eb, int num);
+
+		KdTreeAccel(const KdTreeAccel& tree) = delete;
+
+		bool hit(const RayDifferential& r_in)const override;
+
+		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
+
+		~KdTreeAccel() {
+			if (treeNodes)
+				delete[] treeNodes;
+		}
+	private:
+		int maxDepth;				//树的最大深度
+		const int primsThreshold;	//在一个节点中拥有的最大图元个数
+		const int isectCost;		//与一个节点相交的开销，由用户指定
+		const int traversalCost;	//光线在加速结构中穿梭的开销
+		const double emptyBonus;	//bonus value between 0 and 1
+		int nextFreeNode = 0;
+		int nAccelNode = 0;
+		std::vector<int> primIndices;
+		KdTreeNode* treeNodes;
+
+		struct NodeToProcess {
+			const KdTreeNode* node;
+			Float tMin, tMax;
+		};
+	};
+
+	enum class EdgeType { EdgeStart, EdgeEnd };
+
+
 
 	struct BoundEdge {
 		BoundEdge(bool start, double pos, int prim) :pos(pos), prim(prim) {
