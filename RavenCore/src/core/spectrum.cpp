@@ -961,6 +961,7 @@ namespace Raven {
 		if (lamda[n - 1] < lamdaStart)
 			return v[n - 1];
 		double sum = 0;
+
 		//compute part of SPD outside the provided range
 		if (lamdaStart < lamda[0])
 			sum += (lamda[0] - lamdaStart) * v[0];
@@ -981,7 +982,7 @@ namespace Raven {
 			sum += 0.5 * (interp(segLambdaStart, i) + interp(segLambdaEnd, i)) *
 				(segLambdaEnd - segLambdaStart);
 		}
-		return sum / (lamdaStart, lamdaEnd);
+		return sum / (lamdaStart - lamdaEnd);
 	}
 	
 	bool SampleSorted(const double* lambda, const double* v, int n) {
@@ -1042,20 +1043,22 @@ namespace Raven {
 	SampledSpectrum SampledSpectrum::IllumYellowCurve;
 
 	SampledSpectrum SampledSpectrum::fromSampled(const double* lambda, const double* v, int n) {
+		//samples are not sorted, allocate new memory and sort samples
 		if (!SampleSorted(lambda, v, n)) {
-			//samples are not sorted, allocate new memory and sort samples
 			std::vector<double> sLambda(&lambda[0], &lambda[n - 1]);
 			std::vector<double> sVal(&v[0], &v[n - 1]);
 			SortSample(&sLambda[0], &sVal[0], n);
 			return fromSampled(&sLambda[0], &sVal[0], n);
 		}
-		//if samples are sorted
+
+		//resample sorted spectrum samples to get SampledSpectrum
 		SampledSpectrum spectrum;
 		for (int i = 0; i < nSamples; i++) {
 			double start = Lerp(double(i) / nSamples, (double)sampledLambdaStart, (double)sampledLambdaEnd);
 			double end = Lerp(double(i + 1) / nSamples, (double)sampledLambdaStart, (double)sampledLambdaEnd);
 			spectrum.c[i] = AverageSpectrumSample(lambda, v, n, start, end);
 		}
+		return spectrum;
 	}
 
 	SampledSpectrum SampledSpectrum::fromRGB(const double rgb[3], RGBType type) {
@@ -1148,10 +1151,9 @@ namespace Raven {
 	double SampledSpectrum::y()const {
 		double y = 0.f;
 		for (int i = 0; i < nSamples; i++) {
-			double length = double(sampledLambdaEnd - sampledLambdaStart) / nSamples;
-			y += length * c[i] * YCurve[i];
-			return y / (sampledLambdaEnd - sampledLambdaStart);
+			y +=  c[i] * YCurve[i];
 		}
+		return y * (sampledLambdaEnd - sampledLambdaStart)/(Float)nSamples;
 	}
 
 	void SampledSpectrum::toXYZ(double xyz[3])const {

@@ -213,8 +213,9 @@ namespace Raven {
 			t = Clamp(t, 0, l.vSize() - 1);
 			break;
 		case ImBlack:
-			if (s<0 || s>l.uSize() - 1)return T(0.);
-			if (t<0 || s>l.vSize() - 1)return T(0.);
+			static const T black(0.0);//to avoid returning a reference of a local temporary object
+			if (s<0 || s>l.uSize() - 1)return black;
+			if (t<0 || s>l.vSize() - 1)return black;
 			break;
 		}
 		return l(s, t);

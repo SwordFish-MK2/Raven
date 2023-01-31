@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_SHADING_MODLE_SPECULAR_H_
+﻿#ifndef _RAVEN_SHADING_MODEL_SPECULAR_H_
 #define _RAVEN_SHADING_MODEL_SPECULAR_H_
 
 #include<Raven/core/base.h>
@@ -58,7 +58,7 @@ namespace Raven {
 			R(r),
 			T(t),
 			etaA(etaa),
-			etaB(etaB) {}
+			etaB(etab) {}
 
 		Spectrum sampled_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample, double& pdf)const override;
 
