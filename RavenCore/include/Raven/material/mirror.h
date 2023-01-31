@@ -1,4 +1,4 @@
-#ifndef _RAVEN_MATERIAL_MIRROR_H_
+﻿#ifndef _RAVEN_MATERIAL_MIRROR_H_
 #define _RAVEN_MATERIAL_MIRROR_H_
 
 #include<Raven/core/material.h>

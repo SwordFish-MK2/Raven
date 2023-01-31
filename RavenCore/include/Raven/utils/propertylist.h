@@ -1,4 +1,4 @@
-#ifndef _RAVEN_UTILS_PROPERTYLIST_H_
+ï»¿#ifndef _RAVEN_UTILS_PROPERTYLIST_H_
 #define _RAVEN_UTILS_PROPERTYLIST_H_
 
 #include<Raven/core/math.h>
@@ -72,7 +72,7 @@ namespace Raven {
 	private:
 
 		static std::map<std::string, ObjectRef>& getRefMap() {
-			static std::map<std::string, ObjectRef> refMap;//ÓÃÓÚ´æ·ÅÉùÃ÷ÔÚÍâ²¿µÄÖ¸Õë
+			static std::map<std::string, ObjectRef> refMap;//ç”¨äºå­˜æ”¾å£°æ˜åœ¨å¤–éƒ¨çš„æŒ‡é’ˆ
 			return refMap;
 		}
 
@@ -112,7 +112,7 @@ namespace Raven {
 		int refCount;
 
 		std::map<std::string, Property> propertyMap;
-		std::vector<ObjectRef> refQueue;//ÓÃÓÚ´æ·ÅÖ±½ÓÉùÃ÷ÔÚclassÄÚ²¿µÄ¶ÔÏóÖ¸Õë
+		std::vector<ObjectRef> refQueue;//ç”¨äºå­˜æ”¾ç›´æ¥å£°æ˜åœ¨classå†…éƒ¨çš„å¯¹è±¡æŒ‡é’ˆ
 		std::vector<RefType> refTypeList;
 		std::vector<std::string> refIds;
 

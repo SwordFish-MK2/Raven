@@ -1,4 +1,4 @@
-#include<Raven/core/primitive.h>
+ï»¿#include<Raven/core/primitive.h>
 
 namespace Raven {
 	bool Primitive::hit(const Ray& r_in)const {
@@ -10,21 +10,21 @@ namespace Raven {
 	}
 
 	bool Primitive::intersect(const Ray& ray, HitInfo& record)const {
-		//ÅÐ¶Ï¹âÏßÊÇ·ñÓë¼¸ºÎÌåÏà½»
+		//åˆ¤æ–­å…‰çº¿æ˜¯å¦ä¸Žå‡ ä½•ä½“ç›¸äº¤
 		bool foundIntersection = shape_ptr->intersect(ray, record);
 		return foundIntersection;
 	}
 
 	SurfaceInteraction Primitive::setInteractionProperty(const HitInfo& hitInfo, const RayDifferential& ray)const {
 
-		//È¡µÃ½»µãµÄ¼¸ºÎÐÅÏ¢
+		//å–å¾—äº¤ç‚¹çš„å‡ ä½•ä¿¡æ¯
 		SurfaceInteraction record = shape_ptr->getGeoInfo(hitInfo.pHit);
 
 		record.computeDifferential(ray);
-		//ÅäÖÃ²ÄÖÊÐÅÏ¢
+		//é…ç½®æè´¨ä¿¡æ¯
 		mate_ptr->computeScarttingFunctions(record, true);
 
-		//ÅäÖÃ¹âÔ´ÐÅÏ¢
+		//é…ç½®å…‰æºä¿¡æ¯
 		if (light_ptr.get() != nullptr) {
 			record.hitLight = true;
 			record.light = this->getAreaLight();

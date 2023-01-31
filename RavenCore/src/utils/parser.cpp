@@ -1,4 +1,4 @@
-//
+ï»¿//
 //#include<iostream>
 //#include<functional>
 //
@@ -110,7 +110,7 @@
 //			RMatrix
 //		};
 //
-//		//´´½¨´Óxml×Ö·û´®µ½RavenÊı¾İ½á¹¹tagÖ®¼äµÄÓ³Éä
+//		//åˆ›å»ºä»xmlå­—ç¬¦ä¸²åˆ°Ravenæ•°æ®ç»“æ„tagä¹‹é—´çš„æ˜ å°„
 //		std::map<std::string, RTag> mapping;
 //		mapping["scene"] = RTag::RScene;
 //		mapping["bsdf"] = RTag::RMaterial;
@@ -140,32 +140,32 @@
 //		mapping["point3"] = RTag::RPoint3;
 //		mapping["normal"] = RTag::RNormal;
 //
-//		//¶¨ÒåÓÃÓÚ´¦ÀíxmlµÄº¯Êı£¬¸Ãº¯ÊıÃ¿´Î´¦ÀíxmlµÄÒ»¸ö½Úµã
+//		//å®šä¹‰ç”¨äºå¤„ç†xmlçš„å‡½æ•°ï¼Œè¯¥å‡½æ•°æ¯æ¬¡å¤„ç†xmlçš„ä¸€ä¸ªèŠ‚ç‚¹
 //		std::function<void(const tinyxml2::XMLElement*, PropertyList*, const tinyxml2::XMLElement*)> parseTag =
 //			[&](const tinyxml2::XMLElement* node, PropertyList* pList, const tinyxml2::XMLElement* fatherNode = nullptr) {
 //
-//			//»ñÈ¡µ±Ç°½ÚµãµÄÃû×Ö£¬ÔÚmappingÖĞ²éÕÒÊÇ·ñÓĞ¶ÔÓ¦µÄÓ³Éä
+//			//è·å–å½“å‰èŠ‚ç‚¹çš„åå­—ï¼Œåœ¨mappingä¸­æŸ¥æ‰¾æ˜¯å¦æœ‰å¯¹åº”çš„æ˜ å°„
 //			auto it = mapping.find(node->Name());
 //			int tag = it->second;
 //
-//			//Ã»ÓĞÕÒµ½¶ÔÓ¦µÄÓ³Éä£¬µ±Ç°µÄ½ÚµãÃû³Æ²»ºÏ·¨
+//			//æ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„æ˜ å°„ï¼Œå½“å‰çš„èŠ‚ç‚¹åç§°ä¸åˆæ³•
 //			if (it == mapping.end()) {
 //				std::cout << "Unknown class name " << node->Name() << ",Raven abort." << std::endl;
 //				return;
 //			}
 //
-//			//ÅĞ¶Ïµ±Ç°½Úµã¶ÔÓ¦µÄÀàĞÍ
+//			//åˆ¤æ–­å½“å‰èŠ‚ç‚¹å¯¹åº”çš„ç±»å‹
 //			bool isScene = tag == RTag::RScene;
 //			bool isObject = tag < RTag::RPropertyStart&& tag != RTag::RScene;
 //
-//			//µ±Ç°½Úµã¶ÔÓ¦³¡¾°Àà
+//			//å½“å‰èŠ‚ç‚¹å¯¹åº”åœºæ™¯ç±»
 //			if (isScene) {
 //
-//				//¼ì²éscene½ÚµãµÄattribute£¬²é¿´ÓÃ»§ÊÇ·ñÖ¸¶¨ÁË³¡¾°Ê¹ÓÃµÄ¼ÓËÙ½á¹¹
+//				//æ£€æŸ¥sceneèŠ‚ç‚¹çš„attributeï¼ŒæŸ¥çœ‹ç”¨æˆ·æ˜¯å¦æŒ‡å®šäº†åœºæ™¯ä½¿ç”¨çš„åŠ é€Ÿç»“æ„
 //				const tinyxml2::XMLAttribute* accelerationAttribute =
 //					node->FindAttribute("accelerate");
 //
-//				//ÓÃ»§ÔÚ³¡¾°¶¨ÒåÎÄ¼şÖĞÖ¸¶¨ÁË³¡¾°µÄ¼ÓËÙ½á¹¹£¬Ê¹ÓÃÖ¸¶¨µÄ¼ÓËÙ½á¹¹¹¹½¨³¡¾°Àà
+//				//ç”¨æˆ·åœ¨åœºæ™¯å®šä¹‰æ–‡ä»¶ä¸­æŒ‡å®šäº†åœºæ™¯çš„åŠ é€Ÿç»“æ„ï¼Œä½¿ç”¨æŒ‡å®šçš„åŠ é€Ÿç»“æ„æ„å»ºåœºæ™¯ç±»
 //				if (accelerationAttribute) {
 //					std::string accType = node->FindAttribute("accelerate")->Value();
 //					if (accType == "bvh") {
@@ -183,11 +183,11 @@
 //					}
 //				}
 //
-//				//ÓÃ»§Î´Ö¸¶¨¼ÓËÙ½á¹¹£¬Ä¬ÈÏÊ¹ÓÃBVH¼ÓËÙ³¡¾°
+//				//ç”¨æˆ·æœªæŒ‡å®šåŠ é€Ÿç»“æ„ï¼Œé»˜è®¤ä½¿ç”¨BVHåŠ é€Ÿåœºæ™¯
 //				else
 //					accelerate = AccelType::BVH;
 //
-//				//³¡¾°½ÚµãµÄ×Ó½áµãÖĞ¶¨ÒåÁË³¡¾°ÖĞµÄÍ¼Ôª£¬±éÀúËùÓĞ×Ó½Úµã»ñÈ¡Í¼ÔªĞÅÏ¢
+//				//åœºæ™¯èŠ‚ç‚¹çš„å­ç»“ç‚¹ä¸­å®šä¹‰äº†åœºæ™¯ä¸­çš„å›¾å…ƒï¼Œéå†æ‰€æœ‰å­èŠ‚ç‚¹è·å–å›¾å…ƒä¿¡æ¯
 //				const tinyxml2::XMLElement* childNode = node->FirstChildElement();
 //				while (childNode) {
 //					parseTag(childNode, nullptr, nullptr);
@@ -196,10 +196,10 @@
 //
 //			}
 //
-//			//µ±Ç°½Úµã¶ÔÓ¦RavenÖĞµÄÀà
+//			//å½“å‰èŠ‚ç‚¹å¯¹åº”Ravenä¸­çš„ç±»
 //			if (isObject) {
 //
-//				//´´½¨propertylistÓÃÓÚ´æ´¢¹¹Ôì¸ÃÀà¶ÔÏóËùĞèµÄÊı¾İ
+//				//åˆ›å»ºpropertylistç”¨äºå­˜å‚¨æ„é€ è¯¥ç±»å¯¹è±¡æ‰€éœ€çš„æ•°æ®
 //				PropertyList list;
 //				const tinyxml2::XMLElement* childNode = node->FirstChildElement();
 //				while (childNode) {
@@ -207,11 +207,11 @@
 //					childNode = childNode->NextSiblingElement();
 //				}
 //
-//				//È·¶¨¸Ã½Úµã¾ßÌå¶ÔÓ¦µÄÀàĞÍ£¬½«½ÚµãÀàĞÍÓë´æÓĞÊı¾İµÄPropertyList°ó¶¨
+//				//ç¡®å®šè¯¥èŠ‚ç‚¹å…·ä½“å¯¹åº”çš„ç±»å‹ï¼Œå°†èŠ‚ç‚¹ç±»å‹ä¸å­˜æœ‰æ•°æ®çš„PropertyListç»‘å®š
 //				switch (tag) {
 //				case RFilm: {
 //
-//					////film½ÚµãÖĞtypeµÄÖµÓëfilmÀàĞÍµÄÓ³Éä
+//					////filmèŠ‚ç‚¹ä¸­typeçš„å€¼ä¸filmç±»å‹çš„æ˜ å°„
 //					//const tinyxml2::XMLAttribute* typeAttr = node->FindAttribute("type");
 //					//if (!typeAttr) {
 //					//	std::cout << "No " << "film" << " type is specified, Raven abort.\n";
@@ -238,16 +238,16 @@
 //					_RAVEN_PARSE_CLASS_TYPE_(integrator, Integrator)
 //				}
 //				case RTexture: {
-//					//»ñÈ¡ÎÆÀíµÄÀàĞÍ
+//					//è·å–çº¹ç†çš„ç±»å‹
 //					const tinyxml2::XMLAttribute* typeAttr = node->FindAttribute("type");
 //
-//					//ÊäÈëÖĞ²»°üº¬ÎÆÀíÀàĞÍ£¬³ö´í
+//					//è¾“å…¥ä¸­ä¸åŒ…å«çº¹ç†ç±»å‹ï¼Œå‡ºé”™
 //					if (!typeAttr) {
 //						std::cout << "";
 //						return;
 //					}
 //
-//					//Éú³ÉÎÆÀí
+//					//ç”Ÿæˆçº¹ç†
 //
 //					const std::string& type = typeAttr->Value();
 //					const auto& factory = Factory::getInstance();
@@ -255,13 +255,13 @@
 //					Ref<Texture<Spectrum>> my_object =
 //						std::dynamic_pointer_cast<Texture<Spectrum>>(factory.generate(type, list));
 //
-//					//ÅĞ¶ÏÎÆÀíÊÇ·ñ°üº¬idÊôĞÔ
+//					//åˆ¤æ–­çº¹ç†æ˜¯å¦åŒ…å«idå±æ€§
 //					const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
-//					//µ±Ç°½áµã¶ÔÓ¦µÄ¶ÔÏóÎ»ÓÚÆäËû¶ÔÏóÄÚ²¿£¬Î´Ö¸¶¨id£¬Ö±½Ó½«µ±Ç°ÎÆÀí¼ÓÈë¸¸½ÚµãµÄpropertylist
+//					//å½“å‰ç»“ç‚¹å¯¹åº”çš„å¯¹è±¡ä½äºå…¶ä»–å¯¹è±¡å†…éƒ¨ï¼ŒæœªæŒ‡å®šidï¼Œç›´æ¥å°†å½“å‰çº¹ç†åŠ å…¥çˆ¶èŠ‚ç‚¹çš„propertylist
 //					if (!idAttr && fatherNode != nullptr)
 //						pList->setObjectRef("texture", my_object);
 //
-//					//µ±Ç°ÎÆÀíÖ¸¶¨ÁËid
+//					//å½“å‰çº¹ç†æŒ‡å®šäº†id
 //					else if (idAttr) {
 //						std::string id = idAttr->Value();
 //						PropertyList::setObjectRefById(id, "texture", my_object, *pList);
@@ -272,7 +272,7 @@
 //					const tinyxml2::XMLAttribute* typeAttr = node->FindAttribute("type");
 //
 //					if (!typeAttr) {
-//						//ÊäÈëÖĞ²»°üº¬²ÄÖÊÀàĞÍ£¬³ö´í
+//						//è¾“å…¥ä¸­ä¸åŒ…å«æè´¨ç±»å‹ï¼Œå‡ºé”™
 //						if (!typeAttr) {
 //							std::cout << "";
 //							return;
@@ -426,18 +426,18 @@
 //					break;
 //				}
 //				case RSpectraRGB: {
-//					//»ñÈ¡rgbµÄÖµ
+//					//è·å–rgbçš„å€¼
 //					std::string name = node->FindAttribute("name")->Value();
 //					std::string vstr = node->FindAttribute("value")->Value();
 //					Vector3f rgbValue = toVector3f(vstr);
 //					Spectrum rgb = RGBSpectrum::fromRGB(rgbValue);
 //
-//					//»ñÈ¡¸¸½ÚµãÀàĞÍ£¬¸ù¾İ¸¸½ÚµãÀàĞÍÅĞ¶ÏÉú³ÉSpectrum¶ÔÏó»òConstTextureÖ¸Õë
+//					//è·å–çˆ¶èŠ‚ç‚¹ç±»å‹ï¼Œæ ¹æ®çˆ¶èŠ‚ç‚¹ç±»å‹åˆ¤æ–­ç”ŸæˆSpectrumå¯¹è±¡æˆ–ConstTextureæŒ‡é’ˆ
 //					std::string fathername = fatherNode->Name();
 //
-//					//¸¸½ÚµãÎªMaterial£¬
-//					//´ËÊ±SpectraÎªMaterialµÄreflectanceÊôĞÔ£¬
-//					//Éú³ÉConstTexture<Spectrum>¶ÔÏó
+//					//çˆ¶èŠ‚ç‚¹ä¸ºMaterialï¼Œ
+//					//æ­¤æ—¶Spectraä¸ºMaterialçš„reflectanceå±æ€§ï¼Œ
+//					//ç”ŸæˆConstTexture<Spectrum>å¯¹è±¡
 //					if (fathername == "bsdf" && name == "reflectance") {
 //						Ref<ConstTexture<Spectrum>> spectra = std::make_shared<ConstTexture<Spectrum>>(rgb);
 //						pList->setObjectRef(name, spectra);

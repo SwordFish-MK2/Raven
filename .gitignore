@@ -2,7 +2,9 @@
 .vs/
 build/
 doc/
-/models
+/models/
+.vscode/
+.cache/
 #files
 CMakeSettings.json
 notation.md

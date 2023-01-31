@@ -8,14 +8,14 @@ namespace Raven {
 
 	Spectrum DiffuseAreaLight::sampleLi(const SurfaceInteraction& inter, const Point2f& uv,
 		LightSample* lightSample)const {
-		//ÔÚ¹âÔ´±íÃæ²ÉÑùÒ»¸öµã£¬Ëã³ö´Ó¸ÃµãÉäÏòµãpµÄ·½ÏòÏòÁ¿
+		//ï¿½Ú¹ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½Ó¸Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		auto [lightInter, pdf] = shape_ptr->sample(inter, uv);
 		if (pdf == 0 || DistanceSquared(lightInter.p, inter.p) == 0) {
-			return 0;
+			return Spectrum(0);
 		}
-		//µ÷ÓÃShapeµÄpdfº¯ÊýÇó³ö²ÉÑù¸ÃµãµÄpdf
+		//ï¿½ï¿½ï¿½ï¿½Shapeï¿½ï¿½pdfï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½pdf
 		lightSample->pdf = pdf;
-		lightSample->wi = Normalize(lightInter.p - inter.p);//·½ÏòÎª´ÓµãpÈëÉä¹âÔ´
+		lightSample->wi = Normalize(lightInter.p - inter.p);//ï¿½ï¿½ï¿½ï¿½Îªï¿½Óµï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Ô´
 		//lightSample->n = lightInter.n;
 		lightSample->p = lightInter.p;
 		return Li(lightInter, -(lightSample->wi));
@@ -24,10 +24,10 @@ namespace Raven {
 
 	//Vector3f DiffuseAreaLight::sample_Li(const SurfaceInteraction& inter, const Point2f& uv,
 	//	Vector3f* wi, double* pdf, SurfaceInteraction* lightSample)const {
-	//	//ÔÚ¹âÔ´±íÃæ²ÉÑùÒ»¸öµã£¬Ëã³ö´Ó¸ÃµãÉäÏòµãpµÄ·½ÏòÏòÁ¿
+	//	//ï¿½Ú¹ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½Ó¸Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	//	SurfaceInteraction lightInter = shape_ptr->sample(inter, uv);
-	//	*wi = Normalize(lightInter.p - inter.p);//·½ÏòÎª´ÓµãpÈëÉä¹âÔ´
-	//	//µ÷ÓÃShapeµÄpdfº¯ÊýÇó³ö²ÉÑù¸ÃµãµÄpdf
+	//	*wi = Normalize(lightInter.p - inter.p);//ï¿½ï¿½ï¿½ï¿½Îªï¿½Óµï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Ô´
+	//	//ï¿½ï¿½ï¿½ï¿½Shapeï¿½ï¿½pdfï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½pdf
 	//	*pdf = shape_ptr->pdf(lightInter);
 	//	*lightSample = lightInter;
 	//	return	Li(lightInter, -*wi);

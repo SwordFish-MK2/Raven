@@ -1,4 +1,4 @@
-#ifndef _RAVEN_TEXTURE_SOLID_TEXTURE_H_
+﻿#ifndef _RAVEN_TEXTURE_SOLID_TEXTURE_H_
 #define _RAVEN_TEXTURE_SOLID_TEXTURE_H_
 
 #include<Raven/core/base.h>

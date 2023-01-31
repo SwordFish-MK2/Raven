@@ -1,4 +1,4 @@
-#ifndef _RAVEN_SHADING_MODEL_MICROFACET_H_
+﻿#ifndef _RAVEN_SHADING_MODEL_MICROFACET_H_
 #define _RAVEN_SHADING_MODEL_MICROFACET_H_
 
 #include<Raven/core/bxdf.h>

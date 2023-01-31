@@ -1,4 +1,4 @@
-#include<Raven/shading/microfacet.h>
+ï»¿#include<Raven/shading/microfacet.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -103,7 +103,7 @@ namespace Raven {
 				double y = sinTheta * sin(phi);
 
 				Vector3f wh = Vector3f(x, y, cosTheta);
-				//È·±£²ÉÑùµÄwhÎ»ÓÚÉÏ°ëÇò
+				//ç¡®ä¿é‡‡æ ·çš„whä½äºä¸ŠåŠçƒ
 				if (!SameHemisphere(wo, wh) < 0)
 					wh = -wh;
 
@@ -137,7 +137,7 @@ namespace Raven {
 			}
 		}
 		else {
-			//À­ÉìÈëÉä¹âÏß
+			//æ‹‰ä¼¸å…¥å°„å…‰çº¿
 			Vector3f woStretched = Normalize(Vector3f(wo.x * alphaX, wo.y * alphaY, wo.z));
 
 			auto [slopeX, slopeY] = BeckmannSample11(woStretched, uv);
@@ -212,7 +212,7 @@ namespace Raven {
 
 			//Sample whole hemisphere
 			if (alphaX == alphaY) {
-				//¸÷ÏîÍ¬ĞÔ
+				//å„é¡¹åŒæ€§
 				double phi = 2 * M_PI * uv[1];
 
 				double tanTheta2 = uv[0] * alphaX * alphaX / (1.0 - uv[0]);
@@ -248,7 +248,7 @@ namespace Raven {
 			}
 		}
 		else {
-			//²ÉÑù¿É¼û·¨Ïß
+			//é‡‡æ ·å¯è§æ³•çº¿
 			Vector3f woStreched = Normalize(Vector3f(wo.x * alphaX, wo.y * alphaY, wo.z));
 
 			Vector3f t1 = (woStreched.z < 0.9999) ? Normalize(Cross(woStreched, Vector3f(0, 0, 1))) : Vector3f(1, 0, 0);
@@ -304,7 +304,7 @@ namespace Raven {
 		return albedo * F * G * D / (4 * cosThetaO * cosThetaI);
 	}
 
-	//²ÉÑùwi£¬²¢¼ÆËãbrdf
+	//é‡‡æ ·wiï¼Œå¹¶è®¡ç®—brdf
 	Spectrum MicrofacetReflection::sampled_f(
 		const Vector3f& wo,
 		Vector3f& wi,

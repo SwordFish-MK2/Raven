@@ -1,4 +1,4 @@
-#ifndef _RAVEN_SHAPE_MESH_H_
+ï»¿#ifndef _RAVEN_SHAPE_MESH_H_
 #define _RAVEN_SHAPE_MESH_H_
 
 #include<vector>
@@ -85,7 +85,7 @@ namespace Raven {
 		}
 
 		int index(int num)const {
-			//TODO::¼ì²énumµÄÖµ
+			//TODO::æ£€æŸ¥numçš„å€¼
 			return mesh->indices[i + num];
 		}
 
@@ -93,7 +93,7 @@ namespace Raven {
 
 	private:
 		const TriangleMesh* mesh;
-		int i;//´Ë´¦¼ÇÂ¼µÄÎªÈı½ÇĞÎµÚÒ»¸öindexÔÚindicesÖĞµÄÎ»ÖÃ£¬¹¹Ôìº¯ÊıÖĞÊäÈëµÄÎªÈı½ÇĞÎÔÚÈı½ÇĞÎÊı×éÖĞµÄÎ»ÖÃ
+		int i;//æ­¤å¤„è®°å½•çš„ä¸ºä¸‰è§’å½¢ç¬¬ä¸€ä¸ªindexåœ¨indicesä¸­çš„ä½ç½®ï¼Œæ„é€ å‡½æ•°ä¸­è¾“å…¥çš„ä¸ºä¸‰è§’å½¢åœ¨ä¸‰è§’å½¢æ•°ç»„ä¸­çš„ä½ç½®
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Triangle& t) {

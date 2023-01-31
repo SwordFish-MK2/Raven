@@ -1,4 +1,4 @@
-#ifndef _RAVEN_SHADING_MODEL_LAMBERTAIN_H_
+ï»¿#ifndef _RAVEN_SHADING_MODEL_LAMBERTAIN_H_
 #define _RAVEN_SHADING_MODEL_LAMBERTAIN_H_
 
 #include<Raven/core/base.h>
@@ -8,7 +8,7 @@
 
 namespace Raven {
 	/// <summary>
-	/// ÀíÏëÂş·´ÉäÄ£ĞÍ
+	/// ç†æƒ³æ¼«åå°„æ¨¡å‹
 	/// </summary>
 	class LambertainReflection :public BxDF {
 	public:

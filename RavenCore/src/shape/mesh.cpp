@@ -1,4 +1,4 @@
-#include<Raven/shape/mesh.h>
+ï»¿#include<Raven/shape/mesh.h>
 #include<Raven/core/distribution.h>
 #include<Raven/utils/loader.h>
 #include<Raven/core/light.h>
@@ -56,19 +56,19 @@ namespace Raven {
 	}
 
 	bool Triangle::hit(const Ray& r_in)const {
-		//È¡´ÓÍø¸ñÖĞÈ¡³öÈı½ÇĞÎµÄÈı¸ö¶¥µãp0,p1,p2
+		//å–ä»ç½‘æ ¼ä¸­å–å‡ºä¸‰è§’å½¢çš„ä¸‰ä¸ªé¡¶ç‚¹p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
 		const Point3f& p2 = mesh->vertices[index(2)];
 
-		//ÀûÓÃ¿ËÀ³Ä··¨ÔòÇó½âÈı½ÇĞÍµÄÖØĞÄ×ø±êÓë¹âÏßµÄ´«²¥Ê±¼ät
+		//åˆ©ç”¨å…‹è±å§†æ³•åˆ™æ±‚è§£ä¸‰è§’å‹çš„é‡å¿ƒåæ ‡ä¸å…‰çº¿çš„ä¼ æ’­æ—¶é—´t
 		Vector3f e1 = p1 - p0;
 		Vector3f e2 = p2 - p0;
 		Vector3f s = r_in.origin - p0;
 		Vector3f s1 = Cross(r_in.dir, e2);
 		Vector3f s2 = Cross(s, e1);
 
-		auto det = Dot(s1, e1); //ĞĞÁĞÊ½±ØĞë²»ÎªÁãÇÒÖØĞÄ×ø±êµÄÖµ±ØĞë´óÓÚ0
+		auto det = Dot(s1, e1); //è¡Œåˆ—å¼å¿…é¡»ä¸ä¸ºé›¶ä¸”é‡å¿ƒåæ ‡çš„å€¼å¿…é¡»å¤§äº0
 		if (det <= 0)return false;
 
 		double invDet = 1.0 / det;
@@ -85,11 +85,11 @@ namespace Raven {
 	}
 
 	bool Triangle::intersect(const Ray& r_in, HitInfo& info)const {
-		//È¡´ÓÍø¸ñÖĞÈ¡³öÈı½ÇĞÎµÄÈı¸ö¶¥µãp0,p1,p2
+		//å–ä»ç½‘æ ¼ä¸­å–å‡ºä¸‰è§’å½¢çš„ä¸‰ä¸ªé¡¶ç‚¹p0,p1,p2
 		const Point3f& p0 = mesh->vertices[index(0)];
 		const Point3f& p1 = mesh->vertices[index(1)];
 		const Point3f& p2 = mesh->vertices[index(2)];
-		//ÀûÓÃ¿ËÀ³Ä··¨ÔòÇó½âÈı½ÇĞÍµÄÖØĞÄ×ø±êÓë¹âÏßµÄ´«²¥Ê±¼ät
+		//åˆ©ç”¨å…‹è±å§†æ³•åˆ™æ±‚è§£ä¸‰è§’å‹çš„é‡å¿ƒåæ ‡ä¸å…‰çº¿çš„ä¼ æ’­æ—¶é—´t
 		Vector3f e1 = p1 - p0;
 		Vector3f e2 = p2 - p0;
 		Vector3f s = r_in.origin - p0;
@@ -97,7 +97,7 @@ namespace Raven {
 		Vector3f s2 = Cross(s, e1);
 		auto determinate = Dot(s1, e1);
 
-		//ĞĞÁĞÊ½ÎªÁã£¬ÎŞ½â
+		//è¡Œåˆ—å¼ä¸ºé›¶ï¼Œæ— è§£
 		if (determinate <= 0)
 			return false;
 
@@ -107,11 +107,11 @@ namespace Raven {
 		double b2 = invDet * Dot(s2, r_in.dir);
 		double b0 = 1 - b1 - b2;
 
-		//¹âÏß±ØĞëÑØÕıÏò´«²¥
+		//å…‰çº¿å¿…é¡»æ²¿æ­£å‘ä¼ æ’­
 		if (t <= 0 || t >= r_in.tMax)
 			return false;
 
-		//ÖØĞÄ×ø±ê¶¼´óÓÚ0Ê±£¬½»µãÔÚÈı½ÇĞÎÄÚ£¬¹âÏßÓëÈı½ÇĞÎÏà½»	
+		//é‡å¿ƒåæ ‡éƒ½å¤§äº0æ—¶ï¼Œäº¤ç‚¹åœ¨ä¸‰è§’å½¢å†…ï¼Œå…‰çº¿ä¸ä¸‰è§’å½¢ç›¸äº¤	
 		if (b0 <= 0.0 || b1 <= 0.0 || b2 <= 0.0)
 			return false;
 
@@ -146,17 +146,17 @@ namespace Raven {
 		Point2f uvHit = alpha * uv0 + beta * uv1 + gamma * uv2;
 		auto nHit = alpha * n0 + beta * n1 + gamma * n2;
 
-		////Èç¹û´Ó±³ÃæÈëÉä£¬µ÷Õû·¨Ïß·½Ïò
+		////å¦‚æœä»èƒŒé¢å…¥å°„ï¼Œè°ƒæ•´æ³•çº¿æ–¹å‘
 		//if (Dot(nHit, r_in.dir) >= 0.0)
 		//	nHit = -nHit;
 
-		////¼ÆËãdpduÓëdpdvÒÔ±ãÔÚÍø¸ñ±íÃæÇó³öµÄÇĞÏßÏòÁ¿ÎªÁ¬ĞøµÄÖµ
+		////è®¡ç®—dpduä¸dpdvä»¥ä¾¿åœ¨ç½‘æ ¼è¡¨é¢æ±‚å‡ºçš„åˆ‡çº¿å‘é‡ä¸ºè¿ç»­çš„å€¼
 		Vector3f dpdu, dpdv;
 		double du02 = uv0[0] - uv2[0], du12 = uv1[0] - uv2[0];
 		double dv02 = uv0[1] - uv2[1], dv12 = uv1[1] - uv2[1];
 		double det = du02 * dv12 - dv02 * du12;
 
-		//Èç¹ûĞĞÁĞÊ½µÈÓÚ0£¬Ëæ»úÉú³ÉÒ»×é»¥Ïà´¹Ö±µÄdpduÓëdpdv
+		//å¦‚æœè¡Œåˆ—å¼ç­‰äº0ï¼Œéšæœºç”Ÿæˆä¸€ç»„äº’ç›¸å‚ç›´çš„dpduä¸dpdv
 		if (det == 0) {
 			auto [dpu, dpv] = genTBN((Vector3f)nHit);
 			dpdu = dpu;
@@ -213,7 +213,7 @@ namespace Raven {
 	}
 
 	std::tuple<SurfaceInteraction, double> Triangle::sample(const Point2f& uv)const {
-		//Çó³öuvÖµ¶ÔÓ¦µÄÖØĞÄ×ø±ê
+		//æ±‚å‡ºuvå€¼å¯¹åº”çš„é‡å¿ƒåæ ‡
 		Point2f b = UniformSampleTriangle(uv);
 
 		const Point3f& p0 = mesh->vertices[index(0)];

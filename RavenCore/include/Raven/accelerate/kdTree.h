@@ -1,4 +1,4 @@
-#ifndef _RAVEN_ACCELERATE_KD_TREE_H_
+ï»¿#ifndef _RAVEN_ACCELERATE_KD_TREE_H_
 #define _RAVEN_ACCELERATE_KD_TREE_H_
 
 #include<Raven/core/accelerate.h>
@@ -28,10 +28,10 @@ namespace Raven {
 				delete[] treeNodes;
 		}
 	private:
-		int maxDepth;				//Ê÷µÄ×î´óÉî¶È
-		const int primsThreshold;	//ÔÚÒ»¸ö½ÚµãÖĞÓµÓĞµÄ×î´óÍ¼Ôª¸öÊı
-		const int isectCost;		//ÓëÒ»¸ö½ÚµãÏà½»µÄ¿ªÏú£¬ÓÉÓÃ»§Ö¸¶¨
-		const int traversalCost;	//¹âÏßÔÚ¼ÓËÙ½á¹¹ÖĞ´©ËóµÄ¿ªÏú
+		int maxDepth;				//æ ‘çš„æœ€å¤§æ·±åº¦
+		const int primsThreshold;	//åœ¨ä¸€ä¸ªèŠ‚ç‚¹ä¸­æ‹¥æœ‰çš„æœ€å¤§å›¾å…ƒä¸ªæ•°
+		const int isectCost;		//ä¸ä¸€ä¸ªèŠ‚ç‚¹ç›¸äº¤çš„å¼€é”€ï¼Œç”±ç”¨æˆ·æŒ‡å®š
+		const int traversalCost;	//å…‰çº¿åœ¨åŠ é€Ÿç»“æ„ä¸­ç©¿æ¢­çš„å¼€é”€
 		const double emptyBonus;	//bonus value between 0 and 1
 		int nextFreeNode = 0;
 		int nAccelNode = 0;
@@ -47,7 +47,7 @@ namespace Raven {
 	enum class EdgeType { EdgeStart, EdgeEnd };
 
 	/// <summary>
-	/// KdTreeNode,ÎªÁË³ä·ÖÀûÓÃcache£¬Êı¾İÑ¹ËõÎª8B£¬8¸öNode¸ÕºÃÄÜ·ÅÈë64BµÄcache line
+	/// KdTreeNode,ä¸ºäº†å……åˆ†åˆ©ç”¨cacheï¼Œæ•°æ®å‹ç¼©ä¸º8Bï¼Œ8ä¸ªNodeåˆšå¥½èƒ½æ”¾å…¥64Bçš„cache line
 	/// </summary>
 	struct KdTreeNode {
 	public:

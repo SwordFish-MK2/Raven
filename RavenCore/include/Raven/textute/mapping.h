@@ -1,4 +1,4 @@
-#ifndef _RAVEN_TEXTURE_MAPPING_2D_H_
+ï»¿#ifndef _RAVEN_TEXTURE_MAPPING_2D_H_
 #define _RAVEN_TEXTURE_MAPPING_2D_H_
 
 #include<Raven/core/texture.h>
@@ -9,7 +9,7 @@
 namespace Raven {
 
 	/// <summary>
-	/// UVÓ³Éä£¬Í¨¹ı¶ÔUV×ø±ê½øĞĞ¼òµ¥µÄ·ÂÉä±ä»»µÃµ½ÎÆÀí×ø±êST
+	/// UVæ˜ å°„ï¼Œé€šè¿‡å¯¹UVåæ ‡è¿›è¡Œç®€å•çš„ä»¿å°„å˜æ¢å¾—åˆ°çº¹ç†åæ ‡ST
 	/// </summary>
 	class UVMapping2D :public TextureMapping2D {
 	public:
@@ -26,13 +26,13 @@ namespace Raven {
 			return std::make_shared<UVMapping2D>(su, sv, du, dv);
 		}
 	private:
-		double su, sv;//UV×ø±êµÄËõ·Å
-		double du, dv;//UV×ø±êµ½Æ«ÒÆ
+		double su, sv;//UVåæ ‡çš„ç¼©æ”¾
+		double du, dv;//UVåæ ‡åˆ°åç§»
 	};
 
 
 	/// <summary>
-	/// SphericalMapping,Í¨¹ı½¨Á¢°üÎ§Çò£¬½«µãÓ³Éäµ½ÇòÃæÉÏÉú³ÉÎÆÀí×ø±êST
+	/// SphericalMapping,é€šè¿‡å»ºç«‹åŒ…å›´çƒï¼Œå°†ç‚¹æ˜ å°„åˆ°çƒé¢ä¸Šç”Ÿæˆçº¹ç†åæ ‡ST
 	/// </summary>
 	class SphericalMapping2D :public TextureMapping2D {
 	public:

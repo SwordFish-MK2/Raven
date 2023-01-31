@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_LIGHT_H_
+ï»¿#ifndef _RAVEN_CORE_LIGHT_H_
 #define _RAVEN_CORE_LIGHT_H_
 
 #include<Raven/core/base.h>
@@ -20,7 +20,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// ¹âÔ´Àà½Ó¿Ú£¬ËùÓĞ¹âÔ´±ØĞë¼Ì³Ğ¸ÃÀà
+	/// å…‰æºç±»æ¥å£ï¼Œæ‰€æœ‰å…‰æºå¿…é¡»ç»§æ‰¿è¯¥ç±»
 	/// </summary>
 	class Light :public RavenObject {
 	public:
@@ -52,7 +52,7 @@ namespace Raven {
 
 
 	/// <summary>
-	/// Ãæ»ı¹âÔ´Ğé»ùÀà
+	/// é¢ç§¯å…‰æºè™šåŸºç±»
 	/// </summary>
 	class AreaLight :public Light {
 	public:
@@ -60,16 +60,16 @@ namespace Raven {
 			int flag, int nSamples, const Ref<Shape>& shape) :
 			Light(LTW, WTL, flag, nSamples), shape_ptr(shape), area(shape->area()) {}
 
-		//ÊäÈë¿Õ¼äÖĞµÄÒ»¸öµãp£¬ÔÚ¹âÔ´ÉÏËæ»ú²ÉÑù£¬²¢¼ÆËã³öÉäµÄRadiance
+		//è¾“å…¥ç©ºé—´ä¸­çš„ä¸€ä¸ªç‚¹pï¼Œåœ¨å…‰æºä¸Šéšæœºé‡‡æ ·ï¼Œå¹¶è®¡ç®—å‡ºå°„çš„Radiance
 		virtual Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const = 0;
 
-		//¸ø¶¨¹âÔ´ÉÏµÄÒ»¸öµãÓë³öÉä·½Ïò£¬¼ÆËã³öÉäµÄRadiance
+		//ç»™å®šå…‰æºä¸Šçš„ä¸€ä¸ªç‚¹ä¸å‡ºå°„æ–¹å‘ï¼Œè®¡ç®—å‡ºå°„çš„Radiance
 		virtual Spectrum Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 
-		//·µ»Ø¹âÔ´Ïò¿Õ¼äÖĞ·øÉäµÄ×ÜµÄÄÜÁ¿
+		//è¿”å›å…‰æºå‘ç©ºé—´ä¸­è¾å°„çš„æ€»çš„èƒ½é‡
 		virtual Spectrum power()const = 0;
 
-		//¸ø¶¨¹âÔ´ÉÏµÄÒ»¸öµãÓë³öÉä·½Ïò£¬¼ÆËã²ÉÑùµÄpdf
+		//ç»™å®šå…‰æºä¸Šçš„ä¸€ä¸ªç‚¹ä¸å‡ºå°„æ–¹å‘ï¼Œè®¡ç®—é‡‡æ ·çš„pdf
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const = 0;
 
 		//virtual void setShapePtr(const Ref<Shape>& sptr) { shape_ptr = sptr; }

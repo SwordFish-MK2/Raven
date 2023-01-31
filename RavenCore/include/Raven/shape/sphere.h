@@ -1,4 +1,4 @@
-#ifndef _RAVEN_SHAPE_SPHERE_H_
+﻿#ifndef _RAVEN_SHAPE_SPHERE_H_
 #define _RAVEN_SHAPE_SPHERE_H_
 
 

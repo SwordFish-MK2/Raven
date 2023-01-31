@@ -1,15 +1,15 @@
-#include<Raven/core/shape.h>
+ï»¿#include<Raven/core/shape.h>
 #include<Raven/core/interaction.h>
 
 namespace Raven {
 
-	//defaultÊµÏÖÎªÔÚ¼¸ºÎÌåÉÏ¾ùÔÈµÄ²ÉÑùÒ»¸öµã£¬ÔÙ½«pdf×ª»¯Îª¶ÔÃæ»ıµÄ»ı·Ö
+	//defaultå®ç°ä¸ºåœ¨å‡ ä½•ä½“ä¸Šå‡åŒ€çš„é‡‡æ ·ä¸€ä¸ªç‚¹ï¼Œå†å°†pdfè½¬åŒ–ä¸ºå¯¹é¢ç§¯çš„ç§¯åˆ†
 	std::tuple<SurfaceInteraction, double> Shape::sample(const SurfaceInteraction& ref, const Point2f& rand)const {
 
-		//ÔÚ±íÃæ¾ùÔÈµÄ²ÉÑùÒ»¸öµã²¢¼ÆËãpdf
+		//åœ¨è¡¨é¢å‡åŒ€çš„é‡‡æ ·ä¸€ä¸ªç‚¹å¹¶è®¡ç®—pdf
 		auto [inter, pdf] = sample(rand);
 
-		//½«pdf´Ó¶ÔÃæ»ıµÄ»ı·Ö×ªÎª¶ÔÁ¢Ìå½ÇµÄ»ı·Ö
+		//å°†pdfä»å¯¹é¢ç§¯çš„ç§¯åˆ†è½¬ä¸ºå¯¹ç«‹ä½“è§’çš„ç§¯åˆ†
 		Vector3f wi = inter.p - ref.p;
 		double distanceSquared = wi.lengthSquared();
 		if (distanceSquared == 0)
@@ -23,7 +23,7 @@ namespace Raven {
 		return std::tuple<SurfaceInteraction, double>(inter, pdf);
 	}
 
-	//defaultÊµÏÖÎª¼ÆËã¼¸ºÎÌåÉÏ¾ùÔÈ²ÉÑùµÄpdf£¬ÔÙ³ËÒÔÑÅ¿É±ÈĞĞÁĞÊ½
+	//defaultå®ç°ä¸ºè®¡ç®—å‡ ä½•ä½“ä¸Šå‡åŒ€é‡‡æ ·çš„pdfï¼Œå†ä¹˜ä»¥é›…å¯æ¯”è¡Œåˆ—å¼
 	double Shape::pdf(const SurfaceInteraction& inter, const Vector3f& wi)const {
 		//intersect sample ray to light geometry
 		Point3f origin = inter.p;

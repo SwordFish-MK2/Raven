@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_MEDIA_H_
+ï»¿#ifndef _RAVEN_CORE_MEDIA_H_
 #define _RAVEN_CORE_MEDIA_H_
 
 #include<Raven/core/base.h>
@@ -8,7 +8,7 @@
 
 namespace Raven {
 	/// <summary>
-	/// ½éÖÊ±ß½çµÄ½Ó¿Ú£¬°üº¬±íÃæÁ½²à½éÖÊµÄÖ¸Õë
+	/// ä»‹è´¨è¾¹ç•Œçš„æ¥å£ï¼ŒåŒ…å«è¡¨é¢ä¸¤ä¾§ä»‹è´¨çš„æŒ‡é’ˆ
 	///</summary>
 	struct MediumInterface {
 		//interface
@@ -27,13 +27,19 @@ namespace Raven {
 		Ref<Medium> outside;
 		Ref<Medium> inside;
 	};
-
+	
+	/// <summary>
+	/// PhaseFunctionæ¥å£
+	/// </summary>
 	class PhaseFunction {
 	public:
-		//¼ÆËãPhase Function µÄÖµ
+		//è®¡ç®—Phase Function çš„å€¼
 		virtual double p(const Vector3f& wi, const Vector3f& wo)const = 0;
 	};
 
+	/// <summary>
+	/// ç”±Henyey Greensteinæå‡ºçš„å„é¡¹åŒæ€§phase funcionæ¨¡å‹
+	/// </summary>
 	class HenyeyGreensteinPhaseFunction :public PhaseFunction {
 	public:
 		double p(const Vector3f& wi, const Vector3f& wo)const override;
@@ -41,9 +47,12 @@ namespace Raven {
 		double g;
 	};
 
+	/// <summary>
+	/// ä»‹è´¨æ¥å£
+	/// </summary>
 	class Medium {
 	public:
-		//¼ÙÉè´«Èë¸Ãº¯ÊıµÄ¹âÏßÔÚ´«²¥¹ı³ÌÖĞÎ´±»ÕÚµ²²¢ÇÒÍêÈ«°üÎ§ÔÚµ±Ç°½éÖÊÖĞ£¬¼ÆËã¹âÏßµÄbeam transmittance
+		//å‡è®¾ä¼ å…¥è¯¥å‡½æ•°çš„å…‰çº¿åœ¨ä¼ æ’­è¿‡ç¨‹ä¸­æœªè¢«é®æŒ¡å¹¶ä¸”å®Œå…¨åŒ…å›´åœ¨å½“å‰ä»‹è´¨ä¸­ï¼Œè®¡ç®—å…‰çº¿çš„beam transmittance
 		virtual Spectrum Tr(const Ray& ray, Sampler& sampler)const = 0;
 	};
 

@@ -1,4 +1,4 @@
-#include<Raven/light/infiniteAreaLight.h>
+ï»¿#include<Raven/light/infiniteAreaLight.h>
 #include<Raven/core/scene.h>
 #include<memory>
 
@@ -12,10 +12,10 @@ namespace Raven {
 		Point2i resolution;
 
 
-		//¼ÓÔØimageMap
+		//åŠ è½½imageMap
 		if (mapPath != "") {
 			Image<Spectrum>	texels = ReadImage(mapPath);
-			//Èç¹û³É¹¦¶ÁÈ¡imageMap
+			//å¦‚æœæˆåŠŸè¯»å–imageMap
 				resolution.x = texels.uSize();
 				resolution.y = texels.vSize();
 				for (int i = 0; i < texels.uSize() * texels.vSize(); i++)
@@ -23,16 +23,16 @@ namespace Raven {
 				lightMap.reset(new Mipmap(texels));
 		}
 
-		//Éú³Ésampling weight
-		int width = resolution[0], height = resolution[1];//weight´óĞ¡
-		double filter = 1 / Max(width, height);//ÂË²¨¿í¶È
+		//ç”Ÿæˆsampling weight
+		int width = resolution[0], height = resolution[1];//weightå¤§å°
+		double filter = 1 / Max(width, height);//æ»¤æ³¢å®½åº¦
 		std::unique_ptr<double[]>img(new double[width * height]);
 		for (int v = 0; v < height; v++) {
 			double vp = (double)v / (double)height;
-			double sinTheta = std::sin(M_PI * double(v + 0.5) / double(height));//Éú³ÉsinthetaÓÃÓÚÏû³ıÅ¤Çú
+			double sinTheta = std::sin(M_PI * double(v + 0.5) / double(height));//ç”Ÿæˆsinthetaç”¨äºæ¶ˆé™¤æ‰­æ›²
 			for (int u = 0; u < width; u++) {
 				double up = double(u) / double(width);
-				img[u + v * width] = lightMap->lookup(Point2f(up, vp), filter).y();//Ê¹ÓÃ²ÉÑùµ½µÄSpectrumµÄÁÁ¶ÈÀ´Éú³Épdf
+				img[u + v * width] = lightMap->lookup(Point2f(up, vp), filter).y();//ä½¿ç”¨é‡‡æ ·åˆ°çš„Spectrumçš„äº®åº¦æ¥ç”Ÿæˆpdf
 				img[u + v * width] *= sinTheta;
 			}
 		}
@@ -50,20 +50,20 @@ namespace Raven {
 
 	Spectrum InfiniteAreaLight::sampleLi(const SurfaceInteraction& inter, const Point2f& rand, LightSample* lightSample)const {
 		double pdf = 0;
-		Point2f uv = distribution->sampleContinuous(rand, &pdf);//¸ù¾İ¹âÔ´Ç¿¶È·Ö²¼Éú³ÉÑù±¾
+		Point2f uv = distribution->sampleContinuous(rand, &pdf);//æ ¹æ®å…‰æºå¼ºåº¦åˆ†å¸ƒç”Ÿæˆæ ·æœ¬
 		if (pdf == 0)return Spectrum(0);
 
-		//¼ÆËã²ÉÑù¹âÏßµÄ·½Ïò
+		//è®¡ç®—é‡‡æ ·å…‰çº¿çš„æ–¹å‘
 		double theta = M_PI * uv[1], phi = 2 * M_PI * uv[0];
 		double cosTheta = std::cos(theta), sinTheta = std::sin(theta);
 		double cosPhi = std::cos(phi), sinPhi = std::sin(phi);
 		Vector3f wi = Normalize((*lightToWorld)(Vector3f(sinTheta * cosPhi, cosTheta, -sinTheta * sinPhi)));
 
-		//½«ÃÜ¶Èº¯Êı´Óuv×ø±êÏµ×ª»¯Îª·½Ïò×ø±ê
+		//å°†å¯†åº¦å‡½æ•°ä»uvåæ ‡ç³»è½¬åŒ–ä¸ºæ–¹å‘åæ ‡
 		pdf = pdf / (2 * M_PI * M_PI * sinTheta);
 		if (sinTheta == 0)pdf = 0; 
 
-		//½«ÈëÉä¹âÔ­µãÉèÖÃÔÚÁ½±¶³¡¾°°ë¾¶Ö®Íâ
+		//å°†å…¥å°„å…‰åŸç‚¹è®¾ç½®åœ¨ä¸¤å€åœºæ™¯åŠå¾„ä¹‹å¤–
 		Point3f lightp = inter.p + 2 * worldRadius * wi;
 		lightSample->p = lightp;
 		lightSample->pdf = pdf;

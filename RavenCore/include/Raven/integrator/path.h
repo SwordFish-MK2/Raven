@@ -1,4 +1,4 @@
-#ifndef _RAVEN_RENDERER_PATH_TRACING_H_
+﻿#ifndef _RAVEN_RENDERER_PATH_TRACING_H_
 #define _RAVEN_RENDERER_PATH_TRACING_H_
 
 #include<Raven/core/integrator.h>

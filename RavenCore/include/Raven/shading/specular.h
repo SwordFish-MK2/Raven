@@ -1,4 +1,4 @@
-#ifndef _RAVEN_SHADING_MODLE_SPECULAR_H_
+ï»¿#ifndef _RAVEN_SHADING_MODLE_SPECULAR_H_
 #define _RAVEN_SHADING_MODEL_SPECULAR_H_
 
 #include<Raven/core/base.h>
@@ -7,7 +7,7 @@
 
 namespace Raven {
 	/// <summary>
-	/// ¾µÃæ·´Éä
+	/// é•œé¢åå°„
 	/// </summary>
 	class SpecularReflection final :public BxDF {
 
@@ -28,7 +28,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// ¸ß¹âÍ¸Éä
+	/// é«˜å…‰é€å°„
 	/// </summary>
 	class SpecularTransmission final :public BxDF {
 	public:

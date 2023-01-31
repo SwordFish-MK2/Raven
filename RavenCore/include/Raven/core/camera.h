@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_CAMERA_H_
+ï»¿#ifndef _RAVEN_CORE_CAMERA_H_
 #define _RAVEN_CORE_CAMERA_H_
 
 #include<Raven/core/base.h>
@@ -37,8 +37,8 @@ namespace Raven {
 		Transform CameraToWorld;//place the camera in the scene, including rotation and translation
 
 	public:
-		Ref<Film> film;	//Ïà»úµÄÄ»²¼
-		Ref<Medium> medium;//Ïà»úËù´¦µÄ½éÖÊ£¬¿ÕÖ¸Õë¶ÔÓ¦ÎŞ½éÖÊ
+		Ref<Film> film;	//ç›¸æœºçš„å¹•å¸ƒ
+		Ref<Medium> medium;//ç›¸æœºæ‰€å¤„çš„ä»‹è´¨ï¼Œç©ºæŒ‡é’ˆå¯¹åº”æ— ä»‹è´¨
 	};
 }
 #endif

@@ -1,4 +1,4 @@
-#ifndef _RAVEN_LIGHT_INFINITE_AREA_LIGHT_H_
+ï»¿#ifndef _RAVEN_LIGHT_INFINITE_AREA_LIGHT_H_
 #define _RAVEN_LIGHT_INFINITE_AREA_LIGHT_H_
 
 #include<Raven/core/base.h>
@@ -11,13 +11,13 @@ namespace Raven {
 	public:
 		InfiniteAreaLight(const Ref<Transform>& LightToWorld,const Ref<Transform>& worldToLight,
 			const Spectrum& L, int nSamples, const std::string& textureMap);
-		//ÊäÈë¿Õ¼äÖĞµÄÒ»¸öµãp£¬ÔÚ¹âÔ´ÉÏËæ»ú²ÉÑù£¬²¢¼ÆËã³öÉäµÄRadiance
+		//è¾“å…¥ç©ºé—´ä¸­çš„ä¸€ä¸ªç‚¹pï¼Œåœ¨å…‰æºä¸Šéšæœºé‡‡æ ·ï¼Œå¹¶è®¡ç®—å‡ºå°„çš„Radiance
 		Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv, LightSample* lightSample)const;
 
-		//·µ»Ø¹âÔ´Ïò¿Õ¼äÖĞ·øÉäµÄ×ÜµÄÄÜÁ¿
+		//è¿”å›å…‰æºå‘ç©ºé—´ä¸­è¾å°„çš„æ€»çš„èƒ½é‡
 		virtual Spectrum power()const;
 		
-		//¸ø¶¨¹âÔ´ÉÏµÄÒ»¸öµãÓë³öÉä·½Ïò£¬¼ÆËã²ÉÑùµÄpdf
+		//ç»™å®šå…‰æºä¸Šçš„ä¸€ä¸ªç‚¹ä¸å‡ºå°„æ–¹å‘ï¼Œè®¡ç®—é‡‡æ ·çš„pdf
 		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const;
 
 		Spectrum Le(const RayDifferential&)const;
@@ -26,7 +26,7 @@ namespace Raven {
 	private:
 		std::unique_ptr<Mipmap<RGBSpectrum>> lightMap;
 		std::unique_ptr<Distribution2D> distribution;
-		const Transform lightWorld;//ÓÃÓÚµ÷Õûimage mapµÄ·½Ïò£¬¾ö¶¨ÄÄ¸ö·½ÏòÎªÉÏ
+		const Transform lightWorld;//ç”¨äºè°ƒæ•´image mapçš„æ–¹å‘ï¼Œå†³å®šå“ªä¸ªæ–¹å‘ä¸ºä¸Š
 		Point3f worldCenter;
 		double worldRadius;
 	};

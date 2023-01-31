@@ -1,4 +1,4 @@
-#include<Raven/utils/propertylist.h>
+﻿#include<Raven/utils/propertylist.h>
 namespace Raven {
 #define DEFINE_PROPERTY_ACCESSOR(Type,TypeName,xmlTypeName)							\
 	void PropertyList::set##TypeName(const std::string& name,const Type& value){	\

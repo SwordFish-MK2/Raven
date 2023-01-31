@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_TEXTURE_H_
+ï»¿#ifndef _RAVEN_CORE_TEXTURE_H_
 #define _RAVEN_CORE_TEXTURE_H_
 
 #include<Raven/core/base.h>
@@ -8,7 +8,7 @@
 
 namespace Raven {
 	/// <summary>
-	/// 2DÎÆÀímapping 
+	/// 2Dçº¹ç†mapping 
 	/// </summary>
 	class TextureMapping2D :public RavenObject {
 	public:
@@ -16,7 +16,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// 3DÎÆÀímapping
+	/// 3Dçº¹ç†mapping
 	/// </summary>
 	class TextureMapping3D :public RavenObject {
 	public:
@@ -24,7 +24,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// ÎÆÀí½Ó¿Ú
+	/// çº¹ç†æ¥å£
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	template <class T>
@@ -34,7 +34,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// Const Texture,¶ÔËùÓĞµÄÎÆÀí×ø±ê·µ»ØÒ»¸ö³£Á¿
+	/// Const Texture,å¯¹æ‰€æœ‰çš„çº¹ç†åæ ‡è¿”å›ä¸€ä¸ªå¸¸é‡
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	template <class T>

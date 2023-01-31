@@ -1,4 +1,4 @@
-#include<Raven/core/film.h>
+ï»¿#include<Raven/core/film.h>
 #include<Raven/filter/gaussian.h>
 #include<Raven/core/math.h>
 #include<math.h>
@@ -21,7 +21,7 @@ namespace Raven {
 	//	int vSize = ilevelImage->vSize();
 	//	unsigned char* colorData = (unsigned char*)malloc(sizeof(unsigned char) * 3 * uSize * vSize);
 
-	//	//±éÀúÃ¿¸öÏñËØ
+	//	//éå†æ¯ä¸ªåƒç´ 
 	//	for (int y = 0; y < vSize; y++) {
 	//		for (int x = 0; x < uSize; x++) {
 	//			const RGBSpectrum& pixelValue = (*ilevelImage)(x, y);
@@ -40,11 +40,11 @@ namespace Raven {
 	//void Film::filter(int filterRadius, double sigmaX, double sigmaC, double sigmaN, double sigmaD) {
 	//	for (int y = 0; y < height; y++) {
 	//		for (int x = 0; x < width; x++) {
-	//			//¶ÔÃ¿Ò»¸öÏñËØ£¬Ö´ĞĞ¸ßË¹filter
+	//			//å¯¹æ¯ä¸€ä¸ªåƒç´ ï¼Œæ‰§è¡Œé«˜æ–¯filter
 	//			double totalWeight = 0;
 	//			Vector3f totalColor(0.0);
 	//			GeometryData gbuffer = buffer[x + y * width];
-	//			//Ë«±ßÁªºÏÂË²¨
+	//			//åŒè¾¹è”åˆæ»¤æ³¢
 	//			for (int fy = -filterRadius; fy <= filterRadius; fy++) {
 	//				for (int fx = -filterRadius; fx <= filterRadius; fx++) {
 

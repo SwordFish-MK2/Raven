@@ -1,4 +1,4 @@
-#ifndef _RAVEN_MEDIUM_HOMOGENEOUS_H_
+ï»¿#ifndef _RAVEN_MEDIUM_HOMOGENEOUS_H_
 #define _RAVEN_MEDIUM_HOMOGENEOUS_H_
 
 #include<Raven/core/medium.h>
@@ -11,9 +11,9 @@ namespace Raven {
 
 		virtual Spectrum Tr(const Ray& ray, Sampler& sampler)const override;
 	private:
-		const Spectrum sigma_a;//ÎüÊÕ
-		const Spectrum sigma_s;//ÏòÍâÉ¢Éä
-		const Spectrum sigma_t;//Ë¥¼õ
+		const Spectrum sigma_a;//å¸æ”¶
+		const Spectrum sigma_s;//å‘å¤–æ•£å°„
+		const Spectrum sigma_t;//è¡°å‡
 		const double g;
 	};
 }

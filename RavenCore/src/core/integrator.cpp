@@ -1,36 +1,36 @@
-#include<Raven/core/integrator.h>
+ï»¿#include<Raven/core/integrator.h>
 #include<Raven/core/light.h>
 
 namespace Raven {
 
 	Spectrum EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light) {
 
-		//´¦Àí¹âÔ´
+		//å¤„ç†å…‰æº
 		for (std::shared_ptr<Light> light : scene.lights) {
 			light->preprocess(scene);
 		}
 
 		Spectrum L(0.0);
 
-		//´Ó¹âÔ´µÄ·Ö²¼ÉÏ²ÉÑù
+		//ä»å…‰æºçš„åˆ†å¸ƒä¸Šé‡‡æ ·
 		LightSample lSample;
 		Spectrum Le = light.sampleLi(record, Point2f(GetRand(), GetRand()), &lSample);
 		if (Le != Spectrum(0.0) && lSample.pdf > 0) {
 
-			//¼ÆËãbrdfÓëscarttingPdf
+			//è®¡ç®—brdfä¸scarttingPdf
 			Spectrum f = record.bsdf->f(record.wo, lSample.wi) * std::abs(Dot(lSample.wi, record.n));
 			double scarttingPdf = record.bsdf->pdf(record.wo, lSample.wi);
 			if (f != Spectrum(0.0) && scarttingPdf > 0.0) {
 
-				//ÅĞ¶Ïshadow rayÊÇ·ñ±»ÕÚµ²
+				//åˆ¤æ–­shadow rayæ˜¯å¦è¢«é®æŒ¡
 				//Ray shadowRay(record.p, lSample.wi);
-				Ray shadowRay = record.scartterRay(lSample.wi);//shadow ray´Ó½»µãÉäÏò¹âÔ´
+				Ray shadowRay = record.scartterRay(lSample.wi);//shadow rayä»äº¤ç‚¹å°„å‘å…‰æº
 				double distance = (record.p - lSample.p).length();
 				shadowRay.tMax = distance - 0.01;
 				if (scene.hit(shadowRay))
-					Le = Spectrum(0.0);	//Èç¹ûshadow ray±»ÕÚµ²£¬·µ»ØRadiance=0
+					Le = Spectrum(0.0);	//å¦‚æœshadow rayè¢«é®æŒ¡ï¼Œè¿”å›Radiance=0
 
-				//¼ÆËã´Ë´Î²ÉÑùµÄ¹±Ï×
+				//è®¡ç®—æ­¤æ¬¡é‡‡æ ·çš„è´¡çŒ®
 				if (Le != Spectrum(0.0)) {
 					double weight = PowerHeuristic(1, lSample.pdf, 1, scarttingPdf);
 					L += Le * f * weight / lSample.pdf;
@@ -38,9 +38,9 @@ namespace Raven {
 			}
 		}
 
-		//´ÓbrdfµÄ·Ö²¼ÉÏ²ÉÑù
+		//ä»brdfçš„åˆ†å¸ƒä¸Šé‡‡æ ·
 
-		//²ÉÑùbrdf
+		//é‡‡æ ·brdf
 		auto [f, wi, scarttingPdf, sampledType] =
 			record.bsdf->sample_f(record.wo, Point2f(GetRand(), GetRand()));
 
@@ -50,17 +50,17 @@ namespace Raven {
 			double cosTheta = abs(Dot(wi, record.n));
 			f *= cosTheta;
 
-			//¼ÆËãlightPdf£¬ÇóMISÈ¨ÖØ
+			//è®¡ç®—lightPdfï¼Œæ±‚MISæƒé‡
 			lightPdf = light.pdf_Li(record, wi);
 			if (lightPdf == 0)
 				return L;
 			double weight = PowerHeuristic(1, scarttingPdf, 1, lightPdf);
 
-			//³öÉäshadow ray ÅĞ¶Ï¹âÔ´ÊÇ·ñ±»ÕÚµ²
+			//å‡ºå°„shadow ray åˆ¤æ–­å…‰æºæ˜¯å¦è¢«é®æŒ¡
 			Ray shadowRay = record.scartterRay(wi);
 			std::optional<SurfaceInteraction> intersection = scene.intersect(shadowRay);
 
-			//²ÉÑùµÄshadow rayÎ´±»ÕÚµ²£¬¼ÆËã¹âÔ´µÄ¹±Ï×
+			//é‡‡æ ·çš„shadow rayæœªè¢«é®æŒ¡ï¼Œè®¡ç®—å…‰æºçš„è´¡çŒ®
 			Spectrum Le(0.0);
 			if (intersection) {
 				if (intersection->hitLight && intersection->light == &light)
@@ -74,7 +74,7 @@ namespace Raven {
 		return L;
 	}
 
-	//ÔÚÃ¿¸ö¹âÔ´ÉÏ²ÉÑùÒ»¸öµã£¬¼ÆËãRadiance
+	//åœ¨æ¯ä¸ªå…‰æºä¸Šé‡‡æ ·ä¸€ä¸ªç‚¹ï¼Œè®¡ç®—Radiance
 	Spectrum SampleAllLights(const SurfaceInteraction& record, const Scene& scene) {
 		Spectrum Le(0.0);
 		for (auto light : scene.lights) {

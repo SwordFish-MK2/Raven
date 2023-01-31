@@ -1,5 +1,5 @@
 #include<Raven/accelerate/kdTree.h>
-
+#include<cstring>
 namespace Raven {
 	KdTreeAccel::KdTreeAccel(
 		const std::vector<std::shared_ptr<Primitive>>& p,
@@ -59,14 +59,14 @@ namespace Raven {
 		int* prims1,
 		int badRefine
 	) {
-		//Èç¹ûµ±Ç°ÒÑ¾­·ÖÅäµÄÄÚ´æÒÑÂú£¬·ÖÅäË«±¶µÄÄÚ´æ²¢¿½±´Êý¾Ý
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ²¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (nextFreeNode == nAccelNode) {
 
-			//·ÖÅäË«±¶´óÐ¡µÄÄÚ´æ
+			//ï¿½ï¿½ï¿½ï¿½Ë«ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½Ú´ï¿½
 			int newNodeSize = std::max(512, 2 * nAccelNode);
 			KdTreeNode* newArray = new KdTreeNode[newNodeSize];
 
-			//Èç¹ûÔ­ÄÚ´æ¿Õ¼äÓÐÊý¾Ý£¬¿½±´Êý¾Ý²¢ÊÍ·ÅÔ­ÄÚ´æ¿Õ¼ä
+			//ï¿½ï¿½ï¿½Ô­ï¿½Ú´ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý²ï¿½ï¿½Í·ï¿½Ô­ï¿½Ú´ï¿½Õ¼ï¿½
 			if (nAccelNode > 0) {
 				std::memcpy(newArray, treeNodes, sizeof(KdTreeNode) * nAccelNode);
 				delete[] treeNodes;

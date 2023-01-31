@@ -1,15 +1,15 @@
-#ifndef _RAVEN_CORE_IMAGE_H_
+ï»¿#ifndef _RAVEN_CORE_IMAGE_H_
 #define _RAVEN_CORE_IMAGE_H_
 
 #include<Raven/core/base.h>
 #include<Raven/core/math.h>
 #include<Raven/core/spectrum.h>
-
+#include<cstring>
 namespace Raven {
 	/// <summary>
-/// ´¢´æ2DÍ¼Ïñ
-/// ÈýÍ¨µÀÍ¼Ïñ(TÎªRGBSpectrum)£ºÓÃÓÚ´¢´æÑÕÉ«ÌùÍ¼¡¢äÖÈ¾½á¹ûµÈ
-/// µ¥Í¨µÀÍ¼Ïñ(TÎªdouble£©£ºÓÃÓÚ´¢´æbump mapµÈ
+/// ï¿½ï¿½ï¿½ï¿½2DÍ¼ï¿½ï¿½
+/// ï¿½ï¿½Í¨ï¿½ï¿½Í¼ï¿½ï¿½(TÎªRGBSpectrum)ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½
+/// ï¿½ï¿½Í¨ï¿½ï¿½Í¼ï¿½ï¿½(TÎªdoubleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½bump mapï¿½ï¿½
 /// </summary>
 /// <typeparam name="T"></typeparam>
 	template<class T>

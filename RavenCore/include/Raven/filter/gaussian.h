@@ -1,4 +1,4 @@
-#ifndef _RAVEN_FILTER_GAUSSIAN_H_
+ï»¿#ifndef _RAVEN_FILTER_GAUSSIAN_H_
 #define _RAVEN_FILTER_GAUSSIAN_H_
 
 #include<Raven/core/filter.h>
@@ -15,14 +15,14 @@ namespace Raven {
 		GaussianFilter(const Vector2f& r, double alpha) :Filter(r), alpha(alpha),
 			expRX(exp(-alpha * r.x * r.x)), expRY(exp(-alpha * r.y * r.y)) {}
 		virtual double evaluate(const Point2f& p)const {
-			//2Î¬¸ßË¹µÄÖµµÈÓÚÁ½¸öÎ¬¶ÈÂË²¨µÄ³Ë»ı
+			//2ç»´é«˜æ–¯çš„å€¼ç­‰äºä¸¤ä¸ªç»´åº¦æ»¤æ³¢çš„ä¹˜ç§¯
 			return gaussian(p.x, expRX) * gaussian(p.y, expRY);
 		}
 	private:
-		double expRX, expRY;//ÂË²¨ÔÚÂË²¨±ßÔµµÄÖµ£¬¼õÈ¥¸ÃÖµÈ·±£ÂË²¨ÔÚ±ßÔµµÄÖµÊÕÁ²µ½0
-		double alpha;		//ÂË²¨µÄ²ÎÊı£¬¿ØÖÆ²¨ĞÎµÄÆğ·ü´óĞ¡
+		double expRX, expRY;//æ»¤æ³¢åœ¨æ»¤æ³¢è¾¹ç¼˜çš„å€¼ï¼Œå‡å»è¯¥å€¼ç¡®ä¿æ»¤æ³¢åœ¨è¾¹ç¼˜çš„å€¼æ”¶æ•›åˆ°0
+		double alpha;		//æ»¤æ³¢çš„å‚æ•°ï¼Œæ§åˆ¶æ³¢å½¢çš„èµ·ä¼å¤§å°
 		double gaussian(double distance, double expv)const {
-			//µ¥¸öÎ¬¶ÈµÄ¸ßË¹º¯Êı
+			//å•ä¸ªç»´åº¦çš„é«˜æ–¯å‡½æ•°
 			return Max(0.0, exp(-alpha * distance * distance) - expv);
 		}
 	};

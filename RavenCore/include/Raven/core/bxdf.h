@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_BXDF_H_
+ï»¿#ifndef _RAVEN_CORE_BXDF_H_
 #define _RAVEN_CORE_BXDF_H_
 
 
@@ -25,14 +25,14 @@ namespace Raven {
 			return Vector3f(-wo.x, -wo.y, wo.z);
 	}
 
-	//¼ÆËãÕÛÉä¹â·½Ïò£¬eta = etaI/etaT
+	//è®¡ç®—æŠ˜å°„å…‰æ–¹å‘ï¼Œeta = etaI/etaT
 	inline std::optional<Vector3f> Refract(const Vector3f& wo, const Vector3f& n, double eta) {
 
 		double cosThetaI = Dot(wo, n);
 		double sinThetaI2 = Max(0.0, 1 - cosThetaI * cosThetaI);
 		double sinThetaT2 = eta * eta * sinThetaI2;
 
-		if (sinThetaT2 >= 1)//È«·´Éä
+		if (sinThetaT2 >= 1)//å…¨åå°„
 			return std::nullopt;
 
 		double cosThetaT = sqrt(1 - sinThetaT2);
@@ -46,7 +46,7 @@ namespace Raven {
 		double sinThetaI2 = Max(0.0, 1 - cosThetaI * cosThetaI);
 		double sinThetaT2 = eta * eta * sinThetaI2;
 
-		if (sinThetaT2 >= 1)//È«·´Éä
+		if (sinThetaT2 >= 1)//å…¨åå°„
 			return std::nullopt;
 
 		double cosThetaT = sqrt(1 - sinThetaT2);
@@ -55,7 +55,7 @@ namespace Raven {
 		return wt;
 	}
 
-	//fresnel classÖ»ÓÃÓÚ¼ÆËã·´ÉäµÄ·øÉä¶È
+	//fresnel classåªç”¨äºè®¡ç®—åå°„çš„è¾å°„åº¦
 	class Fresnel {
 	public:
 		virtual double evaluate(double cosTheta)const = 0;
@@ -86,7 +86,7 @@ namespace Raven {
 	};
 
 	/// <summary>
-	/// ÀíÏëÄ£ĞÍ£¬¶ÔÓÚËùÓĞÈëÉä·½Ïò¶¼ÍêÃÀ·´Éä£¬¶àÓÃÓÚ¾µÃæ²ÄÖÊ
+	/// ç†æƒ³æ¨¡å‹ï¼Œå¯¹äºæ‰€æœ‰å…¥å°„æ–¹å‘éƒ½å®Œç¾åå°„ï¼Œå¤šç”¨äºé•œé¢æè´¨
 	/// </summary>
 	class FresnelNoOp final :public Fresnel {
 	public:

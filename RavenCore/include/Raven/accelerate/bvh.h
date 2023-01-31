@@ -1,4 +1,4 @@
-#ifndef _RAVEN_ACCELERATE_BVH_H_
+ï»¿#ifndef _RAVEN_ACCELERATE_BVH_H_
 #define _RAVEN_ACCELERATE_BVH_H_
 
 #include<Raven/core/accelerate.h>
@@ -27,8 +27,8 @@ namespace Raven {
 		Bound3f box;
 
 		std::shared_ptr<BVHNode> children[2];
-		size_t firstPrimOffset;//¸Ã½ÚµãÖĞµÚÒ»¸öÍ¼ÔªÔÚÍ¼ÔªÊı×éÖĞµÄÆ«ÒÆÁ¿
-		size_t nPrims;//¸Ã½ÚµãÖĞº¬ÓĞ¶àÉÙ¸öÍ¼Ôª
+		size_t firstPrimOffset;//è¯¥èŠ‚ç‚¹ä¸­ç¬¬ä¸€ä¸ªå›¾å…ƒåœ¨å›¾å…ƒæ•°ç»„ä¸­çš„åç§»é‡
+		size_t nPrims;//è¯¥èŠ‚ç‚¹ä¸­å«æœ‰å¤šå°‘ä¸ªå›¾å…ƒ
 	};
 
 	struct SAHBucket {
@@ -41,9 +41,9 @@ namespace Raven {
 		PrimitiveInfo(const Bound3f& b, size_t index) :box(b), primitiveIndex(index),
 			centroid(0.5 * box.pMin + 0.5 * box.pMax) {}
 		PrimitiveInfo() {}
-		Bound3f box;//Í¼ÔªµÄ°üÎ§ºĞ
-		Point3f centroid;//°üÎ§ºĞµÄÖĞĞÄµã
-		size_t primitiveIndex;//ÔÚÊı×éÖĞµÄindex
+		Bound3f box;//å›¾å…ƒçš„åŒ…å›´ç›’
+		Point3f centroid;//åŒ…å›´ç›’çš„ä¸­å¿ƒç‚¹
+		size_t primitiveIndex;//åœ¨æ•°ç»„ä¸­çš„index
 	};
 
 	struct LinearBVHNode {
@@ -68,7 +68,7 @@ namespace Raven {
 
 		std::optional<SurfaceInteraction> intersect(const RayDifferential& r_in)const override;
 	private:
-		//½«ËùÓĞµÄBVHNode´¢´æÔÚBVHAccelÀàÖĞ
+		//å°†æ‰€æœ‰çš„BVHNodeå‚¨å­˜åœ¨BVHAccelç±»ä¸­
 		//std::shared_ptr<BVHNode> root;
 		std::vector<LinearBVHNode> linearTree;
 		size_t maxPrimInNode;

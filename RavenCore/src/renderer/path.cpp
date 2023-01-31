@@ -1,12 +1,12 @@
-#include<Raven/integrator/path.h>
+ï»¿#include<Raven/integrator/path.h>
 #include<omp.h>
 #include<Raven/core/light.h>
 #include<Raven/light/infiniteAreaLight.h>
 
 static omp_lock_t lock;
 namespace Raven {
-	//äÖÈ¾³¡¾°
-	//±éÀúFilmÖĞµÄÃ¿¸öÏñËØ£¬¹À¼ÆÏñËØÑÕÉ«µÄÖµ
+	//æ¸²æŸ“åœºæ™¯
+	//éå†Filmä¸­çš„æ¯ä¸ªåƒç´ ï¼Œä¼°è®¡åƒç´ é¢œè‰²çš„å€¼
 	void PathTracingIntegrator::render(
 		const Scene& scene,
 		const Ref<Camera>& camera,
@@ -18,7 +18,7 @@ namespace Raven {
 #pragma omp parallel for
 		for (int i = 0; i < film->yRes; ++i) {
 
-			//¼ÆËãäÖÈ¾µÄ½ø¶È£¬Êä³ö½ø¶ÈÌõ
+			//è®¡ç®—æ¸²æŸ“çš„è¿›åº¦ï¼Œè¾“å‡ºè¿›åº¦æ¡
 			process = (double)finishedLine / film->yRes;
 			omp_set_lock(&lock);
 			UpdateProgress(process);
@@ -55,7 +55,7 @@ namespace Raven {
 		film->write();
 	}
 
-	//Â·¾¶×·×ÙËã·¨
+	//è·¯å¾„è¿½è¸ªç®—æ³•
 	Spectrum PathTracingIntegrator::integrate(
 		const Scene& scene,
 		const RayDifferential& rayIn,
@@ -63,16 +63,16 @@ namespace Raven {
 	{
 		//	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451, 0.843137));
 		Spectrum Li(0.0);
-		Spectrum beta(1.0);//¹âÏßµÄË¥¼õ²ÎÊı
+		Spectrum beta(1.0);//å…‰çº¿çš„è¡°å‡å‚æ•°
 		RayDifferential ray = rayIn;
 
 		bool specularBounce = false;
 		double etaScale = 1;
 		for (; bounce < maxDepth; bounce++) {
 
-			//»ñÈ¡³¡¾°Óë¹âÏßµÄÏà½»ĞÅÏ¢
+			//è·å–åœºæ™¯ä¸å…‰çº¿çš„ç›¸äº¤ä¿¡æ¯
 			std::optional<SurfaceInteraction> record = scene.intersect(ray);
-			//¹âÏßÎ´Óë³¡¾°Ïà½»
+			//å…‰çº¿æœªä¸åœºæ™¯ç›¸äº¤
 			if (!record) {
 				if (bounce == 0 || specularBounce)
 					for (const auto& envlight : scene.infinitAreaLights) {
@@ -81,15 +81,15 @@ namespace Raven {
 				break;
 			}
 			else {
-				//¹âÏßÓë³¡¾°Ïà½»£¬Ïà½»µÄĞÅÏ¢¶¼´¢´æÔÚrecordÖĞ
+				//å…‰çº¿ä¸åœºæ™¯ç›¸äº¤ï¼Œç›¸äº¤çš„ä¿¡æ¯éƒ½å‚¨å­˜åœ¨recordä¸­
 				Point3f p = record->p;
 				Vector3f wo = Normalize(-ray.dir);
 				Normal3f n = record->n;
 
-				//Ö»ÓĞ´ÓÏà»ú³ö·¢µÄ¹âÏß»÷ÖĞ¹âÔ´²ÅÖ±½Ó·µ»Ø¹âÔ´µÄemittion
+				//åªæœ‰ä»ç›¸æœºå‡ºå‘çš„å…‰çº¿å‡»ä¸­å…‰æºæ‰ç›´æ¥è¿”å›å…‰æºçš„emittion
 				if (bounce == 0 || specularBounce) {
 
-					//´ÓÏà»ú³ö·¢µÄ¹âÏßÖ±½Ó»÷ÖĞ¹âÔ´
+					//ä»ç›¸æœºå‡ºå‘çš„å…‰çº¿ç›´æ¥å‡»ä¸­å…‰æº
 					if (record->hitLight) {
 						Spectrum emittion = record->light->Li(*record, wo);
 						Li += beta * emittion;
@@ -97,23 +97,23 @@ namespace Raven {
 					}
 				}
 
-				//²ÉÑù¹âÔ´
+				//é‡‡æ ·å…‰æº
 				Spectrum L_dir = SampleAllLights(*record, scene);
 				Li += beta * L_dir;
 
-				//²ÉÑùbrdf£¬¼ÆËã³öÉä·½Ïò,¸üĞÂbeta
+				//é‡‡æ ·brdfï¼Œè®¡ç®—å‡ºå°„æ–¹å‘,æ›´æ–°beta
 				auto [f, wi, pdf, sampledType] = record->bsdf->sample_f(wo, Point2f(GetRand(), GetRand()));
 				if (f == Spectrum(0.0) || pdf == 0.0)
 					break;
 
-				//¼ÆËãË¥¼õ
+				//è®¡ç®—è¡°å‡
 				double cosTheta = abs(Dot(wi, n));
 				beta *= f * cosTheta / pdf;
 				//std::cout <<f<< beta << std::endl;
 				specularBounce = (sampledType & BxDFType::Specular) != 0;
 				ray = record->scartterRay(wi);
 
-				//¶íÂŞË¹ÂÖÅÌ¶Ä½áÊøÑ­»·
+				//ä¿„ç½—æ–¯è½®ç›˜èµŒç»“æŸå¾ªç¯
 				if (bounce > 3) {
 					double q = Max((double).05, 1 - beta.y());
 					if (GetRand() < q)
@@ -135,7 +135,7 @@ namespace Raven {
 		return std::make_shared<PathTracingIntegrator>(spp, maxDepth, epsilon);
 	}
 
-	//ÊµÀı»¯×¢²áÀà¾²Ì¬¶ÔÏó
+	//å®ä¾‹åŒ–æ³¨å†Œç±»é™æ€å¯¹è±¡
 	PathTracingIntegratorReg PathTracingIntegratorReg::regHelper;
 
 }

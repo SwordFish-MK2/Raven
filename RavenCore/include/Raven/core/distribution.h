@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_DISTRIBUTION_H_
+ï»¿#ifndef _RAVEN_CORE_DISTRIBUTION_H_
 #define _RAVEN_CORE_DISTRIBUTION_H_
 
 #ifndef _USE_MATH_DEFINES
@@ -113,20 +113,20 @@ namespace Raven {
 	}
 
 	/// <summary>
-	/// Ê¹ÓÃÒ»×éµÈ¼ä¾àµÄ³£Öµ·Ö¶Îº¯ÊıÃèÊöµÄ1D·Ö²¼
+	/// ä½¿ç”¨ä¸€ç»„ç­‰é—´è·çš„å¸¸å€¼åˆ†æ®µå‡½æ•°æè¿°çš„1Dåˆ†å¸ƒ
 	/// </summary>
 	struct Distribution1D {
 	public:
-		//ÊäÈëÒ»×é·Ö¶Î³£Öµº¯Êı
+		//è¾“å…¥ä¸€ç»„åˆ†æ®µå¸¸å€¼å‡½æ•°
 		Distribution1D(const double* f, int n) :
 			function(f, f + n), cdf(n + 1) {
 			double invN = 1 / n;
 			integral = 0;
-			//¼ÙÉè¶¨ÒåÓòÎª0-1£¬Ê¹ÓÃÀèÂü»ı·Ö¼ÆËã¶¨»ı·ÖµÄÖµ
+			//å‡è®¾å®šä¹‰åŸŸä¸º0-1ï¼Œä½¿ç”¨é»æ›¼ç§¯åˆ†è®¡ç®—å®šç§¯åˆ†çš„å€¼
 			for (int i = 0; i < n; i++)
 				integral += function[i] * invN;
 
-			//¼ÆËãCDF£¬CDFÎªPDFµÄ»ı·Ö£¬PDFµÈÓÚº¯ÊıÔÚÄ³¸öÇø¼äµÄ»ı·Ö³ıÒÔº¯ÊıÔÚ¶¨ÒåÓòÉÏµÄ»ı·Ö
+			//è®¡ç®—CDFï¼ŒCDFä¸ºPDFçš„ç§¯åˆ†ï¼ŒPDFç­‰äºå‡½æ•°åœ¨æŸä¸ªåŒºé—´çš„ç§¯åˆ†é™¤ä»¥å‡½æ•°åœ¨å®šä¹‰åŸŸä¸Šçš„ç§¯åˆ†
 			cdf[0] = 0;
 			if (integral == 0) {
 				for (int i = 1; i < n + 1; i++)
@@ -142,9 +142,9 @@ namespace Raven {
 		int size()const { return function.size(); }
 		double funInte()const { return integral; }
 		
-		//ÊäÈëÒ»¸ö[0,1]Ö®¼äµÄËæ»úÊı£¬ÔÚ¸Ã·Ö²¼ÖĞ²ÉÑùÒ»¸öx²¢·µ»Øpdf
+		//è¾“å…¥ä¸€ä¸ª[0,1]ä¹‹é—´çš„éšæœºæ•°ï¼Œåœ¨è¯¥åˆ†å¸ƒä¸­é‡‡æ ·ä¸€ä¸ªxå¹¶è¿”å›pdf
 		double sampleContinuous(double u, double* pdf, int* off = nullptr)const {
-			//¸ù¾İÄæ·½·¨Áîu=CDF£¬ÅĞ¶ÏuÎ»ÓÚ·Ö¶Îº¯ÊıµÄÄÄÒ»¸öÆ¬¶Î
+			//æ ¹æ®é€†æ–¹æ³•ä»¤u=CDFï¼Œåˆ¤æ–­uä½äºåˆ†æ®µå‡½æ•°çš„å“ªä¸€ä¸ªç‰‡æ®µ
 			int offset = 0;
 			for (int i = 0; i < cdf.size(); i++) {
 				if (cdf[i] > u)
@@ -153,7 +153,7 @@ namespace Raven {
 			}
 			if (off)*off = offset;
 
-			//¼ÆËãuÔÚ¸ÃÆ¬¶ÎÖĞµÄÆ«ÒÆÁ¿
+			//è®¡ç®—uåœ¨è¯¥ç‰‡æ®µä¸­çš„åç§»é‡
 			double du = u - cdf[offset];
 			if (cdf[offset + 1] - cdf[offset] > 0)
 				du /= (cdf[offset + 1] - cdf[offset]);
@@ -171,7 +171,7 @@ namespace Raven {
 			return (du + double(offset)) / function.size();
 		}
 
-		//ÊäÈëÒ»¸ö[0,1]Ö®¼äµÄËæ»úÊıu£¬Ê¹ÓÃÄæ·½·¨´Ó·Ö¶Îº¯ÊıÖĞ²ÉÑùuËùÎ»ÓÚµÄÄÇ¶Î
+		//è¾“å…¥ä¸€ä¸ª[0,1]ä¹‹é—´çš„éšæœºæ•°uï¼Œä½¿ç”¨é€†æ–¹æ³•ä»åˆ†æ®µå‡½æ•°ä¸­é‡‡æ ·uæ‰€ä½äºçš„é‚£æ®µ
 		int sampleDiscrete(double u, double* pdf, double* remappedU = nullptr)const {
 
 			//find segment surrounding u
@@ -195,8 +195,8 @@ namespace Raven {
 			return offset;
 		}
 
-		std::vector<double> function, cdf;//Ê¹ÓÃÊı×é´æ´¢º¯ÊıÓëCDF
-		double integral;//º¯ÊıÔÚ¶¨ÒåÓòÄÚ»ı·ÖµÄÖµ
+		std::vector<double> function, cdf;//ä½¿ç”¨æ•°ç»„å­˜å‚¨å‡½æ•°ä¸CDF
+		double integral;//å‡½æ•°åœ¨å®šä¹‰åŸŸå†…ç§¯åˆ†çš„å€¼
 	};
 
 	/// <summary>
@@ -206,11 +206,11 @@ namespace Raven {
 	public:
 		Distribution2D(const double* data, int nu, int nv) {
 			conditionalU.resize(nv);
-			//¶ÔÓÚÃ¿¸öVi,UµÄÌõ¼ş¸ÅÂÊÃÜ¶Èº¯ÊıÎª¹ØÓÚUµÄÒ»Î¬³£Öµ·Ö¶Îº¯Êı
+			//å¯¹äºæ¯ä¸ªVi,Uçš„æ¡ä»¶æ¦‚ç‡å¯†åº¦å‡½æ•°ä¸ºå…³äºUçš„ä¸€ç»´å¸¸å€¼åˆ†æ®µå‡½æ•°
 			for (int i = 0; i < nv; i++)
 				conditionalU[i].reset(new Distribution1D(&data[nv * i], nu));
 
-			//VµÄ±ßÔµÃÜ¶Èº¯ÊıÎª¹ØÓÚVµÄÒ»Î¬³£Öµ·Ö¶Îº¯Êı
+			//Vçš„è¾¹ç¼˜å¯†åº¦å‡½æ•°ä¸ºå…³äºVçš„ä¸€ç»´å¸¸å€¼åˆ†æ®µå‡½æ•°
 			std::vector<double> integralU(nu);
 			for (int i = 0; i < nv; i++)
 				integralU[i] = conditionalU[i]->funInte();
@@ -219,11 +219,11 @@ namespace Raven {
 
 		Point2f sampleContinuous(const Point2f& uv, double* pdf)const {
 			double pdfv, pdfu;
-			//Ê×ÏÈ´ÓVµÄ±ßÔµÃÜ¶È·Ö²¼ÖĞ²ÉÑùV
+			//é¦–å…ˆä»Vçš„è¾¹ç¼˜å¯†åº¦åˆ†å¸ƒä¸­é‡‡æ ·V
 			int v;
 			double px = marginalV->sampleContinuous(uv[1], &pdfv, &v);
 
-			//¸ø¶¨V£¬´ÓUµÄÌõ¼şÃÜ¶È·Ö²¼ÖĞ²ÉÑùU
+			//ç»™å®šVï¼Œä»Uçš„æ¡ä»¶å¯†åº¦åˆ†å¸ƒä¸­é‡‡æ ·U
 			double py = conditionalU[v]->sampleContinuous(uv[0], &pdfu);
 			*pdf = pdfv * pdfu;
 			return Point2f(px, py);

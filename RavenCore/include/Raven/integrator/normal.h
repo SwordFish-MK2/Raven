@@ -1,4 +1,4 @@
-//#ifndef _RAVEN_RENDERER_NORMAL_H_
+﻿//#ifndef _RAVEN_RENDERER_NORMAL_H_
 //#define _RAVEN_RENDERER_NORMAL_H_
 //
 //#include"../core/base.h"

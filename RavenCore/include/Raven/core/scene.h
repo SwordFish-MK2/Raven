@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_SCENE_H_
+ï»¿#ifndef _RAVEN_CORE_SCENE_H_
 #define _RAVEN_CORE_SCENE_H_
 
 #include<Raven/core/base.h>
@@ -19,7 +19,7 @@ namespace Raven {
 	private:
 		std::vector<std::shared_ptr<Transform>> transforms;
 		std::vector<std::shared_ptr<TriangleMesh>> meshes;
-		std::shared_ptr<Accelerate> objs;//³¡¾°¼ÓËÙ½á¹¹£¬°üº¬ËùÓĞµÄPrimitive
+		std::shared_ptr<Accelerate> objs;//åœºæ™¯åŠ é€Ÿç»“æ„ï¼ŒåŒ…å«æ‰€æœ‰çš„Primitive
 
 	public:
 		std::vector<std::shared_ptr<Light>> lights;
@@ -34,7 +34,7 @@ namespace Raven {
 
 		Scene(const Scene& s);
 
-		//²âÊÔ¹âÏßÊÇ·ñÓë³¡¾°Ïà½»
+		//æµ‹è¯•å…‰çº¿æ˜¯å¦ä¸åœºæ™¯ç›¸äº¤
 		bool hit(const RayDifferential& r)const { return objs->hit(r); }
 
 		//void addPrimitive(const std::shared_ptr<Primitive>& pri_ptr);
@@ -45,7 +45,7 @@ namespace Raven {
 
 		void addLight(const std::shared_ptr<Light>& light_ptr);
 
-		//ÅĞ¶Ï¹âÏßÊÇ·ñÓë³¡¾°Ïà½»£¬Èç¹ûÏà½»£¬¼ÆËã½»µãĞÅÏ¢
+		//åˆ¤æ–­å…‰çº¿æ˜¯å¦ä¸åœºæ™¯ç›¸äº¤ï¼Œå¦‚æœç›¸äº¤ï¼Œè®¡ç®—äº¤ç‚¹ä¿¡æ¯
 		std::optional<SurfaceInteraction> intersect(const RayDifferential& r)const {
 			return objs->intersect(r);
 		}

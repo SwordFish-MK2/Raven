@@ -1,4 +1,4 @@
-#include<Raven/material/glass.h>
+ï»¿#include<Raven/material/glass.h>
 #include<Raven/shading/microfacet.h>
 namespace Raven {
 
@@ -7,19 +7,19 @@ namespace Raven {
 		bool allowMultipleLobes)const {
 		if (bumpTex != nullptr)Bump(bumpTex, record);
 
-		//´ÓÎÆÀíÖĞÈ¡Öµ
+		//ä»çº¹ç†ä¸­å–å€¼
 		double eta = etaTex->evaluate(record);
 		Spectrum kd = kdTex->evaluate(record);
 		Spectrum kt = ktTex->evaluate(record);
 		double uRoughValue = uRough->evaluate(record);
 		double vRoughValue = vRough->evaluate(record);
 
-		//Éú³ÉĞÂµÄbsdf
+		//ç”Ÿæˆæ–°çš„bsdf
 		record.bsdf = std::make_shared<BSDF>(record, eta);
 
 		if (kd.isBlack() && kt.isBlack())return;
 
-		//Ìí¼Óshading models
+		//æ·»åŠ shading models
 		bool isSpecular = uRoughValue == 0 && vRoughValue == 0;
 
 		std::shared_ptr<Fresnel> fresnel = std::make_shared<FresnelDielectric>(1.0, eta);
