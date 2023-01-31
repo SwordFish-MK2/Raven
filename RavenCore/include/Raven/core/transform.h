@@ -17,7 +17,7 @@
 namespace Raven {
 
 	/// <summary>
-	/// �����࣬ʹ�����������ȴ洢
+	/// 四维矩阵
 	/// </summary>
 	class Mat4f {
 	private:

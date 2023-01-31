@@ -104,7 +104,7 @@ namespace Raven {
 
 				Vector3f wh = Vector3f(x, y, cosTheta);
 				//确保采样的wh位于上半球
-				if (!SameHemisphere(wo, wh) < 0)
+				if (!SameHemisphere(wo, wh))
 					wh = -wh;
 
 				return wh;
@@ -372,7 +372,7 @@ namespace Raven {
 			invSqrtPI * tanTheta * std::exp(-cotTheta * cotTheta));
 
 		while (true) {
-			if (!b >= a || b <= c)
+			if (!(b >= a || b <= c))
 				b = 0.5f * (a + c);
 
 			double invErf = ErfInv(b);

@@ -59,10 +59,10 @@ namespace Raven {
 		int* prims1,
 		int badRefine
 	) {
-		//�����ǰ�Ѿ�������ڴ�����������˫�����ڴ沢��������
+		//current allocated memory is full, allocate double-sized memory and copy the nodes generated.
 		if (nextFreeNode == nAccelNode) {
 
-			//����˫����С���ڴ�
+			//allocate double-sized memory
 			int newNodeSize = std::max(512, 2 * nAccelNode);
 			KdTreeNode* newArray = new KdTreeNode[newNodeSize];
 

@@ -3,6 +3,7 @@
 namespace Raven {
 #define Radiance M_PI/180.f
 
+	//perfomrm gauss-jordan elemination to find inverse
 	Mat4f Mat4f::inverse()const {
 		Mat4f mat = *this;
 		Mat4f invMat{ 1, 0, 0, 0,
@@ -12,21 +13,22 @@ namespace Raven {
 
 		Float pivot[4] = { 0,0,0,0 };
 
-		//��˹��Ԫ
+		//defaulty set matrix non-singular
 		Float singular = false;
 
-		//������Ԫ,������Ϊ�����Ǿ���
+		//perform gauss elemination to transfer the matrix to upper matrix
 		for (int i = 0; i < 4; i++) {
-			pivot[i] = mat(i, i);//��ǰ�е�pivot
+			pivot[i] = mat(i, i);//set default pivot
 
-			//��ԪΪ0ʱ������Ѱ��һ�н���
+			//perform row exchanges to find a non-zero pivot
 			if (pivot[i] == 0) {
 
-				//����Ѱ��һ�н���
+				//loop over rows below to find a non-zero value
 				for (int j = i + 1; j < 4; j++) {
 					singular = true;
 					if (mat(j, i) != 0) {
-						//�ҷ�0 pivot����������
+
+						//found a non-zero pivot, exchange two rows
 						for (size_t k = 0; k < 4; k++) {
 							std::swap(mat.data[j * 4 + k], mat.data[i * 4 + k]);
 							std::swap(invMat.data[j * 4 + k], mat.data[i * 4 + k]);
@@ -37,18 +39,18 @@ namespace Raven {
 					}
 				}
 
-				//������󣬲�������
+				//if no pivot is found, then the matrix must be singular and uninvertable.
 				assert(!singular);
 			}
 
-			//����Ԫ��Ϊ1
+			//scale pivot to 1
 			Float invPivot = 1.0 / pivot[i];
 			for (int j = 0; j < 4; j++) mat(i, j) *= invPivot;
 			for (int j = 0; j < 4; j++) invMat(i, j) *= invPivot;
 
-			//������Ԫ
+			//loop down the current column, eleminate the elements to zero
 			for (int j = i + 1; j < 4; j++) {
-				Float mul = mat(j, i);//��ǰ��Ҫ��ȥ����Ϊ��Ԫ��mul��
+				Float mul = mat(j, i);
 				if (mul == 0)continue;
 				for (int k = 0; k < 4; k++) {
 					mat(j, k) -= mul * mat(i, k);
@@ -57,7 +59,7 @@ namespace Raven {
 			}
 		}
 
-		//���Ϸ�����Ԫ
+		//perform reverse elemination to transfer current matrix to diagnol matrix
 		for (int i = 0; i < 4; i++) {
 			for (int j = i - 1; j >= 0; j--) {
 				Float mul = mat(j, i);
@@ -69,7 +71,8 @@ namespace Raven {
 			}
 		}
 
-		//���Խ��߻�Ϊ0
+		//TODO::Is this necessary?
+		//to scale pivots to 1
 		for (int i = 0; i < 4; i++) {
 			Float invMul = 1.0 / mat(i, i);
 			for (int j = 0; j < 4; j++) invMat(i, j) *= invMul;
@@ -92,7 +95,7 @@ namespace Raven {
 			p.x * m.data[8] + p.y * m.data[9] + p.z * m.data[10] + m.data[11] };
 		T w = p.x * m.data[12] + p.y * m.data[13] + p.z * m.data[14] + m.data[15];
 
-		//��ά���w��������Ϊ1
+		//make sure the w component of point is 1
 		if (w == 1)return p2;
 		else return p2 /= w;
 	}
@@ -240,9 +243,10 @@ namespace Raven {
 		return Scale(Vector3f(1, 1, 1 / (zfar - znear))) * Translate(Vector3f(0, 0, -znear));
 	}
 
-	//�����Screen space��Raster space֮��ı任
+	//Transform from Screen space to Raster space֮
 	Transform Raster(int w, int h) {
-		//�Ƚ����еĵ�����ֱ��ʵ�һ�룬��תy�ᣬ�ٽ�ͼ�����Ͻ�ƽ�Ƶ�ԭ��
+		//scale screen window to raster resolution and reverse y dimension:[-1,1] to [-half_width,half_width],
+		//translate scaled screen window so that the upper left cornner is at origin
 
 		int half_height = h / 2;
 		int half_width = w / 2;

@@ -159,7 +159,7 @@ namespace Raven {
 
 	Spectrum SurfaceInteraction::Le(const Vector3f& w)const {
 		if (hitLight) {
-			light->Li(*this, w);
+			return light->Li(*this, w);
 		}
 		else
 			return Spectrum(0.0);

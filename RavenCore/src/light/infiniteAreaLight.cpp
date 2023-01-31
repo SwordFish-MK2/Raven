@@ -25,7 +25,7 @@ namespace Raven {
 
 		//生成sampling weight
 		int width = resolution[0], height = resolution[1];//weight大小
-		double filter = 1 / Max(width, height);//滤波宽度
+		double filter = 1.0 / Max(width, height);//滤波宽度
 		std::unique_ptr<double[]>img(new double[width * height]);
 		for (int v = 0; v < height; v++) {
 			double vp = (double)v / (double)height;
