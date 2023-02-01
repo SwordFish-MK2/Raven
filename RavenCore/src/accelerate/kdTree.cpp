@@ -1,4 +1,4 @@
-#include<Raven/accelerate/kdTree.h>
+﻿#include<Raven/accelerate/kdTree.h>
 #include<cstring>
 namespace Raven {
 	KdTreeAccel::KdTreeAccel(

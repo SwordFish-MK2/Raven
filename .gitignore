@@ -3,6 +3,7 @@
 build/
 doc/
 /models/
+.xmake/
 .vscode/
 .cache/
 #files
