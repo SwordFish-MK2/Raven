@@ -145,13 +145,22 @@ namespace Raven {
 		return pow((value + 0.055) * 1.0 / 1.055, 2.4);
 	}
 
-	//��ȡ[0,1]֮��������
+	//generate random float numbers in [0,1]
 	inline double GetRand() {
 		static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 		static std::mt19937 generator;
 		return distribution(generator);
 
 	}
+
+	//generate random int numbers
+	inline double GetRandInt(int rStart,int rEnd){
+		Float randF=GetRand();
+		int randInt=randF*(rEnd-rStart);
+		return randInt;
+	}
+
+
 	inline double rgbToFloat(int rgb_value) {
 		return rgb_value / 255.0;
 	}

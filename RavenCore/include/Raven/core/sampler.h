@@ -35,7 +35,7 @@ namespace Raven {
 		//直到最初被请求的n维样本被全部生成完毕前，该函数都return true
 		virtual bool startNextSample();
 
-		virtual std::unique_ptr<Sampler> clone(int seed) = 0;
+		// virtual std::unique_ptr<Sampler> clone(int seed) = 0;
 
 		virtual bool setSampleNumber(int64_t num);
 
