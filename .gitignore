@@ -6,6 +6,7 @@ doc/
 .vscode/
 .cache/
 #files
+.clang-formmat
 CMakeSettings.json
 notation.md
 CMakeSettings.json
