@@ -1,4 +1,4 @@
-#include<Raven/textute/mapping.h>
+﻿#include<Raven/textute/mapping.h>
 
 namespace Raven {
 	UVMapping2DReg UVMapping2DReg::regHelper;

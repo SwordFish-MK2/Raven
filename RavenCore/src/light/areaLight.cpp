@@ -1,4 +1,4 @@
-#include<Raven/light/areaLight.h>
+﻿#include<Raven/light/areaLight.h>
 
 namespace Raven {
 	Spectrum DiffuseAreaLight::Li(

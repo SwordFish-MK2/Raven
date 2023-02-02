@@ -1,4 +1,4 @@
-#ifndef _RAVEN_CORE_TRANSFORM_H_
+﻿#ifndef _RAVEN_CORE_TRANSFORM_H_
 #define _RAVEN_CORE_TRANSFORM_H_
 
 #define _USE_MATH_DEFINES
