@@ -2,7 +2,7 @@
 .vs/
 build/
 doc/
-/models/
+models/
 .xmake/
 .vscode/
 .cache/
