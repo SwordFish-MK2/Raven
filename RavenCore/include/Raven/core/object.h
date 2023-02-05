@@ -1,34 +1,34 @@
 ﻿#ifndef _RAVEN_CORE_OBJECT_H_
 #define _RAVEN_CORE_OBJECT_H_
 
-#include<string>
-#include<functional>
-#include<Raven/core/base.h>
+#include <Raven/core/base.h>
+
+#include <functional>
+#include <string>
 
 namespace Raven {
-	template<typename T>
-	using Ref = std::shared_ptr<T>;
 
-	class RavenObject {
-	protected:
-		virtual ~RavenObject() {}
+class RavenObject {
+protected:
+  virtual ~RavenObject() {}
 
-	private:
-	};
+private:
+};
 
-	class RavenClass {
-	public:
-		using ObjectConstructor = std::function<Ref<RavenObject>(const PropertyList& properties)>;
+class RavenClass {
+public:
+  using ObjectConstructor =
+      std::function<Ref<RavenObject>(const PropertyList& properties)>;
 
-		RavenClass(const ObjectConstructor& cons) :constructor(cons) {}
+  RavenClass(const ObjectConstructor& cons) : constructor(cons) {}
 
-		//构建对象
-		virtual Ref<RavenObject> constructObject()const;
-	private:
+  // 构建对象
+  virtual Ref<RavenObject> constructObject() const;
 
-		std::string type;
-		ObjectConstructor constructor;
-	};
-}
+private:
+  std::string       type;
+  ObjectConstructor constructor;
+};
+}  // namespace Raven
 
-#endif 
+#endif
