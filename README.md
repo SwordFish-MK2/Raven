@@ -1,6 +1,6 @@
 # Raven Introduction
 
-![image](results/cornellbox/cornellbox_path_tracing.jpg)
+![image](/results/integrator/cornellbox_1024spp.jpg)
 
 Raven is an under developing offline ray tracing renderer written in C++17 and runs on windows. It provides basic implementation of the functionalities required to solve the rendering equation. 
 
