@@ -1,89 +1,99 @@
 ---
 Language:        Cpp
 # BasedOnStyle:  Google
-# 说明符号的对齐方式
-AccessModifierOffset: -2
-# 括号后的对齐
-AlignAfterOpenBracket: Align
-# 使用{}定义数组变量时左对齐
+AccessModifierOffset: -1
+
+# 在({之类的括号后对齐参数
+AlignAfterOpenBracket: DontAlign
+
+# 在左侧对齐数组
 AlignArrayOfStructures: Left
 
-# 连续赋值时对齐等号
+# 对齐连续的赋值
 AlignConsecutiveAssignments:
-  #开启对齐
   Enabled:         true
-  #允许间隔空格
   AcrossEmptyLines: false
-  #不跨越注释对齐
   AcrossComments:  false
-  #对齐+= -=等复合运算符
   AlignCompound:   true
-  #补齐短运算符
   PadOperators:    true
 
-# 连续比特运算时对齐运算符
+# 对齐连续BIT赋值
 AlignConsecutiveBitFields:
   Enabled:         true
   AcrossEmptyLines: false
   AcrossComments:  false
   AlignCompound:   true
   PadOperators:    true
-  
-# 连续声明变量时对齐等号
+
+# 对齐连续声明
 AlignConsecutiveDeclarations:
   Enabled:         true
   AcrossEmptyLines: false
   AcrossComments:  false
   AlignCompound:   true
-  PadOperators:    true
+  PadOperators:    false
 
 # 对齐连续的宏定义
 AlignConsecutiveMacros:
-  Enabled:         true
+  Enabled:         false
   AcrossEmptyLines: false
   AcrossComments:  false
-  AlignCompound:   true
-  PadOperators:    true
+  AlignCompound:   false
+  PadOperators:    false
 
-# 左对齐在宏定义中的换行\
-AlignEscapedNewlines: Left
+# 对齐宏定义的下划线
+AlignEscapedNewlines: Right
 
-AlignOperands: Align
+# 对齐操作符
+AlignOperands:   Align
 
+# 对齐注释
 AlignTrailingComments: true
 
-AllowAllArgumentsOnNextLine: true
+# 如果一个参数列表在一行放不下，在第二行对齐这些参数
+AllowAllArgumentsOnNextLine: false
 
-AllowAllParametersOfDeclarationOnNextLine: false  
+# 如果一个函数的声明在一行放不下，在第二行对齐这些参数
+AllowAllParametersOfDeclarationOnNextLine: false
 
-# 把内容较短的枚举定义合并到同一行
-AllowShortEnumsOnASingleLine: true
+# 允许较短的枚举类型在同一行
+AllowShortEnumsOnASingleLine: false
 
-# 自动把代码很短的大括号{}合并到同一行
+# 允许较短的代码段被放在同一行
 AllowShortBlocksOnASingleLine: Always
 
-
+# 允许在switch分支中较短的case代码放在同一行
 AllowShortCaseLabelsOnASingleLine: false
 
+# 将较短的函数定义写在同一行
 AllowShortFunctionsOnASingleLine: All
 
+# 将较短的lambda函数定义卸载同一行
 AllowShortLambdasOnASingleLine: All
 
-AllowShortIfStatementsOnASingleLine: WithoutElse
+# 将较短的if分支放在同一行
+AllowShortIfStatementsOnASingleLine: Never
 
+# 允许较短的循环语句写在同一行
 AllowShortLoopsOnASingleLine: true
 
+# 总是在return后换行（已弃用
 AlwaysBreakAfterDefinitionReturnType: None
 
+# 总是在return后换行
 AlwaysBreakAfterReturnType: None
 
+# 总是在多个string定义间换行
 AlwaysBreakBeforeMultilineStrings: true
 
+# 总是在模板定义后换行
 AlwaysBreakTemplateDeclarations: Yes
+
+
 AttributeMacros:
   - __capability
 BinPackArguments: true
-BinPackParameters: false
+BinPackParameters: true
 BraceWrapping:
   AfterCaseLabel:  false
   AfterClass:      false

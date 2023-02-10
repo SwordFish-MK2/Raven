@@ -10,4 +10,4 @@ target_link_libraries(RavenCore PRIVATE tinyobjloader::tinyobjloader)
 
 target_link_libraries(RavenCore PUBLIC OpenMP::OpenMP_CXX)
 
-#target_link_libraries(RavenCore PUBLIC tinyxml2::tinyxml2)
+target_link_libraries(RavenCore PUBLIC tinyxml2::tinyxml2)
