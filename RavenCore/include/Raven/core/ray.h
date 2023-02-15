@@ -7,12 +7,10 @@
 namespace Raven {
 
 class Ray {
-public:
+ public:
   Ray(bool hasDifferential = false)
       : time(0), hasDifferential(hasDifferential) {}
-  Ray(const Point3f&     o,
-      const Vector3f&    d,
-      double             t      = 0,
+  Ray(const Point3f& o, const Vector3f& d, double t = 0,
       const Ref<Medium>& medium = nullptr)
       : origin(o), dir(d), time(t), hasDifferential(false), medium(medium) {}
   Ray(const Ray& r)
@@ -27,7 +25,9 @@ public:
     return Point3f(origin + dir * t);
   }
 
-public:
+  Point3f operator()(Float t) const { return Point3f(origin + dir * t); }
+
+ public:
   Point3f        origin;
   Vector3f       dir;
   double         time;  // ray starting time
@@ -38,15 +38,13 @@ public:
 };
 
 class RayDifferential : public Ray {
-public:
+ public:
   // rayDifferential part
   Point3f  originX, originY;
   Vector3f directionX, directionY;
 
-  RayDifferential(const Point3f&     o,
-                  const Vector3f&    d,
-                  double             t      = 0,
-                  const Ref<Medium>& medium = nullptr)
+  RayDifferential(const Point3f& o, const Vector3f& d, double t = 0,
+      const Ref<Medium>& medium = nullptr)
       : Ray(o, d, t, medium) {
     hasDifferential = false;
   }

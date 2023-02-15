@@ -64,6 +64,8 @@ class PropertyList;
 struct LightSample;
 struct SurfaceInteraction;
 struct Interaction;
+struct MediumInteraction;
+struct SurfaceInteraction;
 struct MediumInterface;
 
 template <class T>

@@ -9,35 +9,24 @@
 
 namespace Raven {
 struct Interaction {
-public:
+ public:
   Interaction() : time(0), t(0) {}
 
-  Interaction(const Point3f&         p,
-              const Normal3f&        n,
-              const Vector3f&        wo,
-              double                 time,
-              const MediumInterface& mediumInterface);
-  Interaction(const Point3f&  p,
-              const Normal3f& n,
-              const Vector3f& wo,
-              double          time = 0.0,
-              double          t    = 0.0);
+  Interaction(const Point3f& p, const Normal3f& n, const Vector3f& wo,
+      double time, const MediumInterface& mediumInterface);
+  Interaction(const Point3f& p, const Normal3f& n, const Vector3f& wo,
+      double time = 0.0, double t = 0.0);
 
-  Interaction(const Point3f&         p,
-              const Vector3f&        wo,
-              double                 time,
-              double                 t,
-              const MediumInterface& mediumInterface);
+  Interaction(const Point3f& p, const Vector3f& wo, double time, double t,
+      const MediumInterface& mediumInterface);
 
-  Interaction(const Point3f&         p,
-              double                 time,
-              double                 t,
-              const MediumInterface& mediumInterface);
+  Interaction(const Point3f& p, double time, double t,
+      const MediumInterface& mediumInterface);
 
-  //whether this interaction happened on geometric surface
+  // whether this interaction happened on geometric surface
   bool isSurfaceInteraction() { return n == Normal3f(); }
 
-  //whether this interaction happened inside vulume medium
+  // whether this interaction happened inside vulume medium
   bool isMediumInteraction() { return !isSurfaceInteraction(); }
 
   // getMedium函数只在存在medium的场景时使用
@@ -48,7 +37,7 @@ public:
   // 对于MediumIntraction,调用该重载直接返回所处介质的指针
   const Ref<Medium> getMedium() const;
 
-public:
+ public:
   Point3f         p;                // 交点
   double          t;                // 光线传播的距离参数
   double          time;             // 光线由相机出射的时间
@@ -61,28 +50,20 @@ struct SurfaceInteraction : public Interaction {
   // interface
   SurfaceInteraction() {}
 
-  SurfaceInteraction(const Point3f&  p,
-                     const Normal3f& n,
-                     const Vector3f& wo,
-                     const Point2f&  uv,
-                     const Vector3f& dpdu,
-                     const Vector3f& dpdv,
-                     const Vector3f& dndu,
-                     const Vector3f& dndv,
-                     double          time = 0.0,
-                     double          t    = 0.0);
+  SurfaceInteraction(const Point3f& p, const Normal3f& n, const Vector3f& wo,
+      const Point2f& uv, const Vector3f& dpdu, const Vector3f& dpdv,
+      const Vector3f& dndu, const Vector3f& dndv, double time = 0.0,
+      double t = 0.0);
 
-  void setShadingGeometry(const Vector3f& dpdu,
-                          const Vector3f& dpdv,
-                          const Vector3f& dndu,
-                          const Vector3f& dndv);
+  void setShadingGeometry(const Vector3f& dpdu, const Vector3f& dpdv,
+      const Vector3f& dndu, const Vector3f& dndv);
 
   // 计算dudx dudy dvdx dvdy
   void computeDifferential(const RayDifferential& rd);
 
   Spectrum Le(const Vector3f& wi) const;
 
-  Ray scartterRay(const Vector3f& dir,bool reflection=true) const;
+  Ray scartterRay(const Vector3f& dir, bool reflection = true) const;
 
   // data
   Material*             mate_ptr;  // surface material
@@ -111,14 +92,12 @@ struct SurfaceInteraction : public Interaction {
 };
 
 struct MediumInteraction : public Interaction {
-  MediumInteraction(const Point3f&            p,
-                    const Vector3f&           wo,
-                    double                    time,
-                    double                    t,
-                    const Ref<Medium>         medium,
-                    const Ref<PhaseFunction>& phase);
+  MediumInteraction(const Point3f& p, const Vector3f& wo, double time, double t,
+      const Ref<Medium> medium, const Ref<PhaseFunction>& phase);
 
   const Ref<PhaseFunction> phase;
+
+  bool isValid() const { return phase != nullptr; }
 };
 }  // namespace Raven
 

@@ -6,12 +6,15 @@
 #include <Raven/core/ray.h>
 namespace Raven {
 class HomogeneousMedium : public Medium {
-public:
+ public:
   HomogeneousMedium(const Spectrum& sa, const Spectrum& ss, double g);
 
-  virtual Spectrum Tr(const Ray& ray, Sampler& sampler) const override;
+  virtual Spectrum tr(const Ray& ray, Sampler& sampler) const override;
 
-private:
+  virtual Spectrum sample(const Ray& ray, Sampler& sampler,
+      Ref<MediumInteraction> minter) const override;
+
+ private:
   const Spectrum sigma_a;  // absorb
   const Spectrum sigma_s;  // scatter
   const Spectrum sigma_t;  // transmittence

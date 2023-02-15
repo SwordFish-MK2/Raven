@@ -5,24 +5,25 @@
 #include <Raven/core/math.h>
 #include <Raven/core/object.h>
 #include <Raven/core/spectrum.h>
+#include <Raven/core/sampler.h>
 
 namespace Raven {
 /// <summary>
 /// 介质边界的接口，包含表面两侧介质的指针
 ///</summary>
 struct MediumInterface {
-  public:
+ public:
   // interface
   MediumInterface(const std::shared_ptr<Medium>& medium)
       : outside(medium), inside(medium) {}
 
   MediumInterface(const std::shared_ptr<Medium>& outside,
-                  const std::shared_ptr<Medium>& inside)
+      const std::shared_ptr<Medium>&             inside)
       : outside(outside), inside(inside) {}
 
   MediumInterface() : outside(nullptr), inside(nullptr) {}
 
-  bool isMediumTransition()const { return inside != outside; }
+  bool isMediumTransition() const { return inside != outside; }
   // data
   Ref<Medium> outside;
   Ref<Medium> inside;
@@ -32,7 +33,7 @@ struct MediumInterface {
 /// PhaseFunction接口
 /// </summary>
 class PhaseFunction {
-public:
+ public:
   // 计算Phase Function 的值
   virtual double p(const Vector3f& wi, const Vector3f& wo) const = 0;
 };
@@ -41,10 +42,10 @@ public:
 /// 由Henyey Greenstein提出的各项同性phase funcion模型
 /// </summary>
 class HenyeyGreensteinPhaseFunction : public PhaseFunction {
-public:
+ public:
   double p(const Vector3f& wi, const Vector3f& wo) const override;
 
-private:
+ private:
   double g;
 };
 
@@ -52,10 +53,15 @@ private:
 /// 介质接口
 /// </summary>
 class Medium {
-public:
+ public:
   // 假设传入该函数的光线在传播过程中未被遮挡并且完全包围在当前介质中，计算光线的beam
   // transmittance
-  virtual Spectrum Tr(const Ray& ray, Sampler& sampler) const = 0;
+  virtual Spectrum tr(const Ray& ray, Sampler& sampler) const = 0;
+
+  // sample a intersection point alone the ray,campute the ratio of the light
+  // transmittence and sampling pdf
+  virtual Spectrum sample(const Ray& ray, Sampler& sampler,
+      Ref<MediumInteraction> minter) const = 0;
 };
 
 inline double PhaseHG(double cosTheta, double g) {
