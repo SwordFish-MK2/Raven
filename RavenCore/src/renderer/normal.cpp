@@ -1,15 +1,15 @@
-﻿//#include"normal.h"
-//#include"../core/interaction.h"
+// #include"normal.h"
+// #include"../core/interaction.h"
 //
-//#include"../core/scene.h"
+// #include"../core/scene.h"
 //
-//namespace Raven {
+// namespace Raven {
 //
 //	void NormalRenderer::render(const Scene& scene) {
 //		for (int i = 0; i < film.height; ++i) {
-//			std::cerr << "\rScanlines remaining: " << film.height - 1 - i << ' ' << std::flush;
-//			for (int j = 0; j < film.width; ++j) {
-//				Vector3f pixelColor(0.0);
+//			std::cerr << "\rScanlines remaining: " << film.height - 1 -
+//i << ' ' << std::flush; 			for (int j = 0; j < film.width; ++j) { 				Vector3f
+//pixelColor(0.0);
 //
 //				//camera sample
 //				auto cu = double(j) + GetRand();
@@ -32,9 +32,11 @@
 //		film.writeTxt();
 //	}
 //
-//	Vector3f NormalRenderer::integrate(const Scene& scene, const Ray& r_in, int depth)const {
+//	Vector3f NormalRenderer::integrate(const Scene& scene, const Ray& r_in,
+//int depth)const {
 //
-//		std::optional<SurfaceInteraction> record = scene.intersect(r_in, std::numeric_limits<double>::max());
+//		std::optional<SurfaceInteraction> record = scene.intersect(r_in,
+//std::numeric_limits<double>::max());
 //
 //		if (record) {
 //			const Normal3f& n = record->n;
@@ -44,4 +46,4 @@
 //			return Vector3f(0.0,0.0,0.0);
 //	}
 //
-//}
+// }

@@ -1,4 +1,4 @@
-﻿#include <Raven/core/interaction.h>
+#include <Raven/core/interaction.h>
 #include <Raven/core/shape.h>
 
 namespace Raven {

@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_MEDIUM_HOMOGENEOUS_H_
+#ifndef _RAVEN_MEDIUM_HOMOGENEOUS_H_
 #define _RAVEN_MEDIUM_HOMOGENEOUS_H_
 
 #include <Raven/core/base.h>
@@ -11,8 +11,9 @@ class HomogeneousMedium : public Medium {
 
   virtual Spectrum tr(const Ray& ray, Sampler& sampler) const override;
 
-  virtual Spectrum sample(const Ray& ray, Sampler& sampler,
-      Ref<MediumInteraction> minter) const override;
+  virtual Spectrum sample(const Ray&             ray,
+                          Sampler&               sampler,
+                          Ref<MediumInteraction> minter) const override;
 
  private:
   const Spectrum sigma_a;  // absorb

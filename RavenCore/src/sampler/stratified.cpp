@@ -1,4 +1,4 @@
-﻿#include <Raven/sampler/stratified.h>
+#include <Raven/sampler/stratified.h>
 
 #include "Raven/core/base.h"
 #include "Raven/core/sampler.h"
@@ -30,7 +30,7 @@ void StratifiedSampler::startPixel(const Point2i &p) {
 
   // generate sample arraies
   //
-  // generate 1D array sample 
+  // generate 1D array sample
   for (size_t i = 0; i < arraySize1D.size(); i++) {
     for (int64_t j = 0; j < samplesPerPixel; j++) {
       int count = arraySize1D[i];
@@ -43,7 +43,7 @@ void StratifiedSampler::startPixel(const Point2i &p) {
   for (size_t i = 0; i < arraySize2D.size(); i++) {
     for (int64_t j = 0; j < samplesPerPixel; j++) {
       int count = arraySize2D[i];
-      LatinHyperCube(&array2D[i][j*count].x, count, 2);
+      LatinHyperCube(&array2D[i][j * count].x, count, 2);
     }
   }
 }

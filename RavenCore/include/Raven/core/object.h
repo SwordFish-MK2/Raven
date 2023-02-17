@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_OBJECT_H_
+#ifndef _RAVEN_CORE_OBJECT_H_
 #define _RAVEN_CORE_OBJECT_H_
 
 #include <Raven/core/base.h>
@@ -9,14 +9,14 @@
 namespace Raven {
 
 class RavenObject {
-protected:
+ protected:
   virtual ~RavenObject() {}
 
-private:
+ private:
 };
 
 class RavenClass {
-public:
+ public:
   using ObjectConstructor =
       std::function<Ref<RavenObject>(const PropertyList& properties)>;
 
@@ -25,7 +25,7 @@ public:
   // 构建对象
   virtual Ref<RavenObject> constructObject() const;
 
-private:
+ private:
   std::string       type;
   ObjectConstructor constructor;
 };

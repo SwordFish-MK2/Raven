@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_INTERACTION_H_
+#ifndef _RAVEN_CORE_INTERACTION_H_
 #define _RAVEN_CORE_INTERACTION_H_
 
 #include <Raven/core/base.h>

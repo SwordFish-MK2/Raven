@@ -1,4 +1,4 @@
-﻿#include<Raven/shape/sphere.h>
+#include<Raven/shape/sphere.h>
 #include<Raven/core/distribution.h>
 namespace Raven {
 

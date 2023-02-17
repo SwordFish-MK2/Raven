@@ -1,4 +1,4 @@
-﻿#include <Raven/core/integrator.h>
+#include <Raven/core/integrator.h>
 #include <Raven/core/light.h>
 
 #include "Raven/core/base.h"

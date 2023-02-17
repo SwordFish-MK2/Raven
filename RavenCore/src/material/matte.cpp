@@ -1,4 +1,4 @@
-﻿#include<Raven/material/matte.h>
+#include<Raven/material/matte.h>
 
 namespace Raven {
 	//determing bump effect and generate BSDF

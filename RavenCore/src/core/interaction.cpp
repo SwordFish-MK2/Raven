@@ -1,4 +1,4 @@
-﻿#include <Raven/core/interaction.h>
+#include <Raven/core/interaction.h>
 #include <Raven/core/light.h>
 namespace Raven {
 Interaction::Interaction(const Point3f&         p,
@@ -71,9 +71,7 @@ MediumInteraction::MediumInteraction(const Point3f&            p,
                                      double                    t,
                                      const Ref<Medium>         medium,
                                      const Ref<PhaseFunction>& phase)
-    : Interaction(p, wo, time, t, MediumInterface(medium)), phase(phase) 
-    {}
-
+    : Interaction(p, wo, time, t, MediumInterface(medium)), phase(phase) {}
 
 // 根据微分光线计算交点的参数坐标(u,v)分别关于屏幕空间坐标(x,y)的偏导数
 void SurfaceInteraction::computeDifferential(const RayDifferential& rd) {

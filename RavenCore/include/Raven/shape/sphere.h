@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_SHAPE_SPHERE_H_
+#ifndef _RAVEN_SHAPE_SPHERE_H_
 #define _RAVEN_SHAPE_SPHERE_H_
 
 #include <Raven/core/base.h>
@@ -28,7 +28,7 @@ class Sphere final : public Shape {
 
   std::tuple<SurfaceInteraction, double> sample(
       const Interaction& inter,
-      const Point2f&            rand) const override;
+      const Point2f&     rand) const override;
 
   double pdf(const Interaction& inter) const override { return 1 / area(); }
 

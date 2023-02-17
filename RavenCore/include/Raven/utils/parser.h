@@ -1,22 +1,22 @@
-﻿//#ifndef _RAVEN_UTILS_PARSER_H_
-//#define _RAVEN_UTILS_PARSER_H_
+// #ifndef _RAVEN_UTILS_PARSER_H_
+// #define _RAVEN_UTILS_PARSER_H_
 //
-//#include<optional>
-//#include<string>
-//#include<map>
-//#include<memory>
-//#include<tinyxml2.h>
-//#include<Raven/core/base.h>
-//#include<Raven/core/spectrum.h>
-//#include<Raven/core/math.h>
-//#include<Raven/utils/propertylist.h>
+// #include<optional>
+// #include<string>
+// #include<map>
+// #include<memory>
+// #include<tinyxml2.h>
+// #include<Raven/core/base.h>
+// #include<Raven/core/spectrum.h>
+// #include<Raven/core/math.h>
+// #include<Raven/utils/propertylist.h>
 //
-//namespace Raven {
+// namespace Raven {
 //	enum RavenFilmType {
 //		NoFilter
 //	};
 //
-//	
+//
 //
 //
 //	enum RavenCameraType {
@@ -88,16 +88,20 @@
 //		std::pair<RavenFilmType, PropertyList> filmProperty;
 //
 //
-//		std::vector<std::tuple<std::string, RavenTransformType, PropertyList>>transformProperty;
-//		std::vector<std::tuple<std::string, RavenTextureType, PropertyList>>textureProperty;
-//		std::vector<std::tuple<std::string, RavenMaterialType, PropertyList>>materialProperty;
-//		std::vector<std::tuple<std::string, RavenShapeType, PropertyList>>shapeProperty;
-//		std::vector<std::tuple<std::string, RavenLightType, PropertyList>>lightProperty;
-//		std::vector<std::tuple<std::string, RavenPrimitiveType, PropertyList>>primProperty;
-//		std::vector<std::tuple<std::string, RavenMappingType, PropertyList>>mappingProperty;
+//		std::vector<std::tuple<std::string, RavenTransformType,
+//PropertyList>>transformProperty; 		std::vector<std::tuple<std::string,
+//RavenTextureType, PropertyList>>textureProperty;
+//		std::vector<std::tuple<std::string, RavenMaterialType,
+//PropertyList>>materialProperty; 		std::vector<std::tuple<std::string,
+//RavenShapeType, PropertyList>>shapeProperty;
+//		std::vector<std::tuple<std::string, RavenLightType,
+//PropertyList>>lightProperty; 		std::vector<std::tuple<std::string,
+//RavenPrimitiveType, PropertyList>>primProperty;
+//		std::vector<std::tuple<std::string, RavenMappingType,
+//PropertyList>>mappingProperty;
 //
 //	};
 //
 //
-//}
-//#endif
+// }
+// #endif

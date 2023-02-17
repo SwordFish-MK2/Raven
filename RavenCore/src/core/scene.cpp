@@ -1,4 +1,4 @@
-﻿#include <Raven/accelerate/bvh.h>
+#include <Raven/accelerate/bvh.h>
 #include <Raven/core/mipmap.h>
 #include <Raven/core/scene.h>
 #include <Raven/core/spectrum.h>
@@ -114,8 +114,8 @@ Scene Scene::buildCornellBox() {
 
     // generate primitive
     for (size_t i = 0; i < triangles.size(); i++)
-      prim_ptrs.push_back(
-          std::make_shared<GeometryPrimitive>(triangles[i], mate,nullptr,MediumInterface{}));
+      prim_ptrs.push_back(std::make_shared<GeometryPrimitive>(
+          triangles[i], mate, nullptr, MediumInterface{}));
   }
 
   // floor
@@ -137,8 +137,8 @@ Scene Scene::buildCornellBox() {
 
     // generate primitive
     for (size_t i = 0; i < triangles.size(); i++)
-      prim_ptrs.push_back(
-          std::make_shared<GeometryPrimitive>(triangles[i], mate,nullptr,MediumInterface{}));
+      prim_ptrs.push_back(std::make_shared<GeometryPrimitive>(
+          triangles[i], mate, nullptr, MediumInterface{}));
   }
 
   ////back
@@ -155,12 +155,12 @@ Scene Scene::buildCornellBox() {
   //
   //	//material of floor
   //	const auto mate = MatteMaterial::buildConst(0.0,
-  //RGBSpectrum::fromRGB(0.725f, 0.71f, 0.68f));
+  // RGBSpectrum::fromRGB(0.725f, 0.71f, 0.68f));
   //
   //	//generate primitive
   //	for (size_t i = 0; i < triangles.size(); i++)
   //		prim_ptrs.push_back(std::make_shared<Primitive>(triangles[i],
-  //mate));
+  // mate));
   //}
   //
   ////ceiling
@@ -177,12 +177,12 @@ Scene Scene::buildCornellBox() {
   //
   //	//material of floor
   //	const auto mate = MatteMaterial::buildConst(0.0,
-  //RGBSpectrum::fromRGB(0.725f, 0.71f, 0.68f));
+  // RGBSpectrum::fromRGB(0.725f, 0.71f, 0.68f));
   //
   //	//generate primitive
   //	for (size_t i = 0; i < triangles.size(); i++)
   //		prim_ptrs.push_back(std::make_shared<Primitive>(triangles[i],
-  //mate));
+  // mate));
   //}
 
   // tall box
@@ -204,8 +204,8 @@ Scene Scene::buildCornellBox() {
 
     // generate primitive
     for (size_t i = 0; i < triangles.size(); i++)
-      prim_ptrs.push_back(
-          std::make_shared<GeometryPrimitive>(triangles[i], mate,nullptr,MediumInterface{}));
+      prim_ptrs.push_back(std::make_shared<GeometryPrimitive>(
+          triangles[i], mate, nullptr, MediumInterface{}));
   }
 
   // short box

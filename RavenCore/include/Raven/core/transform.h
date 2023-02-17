@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_TRANSFORM_H_
+#ifndef _RAVEN_CORE_TRANSFORM_H_
 #define _RAVEN_CORE_TRANSFORM_H_
 
 #define _USE_MATH_DEFINES
@@ -7,8 +7,9 @@
 #include <Raven/core/interaction.h>
 #include <Raven/core/object.h>
 #include <Raven/core/ray.h>
-#include <array>
 #include <assert.h>
+
+#include <array>
 #include <optional>
 
 namespace Raven {
@@ -17,9 +18,9 @@ namespace Raven {
 /// 四维矩阵
 /// </summary>
 class Mat4f {
-private:
+ private:
   class CommaWapper {
-  public:
+   public:
     CommaWapper() = delete;
     explicit CommaWapper(Mat4f *const m) : m(m) {}
     CommaWapper &operator,(Float val) {
@@ -27,16 +28,29 @@ private:
       return *this;
     }
 
-  private:
+   private:
     Mat4f *const m;
   };
 
-public:
+ public:
   Mat4f() : index(0) { data = std::array<Float, 16>{0.0}; }
 
-  Mat4f(Float v00, Float v01, Float v02, Float v03, Float v10, Float v11,
-        Float v12, Float v13, Float v20, Float v21, Float v22, Float v23,
-        Float v30, Float v31, Float v32, Float v33)
+  Mat4f(Float v00,
+        Float v01,
+        Float v02,
+        Float v03,
+        Float v10,
+        Float v11,
+        Float v12,
+        Float v13,
+        Float v20,
+        Float v21,
+        Float v22,
+        Float v23,
+        Float v30,
+        Float v31,
+        Float v32,
+        Float v33)
       : index(0),
         data(std::array<Float, 16>{v00, v01, v02, v03, v10, v11, v12, v13, v20,
                                    v21, v22, v23, v30, v31, v32, v33}) {}
@@ -69,7 +83,8 @@ public:
     return mat;
   }
 
-  template <class T> Normal3<T> operator*(const Normal3<T> &n) const {
+  template <class T>
+  Normal3<T> operator*(const Normal3<T> &n) const {
     Mat4f invm = this->inverse();
     return Normal3<T>{
         n.x * invm.data[0] + n.y * invm.data[4] + n.z * invm.data[8],
@@ -77,17 +92,19 @@ public:
         n.x * invm.data[2] + n.y * invm.data[6] + n.z * invm.data[10]};
   }
 
-  template <class T> Vector3<T> operator*(const Vector3<T> &v) const {
+  template <class T>
+  Vector3<T> operator*(const Vector3<T> &v) const {
     return Vector3<T>{v.x * data[0] + v.y * data[1] + v.z * data[2],
                       v.x * data[4] + v.y * data[5] + v.z * data[6],
                       v.x * data[8] + v.y * data[9] + v.z * data[10]};
   }
 
-  template <class T> Point3<T> operator*(const Point3<T> &p) const {
-    Point3<T> resultP{p.x * data[0] + p.y * data[1] + p.z * data[2] + data[3],
-                      p.x * data[4] + p.y * data[5] + p.z * data[6] + data[7],
-                      p.x * data[8] + p.y * data[9] + p.z * data[10] +
-                          data[11]};
+  template <class T>
+  Point3<T> operator*(const Point3<T> &p) const {
+    Point3<T> resultP{
+        p.x * data[0] + p.y * data[1] + p.z * data[2] + data[3],
+        p.x * data[4] + p.y * data[5] + p.z * data[6] + data[7],
+        p.x * data[8] + p.y * data[9] + p.z * data[10] + data[11]};
     T w = p.x * data[12] + p.y * data[13] + p.z * data[14] + data[15];
 
     // ��ά���w��������Ϊ1
@@ -109,25 +126,24 @@ public:
 
   inline friend std::ostream &operator<<(std::ostream &os, const Mat4f &mat);
 
-private:
+ private:
   int index;
 
-public:
+ public:
   friend CommaWapper;
   std::array<Float, 16> data;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Mat4f &mat) {
   for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 3; j++)
-      os << mat(i, j) << ",";
+    for (int j = 0; j < 3; j++) os << mat(i, j) << ",";
     os << mat(i, 3) << std::endl;
   }
   return os;
 }
 
 class Transform : public RavenObject {
-public:
+ public:
   Transform() {}
 
   Transform(const Mat4f &mat) : m(mat), invm(mat.inverse()) {}
@@ -137,43 +153,74 @@ public:
   Transform(const std::array<Float, 16> &data)
       : m(Mat4f(data)), invm(m.inverse()) {}
 
-  Transform(Float v00, Float v01, Float v02, Float v03, Float v10, Float v11,
-            Float v12, Float v13, Float v20, Float v21, Float v22, Float v23,
-            Float v30, Float v31, Float v32, Float v33)
-      : m(Mat4f(v00, v01, v02, v03, v10, v11, v12, v13, v20, v21, v22, v23, v30,
-                v31, v32, v33)),
+  Transform(Float v00,
+            Float v01,
+            Float v02,
+            Float v03,
+            Float v10,
+            Float v11,
+            Float v12,
+            Float v13,
+            Float v20,
+            Float v21,
+            Float v22,
+            Float v23,
+            Float v30,
+            Float v31,
+            Float v32,
+            Float v33)
+      : m(Mat4f(v00,
+                v01,
+                v02,
+                v03,
+                v10,
+                v11,
+                v12,
+                v13,
+                v20,
+                v21,
+                v22,
+                v23,
+                v30,
+                v31,
+                v32,
+                v33)),
         invm(m.inverse()) {}
 
-  //template <class T> Vector3<T> operator()(const Vector3<T> &v) const;
+  // template <class T> Vector3<T> operator()(const Vector3<T> &v) const;
 
-  //template <class T> Point3<T> operator()(const Point3<T> &p) const;
+  // template <class T> Point3<T> operator()(const Point3<T> &p) const;
 
-  	template<class T>
-  	Vector3<T> operator()(const Vector3<T> &v) const {
-    	return Vector3<T>{v.x * m.data[0] + v.y * m.data[1] + v.z * m.data[2],
+  template <class T>
+  Vector3<T> operator()(const Vector3<T> &v) const {
+    return Vector3<T>{v.x * m.data[0] + v.y * m.data[1] + v.z * m.data[2],
                       v.x * m.data[4] + v.y * m.data[5] + v.z * m.data[6],
                       v.x * m.data[8] + v.y * m.data[9] + v.z * m.data[10]};
   }
-	template<class T>
-	Point3<T> operator()(const Point3<T>& p)const {
-		Point3<T> p2{ p.x * m.data[0] + p.y * m.data[1] + p.z * m.data[2] + m.data[3],
-			p.x * m.data[4] + p.y * m.data[5] + p.z * m.data[6] + m.data[7],
-			p.x * m.data[8] + p.y * m.data[9] + p.z * m.data[10] + m.data[11] };
-		T w = p.x * m.data[12] + p.y * m.data[13] + p.z * m.data[14] + m.data[15];
+  template <class T>
+  Point3<T> operator()(const Point3<T> &p) const {
+    Point3<T> p2{
+        p.x * m.data[0] + p.y * m.data[1] + p.z * m.data[2] + m.data[3],
+        p.x * m.data[4] + p.y * m.data[5] + p.z * m.data[6] + m.data[7],
+        p.x * m.data[8] + p.y * m.data[9] + p.z * m.data[10] + m.data[11]};
+    T w = p.x * m.data[12] + p.y * m.data[13] + p.z * m.data[14] + m.data[15];
 
-		//make sure the w component of point is 1
-		if (w == 1)return p2;
-		else return p2 /= w;
-	}
+    // make sure the w component of point is 1
+    if (w == 1)
+      return p2;
+    else
+      return p2 /= w;
+  }
 
-	template<class T>
-	Normal3<T> operator()(const Normal3<T>& v)const {
-		return Normal3<T>{v.x* invm.data[0] + v.y * invm.data[4] + v.z * invm.data[8],
-			v.x* invm.data[1] + v.y * invm.data[5] + v.z * invm.data[9],
-			v.x* invm.data[2] + v.y * invm.data[6] + v.z * invm.data[10]};
-	}
+  template <class T>
+  Normal3<T> operator()(const Normal3<T> &v) const {
+    return Normal3<T>{
+        v.x * invm.data[0] + v.y * invm.data[4] + v.z * invm.data[8],
+        v.x * invm.data[1] + v.y * invm.data[5] + v.z * invm.data[9],
+        v.x * invm.data[2] + v.y * invm.data[6] + v.z * invm.data[10]};
+  }
 
-//   template <class T> Normal3<T> operator()(const Normal3<T> &n) const;
+  //   template <class T> Normal3<T> operator()(const Normal3<T> &n) const;
 
   Bound3f operator()(const Bound3f &box) const;
 
@@ -191,7 +238,7 @@ public:
 
   inline friend std::ostream &operator<<(std::ostream &, const Transform &t);
 
-private:
+ private:
   Mat4f m, invm;
 };
 
@@ -237,6 +284,6 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up);
 Transform Orthographic(double near, double far);
 Transform Perspective(double fov, double znear, double zfar);
 Transform Raster(int h, int w);
-} // namespace Raven
+}  // namespace Raven
 
 #endif

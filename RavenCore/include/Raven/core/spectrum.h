@@ -1,119 +1,101 @@
-﻿#ifndef _RAVEN_CORE_SPECTRUM_H_
+#ifndef _RAVEN_CORE_SPECTRUM_H_
 #define _RAVEN_CORE_SPECTRUM_H_
 
 #include <Raven/core/base.h>
 #include <Raven/core/math.h>
+
 #include <limits>
 #include <tuple>
 
 namespace Raven {
-static const int nSamples = 60;
+static const int nSamples           = 60;
 static const int sampledLambdaStart = 400;
-static const int sampledLambdaEnd = 700;
+static const int sampledLambdaEnd   = 700;
 
-template <int nSpectrumSamples> class CoefficientSpectrum {
-public:
-  double c[nSpectrumSamples];
+template <int nSpectrumSamples>
+class CoefficientSpectrum {
+ public:
+  double           c[nSpectrumSamples];
   static const int sampleNumber = nSpectrumSamples;
   CoefficientSpectrum() {
-    for (int i = 0; i < sampleNumber; i++) {
-      c[i] = 0.f;
-    }
+    for (int i = 0; i < sampleNumber; i++) { c[i] = 0.f; }
   }
   CoefficientSpectrum(double v) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] = v;
+    for (int i = 0; i < sampleNumber; i++) c[i] = v;
   }
   CoefficientSpectrum(const CoefficientSpectrum &spectrum) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] = spectrum.c[i];
+    for (int i = 0; i < sampleNumber; i++) c[i] = spectrum.c[i];
   }
   CoefficientSpectrum operator+(const CoefficientSpectrum &s) const {
     CoefficientSpectrum temp;
-    for (int i = 0; i < sampleNumber; i++)
-      temp.c[i] = this->c[i] + s.c[i];
+    for (int i = 0; i < sampleNumber; i++) temp.c[i] = this->c[i] + s.c[i];
     return temp;
   }
   CoefficientSpectrum &operator+=(const CoefficientSpectrum &s) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] += s.c[i];
+    for (int i = 0; i < sampleNumber; i++) c[i] += s.c[i];
     return *this;
   }
   CoefficientSpectrum operator-(const CoefficientSpectrum &s) const {
     CoefficientSpectrum temp;
-    for (int i = 0; i < sampleNumber; i++)
-      temp.c[i] = this->c[i] - s.c[i];
+    for (int i = 0; i < sampleNumber; i++) temp.c[i] = this->c[i] - s.c[i];
     return temp;
   }
   CoefficientSpectrum operator-() const {
     CoefficientSpectrum temp = *this;
-    for (int i = 0; i < sampleNumber; i++)
-      temp.c[i] *= -1;
+    for (int i = 0; i < sampleNumber; i++) temp.c[i] *= -1;
     return temp;
   }
   CoefficientSpectrum &operator-=(const CoefficientSpectrum &s) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] -= s.c[i];
+    for (int i = 0; i < sampleNumber; i++) c[i] -= s.c[i];
     return *this;
   }
   CoefficientSpectrum operator*(const CoefficientSpectrum &s) const {
     CoefficientSpectrum temp = *this;
-    for (int i = 0; i < sampleNumber; i++)
-      temp.c[i] *= s.c[i];
+    for (int i = 0; i < sampleNumber; i++) temp.c[i] *= s.c[i];
     return temp;
   }
   CoefficientSpectrum &operator*=(const CoefficientSpectrum &s) {
-    for (int i = 0; i < sampleNumber; i++) {
-      c[i] *= s.c[i];
-    }
+    for (int i = 0; i < sampleNumber; i++) { c[i] *= s.c[i]; }
     return *this;
   }
   CoefficientSpectrum operator*(double t) const {
     CoefficientSpectrum temp;
-    for (int i = 0; i < sampleNumber; i++) {
-      temp.c[i] = this->c[i] * t;
-    }
+    for (int i = 0; i < sampleNumber; i++) { temp.c[i] = this->c[i] * t; }
     return temp;
   }
   CoefficientSpectrum &operator*=(double t) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] *= t;
+    for (int i = 0; i < sampleNumber; i++) c[i] *= t;
     return *this;
   }
 
   template <int n>
-  friend inline CoefficientSpectrum operator*(double a,
+  friend inline CoefficientSpectrum operator*(double                     a,
                                               const CoefficientSpectrum &s);
 
   CoefficientSpectrum operator/(const CoefficientSpectrum &s) const {
     CoefficientSpectrum temp = *this;
-    for (int i = 0; i < sampleNumber; i++)
-      temp.c[i] /= s.c[i];
+    for (int i = 0; i < sampleNumber; i++) temp.c[i] /= s.c[i];
     return temp;
   }
 
   CoefficientSpectrum &operator/=(const CoefficientSpectrum &s) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] /= s.c[i];
+    for (int i = 0; i < sampleNumber; i++) c[i] /= s.c[i];
     return *this;
   }
 
   CoefficientSpectrum operator/(double t) const {
     CoefficientSpectrum temp;
-    for (int i = 0; i < sampleNumber; i++)
-      temp.c[i] = c[i] / t;
+    for (int i = 0; i < sampleNumber; i++) temp.c[i] = c[i] / t;
     return temp;
   }
 
   CoefficientSpectrum &operator/=(double t) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] /= t;
+    for (int i = 0; i < sampleNumber; i++) c[i] /= t;
     return *this;
   }
 
   CoefficientSpectrum &operator=(const CoefficientSpectrum &s) {
-    for (int i = 0; i < sampleNumber; i++)
-      c[i] = s.c[i];
+    for (int i = 0; i < sampleNumber; i++) c[i] = s.c[i];
     return *this;
   }
 
@@ -137,9 +119,9 @@ public:
 
   double operator[](int i) const { return c[i]; }
 
-  CoefficientSpectrum
-  Clamp(double min = 0.F,
-        double max = std::numeric_limits<Float>::max()) const {
+  CoefficientSpectrum Clamp(
+      double min = 0.F,
+      double max = std::numeric_limits<Float>::max()) const {
     CoefficientSpectrum temp;
     for (int i = 0; i < sampleNumber; i++) {
       temp.c[i] = Clamp(c[i], min, max);
@@ -171,7 +153,7 @@ public:
     return true;
   }
 
-  friend inline std::ostream &operator<<(std::ostream &out,
+  friend inline std::ostream &operator<<(std::ostream              &out,
                                          const CoefficientSpectrum &s) {
     out << "[";
     for (int i = 0; i < sampleNumber; i++) {
@@ -185,40 +167,38 @@ public:
 };
 
 template <int n>
-CoefficientSpectrum<n> Clamp(const CoefficientSpectrum<n> &s, double min,
-                             double max) {
+CoefficientSpectrum<n> Clamp(const CoefficientSpectrum<n> &s,
+                             double                        min,
+                             double                        max) {
   CoefficientSpectrum<n> temp;
-  for (int i = 0; i < n; i++) {
-    temp[i] = Clamp(s[i], min, max);
-  }
+  for (int i = 0; i < n; i++) { temp[i] = Clamp(s[i], min, max); }
   return temp;
 }
 template <int n>
-CoefficientSpectrum<n> Lerp(double t, const CoefficientSpectrum<n> &s1,
-                            const CoefficientSpectrum<n> s2) {
+CoefficientSpectrum<n> Lerp(double                        t,
+                            const CoefficientSpectrum<n> &s1,
+                            const CoefficientSpectrum<n>  s2) {
   CoefficientSpectrum<n> temp;
-  for (int i = 0; i < n; i++) {
-    temp[i] = Lerp(t, s1[i], s2[i]);
-  }
+  for (int i = 0; i < n; i++) { temp[i] = Lerp(t, s1[i], s2[i]); }
   return temp;
 }
 
-static const int nXYZSamples = 471;
+static const int    nXYZSamples = 471;
 extern const double CIEX[nXYZSamples];
 extern const double CIEY[nXYZSamples];
 extern const double CIEZ[nXYZSamples];
 extern const double CIELambda[nXYZSamples];
 static const double CIE_Y_integral = 106.856895;
 
-static const int nRGBSamples = 32;
+static const int    nRGBSamples = 32;
 extern const double RGBLambda[nRGBSamples];
-extern const double RGBReflRed[nRGBSamples]; // original colors
+extern const double RGBReflRed[nRGBSamples];  // original colors
 extern const double RGBReflGreen[nRGBSamples];
 extern const double RGBReflBlue[nRGBSamples];
-extern const double RGBReflWhite[nRGBSamples];   // red+green+blue
-extern const double RGBReflCyan[nRGBSamples];    // green+blue
-extern const double RGBReflMagenta[nRGBSamples]; // red+green
-extern const double RGBReflYellow[nRGBSamples];  // red+blue
+extern const double RGBReflWhite[nRGBSamples];    // red+green+blue
+extern const double RGBReflCyan[nRGBSamples];     // green+blue
+extern const double RGBReflMagenta[nRGBSamples];  // red+green
+extern const double RGBReflYellow[nRGBSamples];   // red+blue
 
 extern const double RGBIllumRed[nRGBSamples];
 extern const double RGBIllumGreen[nRGBSamples];
@@ -228,10 +208,13 @@ extern const double RGBIllumCyan[nRGBSamples];
 extern const double RBGIllumMagenta[nRGBSamples];
 extern const double RGBIllumYellow[nRGBSamples];
 
-enum RGBType { RGBReflection, RGBIllumination };
+enum RGBType {
+  RGBReflection,
+  RGBIllumination
+};
 
 class SampledSpectrum : public CoefficientSpectrum<nSamples> {
-private:
+ private:
   // static curves
   static SampledSpectrum XCurve;
   static SampledSpectrum YCurve;
@@ -253,30 +236,34 @@ private:
   static SampledSpectrum IllumMagentaCurve;
   static SampledSpectrum IllumYellowCurve;
 
-public:
+ public:
   // static methods
-  static void init(); // compute all static curves
+  static void            init();  // compute all static curves
   static SampledSpectrum fromRGB(const double rgb[3],
-                                 RGBType type = RGBReflection);
+                                 RGBType      type = RGBReflection);
   static SampledSpectrum fromXYZ(const double xyz[3],
-                                 RGBType type = RGBReflection);
-  static SampledSpectrum fromSampled(const double *lambda, const double *v,
-                                     int n);
+                                 RGBType      type = RGBReflection);
+  static SampledSpectrum fromSampled(const double *lambda,
+                                     const double *v,
+                                     int           n);
 
   SampledSpectrum() : CoefficientSpectrum(0.f) {}
   SampledSpectrum(double v) : CoefficientSpectrum(v) {}
   void toXYZ(double xyz[3])
-      const; // compute xyz values from a arbitrary sampledSpectrum
-  void toRGB(double rgb[3]) const; // compute xyz values from SPD and then
-                                   // compute xyz values to rgb values
-  double y() const; // compute y value from a arbitrary sampledSpectrum
+      const;  // compute xyz values from a arbitrary sampledSpectrum
+  void toRGB(double rgb[3]) const;  // compute xyz values from SPD and then
+                                    // compute xyz values to rgb values
+  double y() const;  // compute y value from a arbitrary sampledSpectrum
 };
 
 // quick sort
 void Sort(double *lamda, double *v, int start, int end);
 // compute avertage spectrum values in sample range
-double AverageSpectrumSample(const double *lamda, const double *v, int n,
-                             int lamdaStart, int lamdaEnd);
+double AverageSpectrumSample(const double *lamda,
+                             const double *v,
+                             int           n,
+                             int           lamdaStart,
+                             int           lamdaEnd);
 // test if given sample array is sorted
 bool SampleSorted(const double *lamda, const double *v, int n);
 // sort sample array with quick sort method
@@ -298,7 +285,7 @@ inline void RGBToXYZ(const double rgb[3], double xyz[3]) {
 }
 
 class RGBSpectrum : public CoefficientSpectrum<3> {
-public:
+ public:
   RGBSpectrum() : CoefficientSpectrum(0.f) {}
   RGBSpectrum(double r, double g, double b) {
     c[0] = r;
@@ -311,17 +298,21 @@ public:
   static RGBSpectrum fromSampled(const double *lambda, const double *v, int n);
   static RGBSpectrum fromXYZ(const double xyz[3], RGBType type = RGBReflection);
   static RGBSpectrum fromRGB(const double rgb[3], RGBType type = RGBReflection);
-  static RGBSpectrum fromRGB(double r, double g, double b,
+  static RGBSpectrum fromRGB(double  r,
+                             double  g,
+                             double  b,
                              RGBType type = RGBReflection);
   static RGBSpectrum fromRGB(const Vector3f &v, RGBType type = RGBReflection);
   const RGBSpectrum &toRGBSpectrum() const { return *this; }
-  double y() const;
-  void toRGB(double *rgb) const;
-  void toXYZ(double *xyz) const;
+  double             y() const;
+  void               toRGB(double *rgb) const;
+  void               toXYZ(double *xyz) const;
 
-private:
+ private:
   static double interpolateSpectrumSamples(const double *lambda,
-                                           const double *values, int n, int l);
+                                           const double *values,
+                                           int           n,
+                                           int           l);
 };
 
 // void getSpectrumSample(std::shared_ptr<double[]> lambda,
@@ -330,42 +321,34 @@ private:
 using Spectrum = RGBSpectrum;
 
 template <int n>
-inline CoefficientSpectrum<n> operator*(double a,
+inline CoefficientSpectrum<n> operator*(double                        a,
                                         const CoefficientSpectrum<n> &s) {
   CoefficientSpectrum<n> temp;
-  for (int i = 0; i < n; i++) {
-    temp.c[i] = s.c[i] * a;
-  }
+  for (int i = 0; i < n; i++) { temp.c[i] = s.c[i] * a; }
   return temp;
 }
 
 template <int n>
 inline CoefficientSpectrum<n> Pow(const CoefficientSpectrum<n> &s, double p) {
   CoefficientSpectrum<n> temp;
-  for (int i = 0; i < n; i++) {
-    temp.c[i] = std::pow(s.c[i], p);
-  }
+  for (int i = 0; i < n; i++) { temp.c[i] = std::pow(s.c[i], p); }
   return temp;
 }
 
 template <int n>
 inline CoefficientSpectrum<n> Sqrt(const CoefficientSpectrum<n> &s) {
   CoefficientSpectrum<n> temp;
-  for (int i = 0; i < n; i++) {
-    temp.c[i] = std::sqrt(s.c[i]);
-  }
+  for (int i = 0; i < n; i++) { temp.c[i] = std::sqrt(s.c[i]); }
   return temp;
 }
 
 template <int n>
 inline CoefficientSpectrum<n> Exp(const CoefficientSpectrum<n> &s) {
   CoefficientSpectrum<n> temp;
-  for (int i = 0; i < n; i++) {
-    temp.c[i] = std::exp(s.c[i]);
-  }
+  for (int i = 0; i < n; i++) { temp.c[i] = std::exp(s.c[i]); }
   return temp;
 }
 
-} // namespace Raven
+}  // namespace Raven
 
 #endif

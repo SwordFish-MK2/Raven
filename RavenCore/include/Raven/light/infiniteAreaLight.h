@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_LIGHT_INFINITE_AREA_LIGHT_H_
+#ifndef _RAVEN_LIGHT_INFINITE_AREA_LIGHT_H_
 #define _RAVEN_LIGHT_INFINITE_AREA_LIGHT_H_
 
 #include <Raven/core/base.h>

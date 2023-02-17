@@ -1,13 +1,13 @@
-﻿//#ifndef _RAVEN_CORE_RENDERING_PROGRAME_H_
-//#define _RAVEN_CORE_RENDERING_PROGRAME_H_
+// #ifndef _RAVEN_CORE_RENDERING_PROGRAME_H_
+// #define _RAVEN_CORE_RENDERING_PROGRAME_H_
 //
-//#include<Raven/core/base.h>
-//#include<Raven/core/integrator.h>
-//#include<Raven/core/scene.h>
-//#include<chrono>
-//#include<map>
+// #include<Raven/core/base.h>
+// #include<Raven/core/integrator.h>
+// #include<Raven/core/scene.h>
+// #include<chrono>
+// #include<map>
 //
-//namespace Raven {
+// namespace Raven {
 //	class RavenRenderingPrograme {
 //	public:
 //		RavenRenderingPrograme(
@@ -29,14 +29,18 @@
 //		renderer->render(*scene,);
 //		auto stop = std::chrono::system_clock::now();
 //		std::cout << "Rendering complete:\n";
-//		auto hours = std::chrono::duration_cast<std::chrono::hours>(stop - start).count();
-//		auto minutes = std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() - hours * 60;
-//		auto seconds = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() - minutes * 60;
+//		auto hours = std::chrono::duration_cast<std::chrono::hours>(stop
+//- start).count(); 		auto minutes =
+// std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() -
+// hours
+//* 60; 		auto seconds =
+//std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() -
+// minutes * 60;
 //
 //		std::cout << hours << "hours\n";
 //		std::cout << minutes << "minutes\n";
 //		std::cout << seconds << "seconds\n";
 //	}
-//}
+// }
 //
-//#endif
+// #endif

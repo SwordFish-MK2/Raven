@@ -1,10 +1,12 @@
-﻿#include <Raven/core/medium.h>
+#include <Raven/core/medium.h>
 #include <Raven/core/primitive.h>
 
 namespace Raven {
 bool GeometryPrimitive::hit(const Ray& r_in) const {
   // perform ray-geometry intersection test
-  if (!shape_ptr->hit(r_in)) { return false; }
+  if (!shape_ptr->hit(r_in)) {
+    return false;
+  }
   return true;
 }
 
@@ -49,14 +51,15 @@ Bound3f GeometryPrimitive::worldBounds() const {
 }
 
 bool TransformedPrimitive::hit(const Ray& r_in) const {
-  if (!primToWorld || !worldToPrim || !prim) return false;
+  if (!primToWorld || !worldToPrim || !prim)
+    return false;
   // transform the incident ray to primitive space then perform ray intersection
   // test
   Ray transformedRay = Inverse(*primToWorld)(r_in);
   return prim->hit(r_in);
 }
 
-bool TransformedPrimitive::intersect(const Ray &ray, HitInfo &info)const{
+bool TransformedPrimitive::intersect(const Ray& ray, HitInfo& info) const {
   return prim->intersect(ray, info);
 }
 

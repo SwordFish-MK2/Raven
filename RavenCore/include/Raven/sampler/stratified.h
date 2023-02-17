@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_SAMPLER_STRATIFIED_H_
+#ifndef _RAVEN_SAMPLER_STRATIFIED_H_
 #define _RAVEN_SAMPLER_STRATIFIED_H_
 
 #include <Raven/core/base.h>
@@ -11,14 +11,14 @@ namespace Raven {
 /// 分层采样
 /// </summary>
 class StratifiedSampler final : public PixelSampler {
-public:
+ public:
   StratifiedSampler(int xSamples, int ySamples, bool jitter, int nDimensions);
 
   void startPixel(const Point2i &p) override;
 
-//  std::unique_ptr<Sampler> clone(int seed) override;
+  //  std::unique_ptr<Sampler> clone(int seed) override;
 
-private:
+ private:
   const int xPixelSamples;
   const int yPixelSamples;
   bool      jitter;

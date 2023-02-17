@@ -70,12 +70,14 @@ struct MediumInterface;
 
 template <class T>
 T Max(T t1, T t2) {
-  if (t1 > t2) return t1;
+  if (t1 > t2)
+    return t1;
   return t2;
 }
 template <class T>
 T Min(T t1, T t2) {
-  if (t1 < t2) return t1;
+  if (t1 < t2)
+    return t1;
   return t2;
 }
 template <class T>
@@ -108,7 +110,8 @@ inline bool Quadratic(double  a,
                       double& tmin,
                       double& tmax) {
   double discrim = b * b - 4 * a * c;
-  if (discrim <= 0) return false;
+  if (discrim <= 0)
+    return false;
   double rootDiscrim = std::sqrt(discrim);
   double q;
   if (b < 0)
@@ -117,7 +120,8 @@ inline bool Quadratic(double  a,
     q = -.5 * (b + rootDiscrim);
   tmin = q / a;
   tmax = c / q;
-  if (tmin > tmax) std::swap(tmin, tmax);
+  if (tmin > tmax)
+    std::swap(tmin, tmax);
   return true;
 }
 template <class T>
@@ -142,25 +146,29 @@ inline bool solve2x2LinearSystem(const double* A,
                                  double*       x0,
                                  double*       x1) {
   double det = A[0] * A[3] - A[1] * A[2];
-  if (std::abs(det) < 1e-8) return false;
+  if (std::abs(det) < 1e-8)
+    return false;
   // use Cramer's law to solve linear equation system
   double det0 = b[0] * A[3] - b[1] * A[1];
   double det1 = A[0] * b[1] - A[2] * b[0];
   *x0         = det0 / det;
   *x1         = det1 / det;
-  if (std::isnan(*x0) || std::isnan(*x1)) return false;
+  if (std::isnan(*x0) || std::isnan(*x1))
+    return false;
   return true;
 }
 // perform gamma correct for sRGB standerd, create a nonlinear relationship
 // between brightness and pixel values
 inline double GammaCorrect(double value) {
-  if (value <= 0.0031308) return 12.92 * value;
+  if (value <= 0.0031308)
+    return 12.92 * value;
   return 1.055 * pow(value, 1 / 2.4) - 0.055;
 }
 // remove gamma correct and reconstruct a linear relationship between brightness
 // and pixel values
 inline double InverseGammaCorrect(double value) {
-  if (value < 0.04045) return value / 12.92;
+  if (value < 0.04045)
+    return value / 12.92;
   return pow((value + 0.055) * 1.0 / 1.055, 2.4);
 }
 
@@ -238,7 +246,7 @@ class RavenParamSetItem {
                     int                         nValues = 1)
       : name(name), values(value), nValues(nValues) {}
 
-private:
+ private:
   std::string          name;
   std::unique_ptr<T[]> values;
   int                  nValues;

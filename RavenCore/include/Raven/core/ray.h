@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_RAY_H_
+#ifndef _RAVEN_CORE_RAY_H_
 #define _RAVEN_CORE_RAY_H_
 
 #include <Raven/core/base.h>
@@ -10,7 +10,9 @@ class Ray {
  public:
   Ray(bool hasDifferential = false)
       : time(0), hasDifferential(hasDifferential) {}
-  Ray(const Point3f& o, const Vector3f& d, double t = 0,
+  Ray(const Point3f&     o,
+      const Vector3f&    d,
+      double             t      = 0,
       const Ref<Medium>& medium = nullptr)
       : origin(o), dir(d), time(t), hasDifferential(false), medium(medium) {}
   Ray(const Ray& r)
@@ -43,8 +45,10 @@ class RayDifferential : public Ray {
   Point3f  originX, originY;
   Vector3f directionX, directionY;
 
-  RayDifferential(const Point3f& o, const Vector3f& d, double t = 0,
-      const Ref<Medium>& medium = nullptr)
+  RayDifferential(const Point3f&     o,
+                  const Vector3f&    d,
+                  double             t      = 0,
+                  const Ref<Medium>& medium = nullptr)
       : Ray(o, d, t, medium) {
     hasDifferential = false;
   }

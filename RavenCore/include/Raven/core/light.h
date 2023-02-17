@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_LIGHT_H_
+#ifndef _RAVEN_CORE_LIGHT_H_
 #define _RAVEN_CORE_LIGHT_H_
 
 #include <Raven/core/base.h>
@@ -46,12 +46,11 @@ class Light : public RavenObject {
     return Spectrum(0.0);
   }
 
-  virtual double pdf_Li(const Interaction& inter,
-                        const Vector3f&           wi) const = 0;
+  virtual double pdf_Li(const Interaction& inter, const Vector3f& wi) const = 0;
 
   virtual void preprocess(const Scene& scene) {}
 
-  virtual bool isDeltaLight()const {
+  virtual bool isDeltaLight() const {
     return flag & (int)LightFlag::DeltaPosition ||
            flag & (int)LightFlag::DeltaDirection;
   }
@@ -85,15 +84,13 @@ class AreaLight : public Light {
                             LightSample*       lightSample) const = 0;
 
   // 给定光源上的一个点与出射方向，计算出射的Radiance
-  virtual Spectrum Li(const Interaction& inter,
-                      const Vector3f&           wi) const = 0;
+  virtual Spectrum Li(const Interaction& inter, const Vector3f& wi) const = 0;
 
   // 返回光源向空间中辐射的总的能量
   virtual Spectrum power() const = 0;
 
   // 给定光源上的一个点与出射方向，计算采样的pdf
-  virtual double pdf_Li(const Interaction& inter,
-                        const Vector3f&           wi) const = 0;
+  virtual double pdf_Li(const Interaction& inter, const Vector3f& wi) const = 0;
 
   // virtual void setShapePtr(const Ref<Shape>& sptr) { shape_ptr = sptr; }
  protected:

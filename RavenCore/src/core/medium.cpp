@@ -1,4 +1,4 @@
-﻿#include <Raven/core/medium.h>
+#include <Raven/core/medium.h>
 
 #include "Raven/core/math.h"
 

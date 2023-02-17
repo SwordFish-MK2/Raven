@@ -1,4 +1,4 @@
-﻿#include <Raven/core/scene.h>
+#include <Raven/core/scene.h>
 #include <Raven/light/infiniteAreaLight.h>
 
 #include <memory>

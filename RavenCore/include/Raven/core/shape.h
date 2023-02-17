@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_SHAPE_H_
+#ifndef _RAVEN_CORE_SHAPE_H_
 #define _RAVEN_CORE_SHAPE_H_
 
 #include <Raven/core/aabb.h>

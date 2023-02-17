@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_PRIMITIVE_H_
+#ifndef _RAVEN_CORE_PRIMITIVE_H_
 #define _RAVEN_CORE_PRIMITIVE_H_
 
 #include <Raven/core/base.h>
@@ -13,7 +13,7 @@ namespace Raven {
 
 // primitive inter
 class Primitive : public RavenObject {
-public:
+ public:
   // whether the incident ray hits the geometric shape of current primitive
   virtual bool hit(const Ray& r_in) const = 0;
 
@@ -31,11 +31,11 @@ public:
 
 //
 class GeometryPrimitive final : public Primitive {
-public:
+ public:
   GeometryPrimitive(const std::shared_ptr<Shape>&     shape_ptr,
                     const std::shared_ptr<Material>&  mate_ptr,
-                    const std::shared_ptr<AreaLight>& light=nullptr,
-                    const MediumInterface&            medium=MediumInterface{})
+                    const std::shared_ptr<AreaLight>& light = nullptr,
+                    const MediumInterface& medium           = MediumInterface{})
       : shape_ptr(shape_ptr),
         mate_ptr(mate_ptr),
         light_ptr(light),
@@ -54,7 +54,7 @@ public:
 
   // static Ref<GeometryPrimitive> build(const Ref<PropertyList>& param);
 
-private:
+ private:
   std::shared_ptr<Shape>     shape_ptr;
   std::shared_ptr<Material>  mate_ptr;
   std::shared_ptr<AreaLight> light_ptr;
@@ -62,7 +62,7 @@ private:
 };
 
 class TransformedPrimitive final : public Primitive {
-public:
+ public:
   TransformedPrimitive(const Transform*                 ptw,
                        const Transform*                 wtp,
                        const std::shared_ptr<Primitive> p)
@@ -83,12 +83,11 @@ public:
       const Transform*                  wtp,
       const std::shared_ptr<Primitive>& prim);
 
-private:
+ private:
   const Transform*                 primToWorld;
   const Transform*                 worldToPrim;
   const std::shared_ptr<Primitive> prim;
 };
-
 
 }  // namespace Raven
 

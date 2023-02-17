@@ -1,4 +1,4 @@
-﻿#include<Raven/shading/oren_nayar.h>
+#include<Raven/shading/oren_nayar.h>
 #include<Raven/core/distribution.h>
 namespace Raven {
 	//Spectrum OrenNayar::f(const vectorf3& wo,const  vectorf3& wi)const {

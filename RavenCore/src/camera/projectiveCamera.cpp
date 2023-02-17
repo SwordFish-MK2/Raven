@@ -1,4 +1,4 @@
-﻿#include <Raven/camera/projectiveCamera.h>
+#include <Raven/camera/projectiveCamera.h>
 #include <Raven/core/film.h>
 
 #include <iostream>
@@ -56,7 +56,7 @@ int OrthographicCamera::GenerateRayDifferential(
     RayDifferential&    rayDifferential) const {
   Point3f         pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
   Point3f         pCamera = RasterToCamera(pRaster);
-  RayDifferential sampleRay(pCamera, Vector3f{0, 0, 1},sample.time,medium);
+  RayDifferential sampleRay(pCamera, Vector3f{0, 0, 1}, sample.time, medium);
   rayDifferential = CameraToWorld(sampleRay);
 
   return 1;
@@ -90,7 +90,7 @@ int PerspectiveCamera::GenerateRay(const CameraSample& sample, Ray& ray) const {
                    0.0f);                      // point on film in raster space
   Point3f  pCamera = RasterToCamera(pRaster);  // point on film in camera space
   Vector3f dir(pCamera[0], pCamera[1], pCamera[2]);
-  Ray      sampleRay(ori, dir.normalized(),sample.time,medium);
+  Ray      sampleRay(ori, dir.normalized(), sample.time, medium);
   // update the ray origin and properate direction from the lens sample
   if (lensRadius > 0.f) {  // depth of field would be computed only when the
                            // lensRadius is larger than 0.f
@@ -115,7 +115,7 @@ int PerspectiveCamera::GenerateRayDifferential(
   Point3f         pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
   Point3f         pCamera = RasterToCamera(pRaster);
   Vector3f        dir(pCamera[0], pCamera[1], pCamera[2]);
-  RayDifferential sampleRay(ori, dir.normalized(),sample.time,medium);
+  RayDifferential sampleRay(ori, dir.normalized(), sample.time, medium);
   sampleRay.hasDifferential = true;
   sampleRay.originX         = ori;
   sampleRay.originY         = ori;
@@ -162,11 +162,11 @@ int PerspectiveCamera::GenerateRayDifferential(
 //	double far = param.getFloat("far", 1000);
 
 //	Ref<Transform> CTW =
-//std::dynamic_pointer_cast<Transform>(CTWObj.getRef()); 	Ref<Transform> STR =
-//std::dynamic_pointer_cast<Transform>(STRObj.getRef());
+// std::dynamic_pointer_cast<Transform>(CTWObj.getRef()); 	Ref<Transform>
+// STR = std::dynamic_pointer_cast<Transform>(STRObj.getRef());
 
 //	return std::make_shared<OrthographicCamera>(*CTW, *STR, lensRadius,
-//focalDistance, top, bottom, left, right, near, far);
+// focalDistance, top, bottom, left, right, near, far);
 
 //}
 

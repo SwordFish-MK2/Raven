@@ -1,4 +1,4 @@
-﻿#ifndef _RAVEN_CORE_MEDIA_H_
+#ifndef _RAVEN_CORE_MEDIA_H_
 #define _RAVEN_CORE_MEDIA_H_
 
 #include <Raven/core/base.h>

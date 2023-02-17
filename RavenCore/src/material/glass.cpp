@@ -1,4 +1,4 @@
-﻿#include<Raven/material/glass.h>
+#include<Raven/material/glass.h>
 #include<Raven/shading/microfacet.h>
 namespace Raven {
 

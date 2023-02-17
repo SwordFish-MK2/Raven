@@ -1,4 +1,4 @@
-﻿#include<Raven/material/plastic.h>
+#include<Raven/material/plastic.h>
 #include<Raven/shading/lambertain.h>
 #include<Raven/shading/microfacet.h>
 

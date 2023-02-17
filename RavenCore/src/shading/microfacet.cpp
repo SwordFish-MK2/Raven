@@ -1,4 +1,4 @@
-﻿#include<Raven/shading/microfacet.h>
+#include<Raven/shading/microfacet.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
