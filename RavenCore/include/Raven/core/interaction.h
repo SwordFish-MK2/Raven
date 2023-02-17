@@ -35,7 +35,7 @@ struct Interaction {
               const MediumInterface& mediumInterface);
 
   // whether this interaction happened on geometric surface
-  bool isSurfaceInteraction() const { return n == Normal3f(); }
+  bool isSurfaceInteraction() const { return n != Normal3f(); }
 
   // whether this interaction happened inside vulume medium
   bool isMediumInteraction() const { return !isSurfaceInteraction(); }
