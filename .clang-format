@@ -4,7 +4,7 @@ Language:        Cpp
 AccessModifierOffset: -1
 
 # 在({之类的括号后对齐参数
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: Align
 
 # 在左侧对齐数组
 AlignArrayOfStructures: Left
@@ -93,7 +93,7 @@ AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros:
   - __capability
 BinPackArguments: true
-BinPackParameters: true
+BinPackParameters: false
 BraceWrapping:
   AfterCaseLabel:  false
   AfterClass:      false
