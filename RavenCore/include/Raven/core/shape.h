@@ -11,9 +11,12 @@
 #include <optional>
 
 namespace Raven {
-enum PrimType { PTriangle, PSphere };
+enum PrimType {
+  PTriangle,
+  PSphere
+};
 
-///<summary>
+///< summary>
 /// Geometric info of a surface interaction
 ///</summary>
 struct HitInfo {
@@ -32,11 +35,11 @@ struct HitInfo {
 /// Shape interface, all geometrics must inherit this class
 /// </summary>
 class Shape : public RavenObject {
-protected:
+ protected:
   Ref<Transform> localToWorld;
   Ref<Transform> worldToLocal;
 
-public:
+ public:
   Shape(const Ref<Transform>& LTW, const Ref<Transform>& WTL)
       : localToWorld(LTW), worldToLocal(WTL) {}
 
@@ -63,14 +66,14 @@ public:
 
   // 给定空间中的一个点，在几何体体表面采样一个点，pdf为对立体角的积分
   virtual std::tuple<SurfaceInteraction, double> sample(
-      const SurfaceInteraction& ref,
-      const Point2f&            rand) const;
+      const Interaction& ref,
+      const Point2f&     rand) const;
 
   // 在几何体上均匀采样的pdf，对面积积分
-  virtual double pdf(const SurfaceInteraction&) const { return 1 / area(); }
+  virtual double pdf(const Interaction&) const { return 1 / area(); }
 
   // 在空间中给定点采样的pdf，对立体角积分
-  virtual double pdf(const SurfaceInteraction& inter, const Vector3f& wi) const;
+  virtual double pdf(const Interaction& inter, const Vector3f& wi) const;
 };
 }  // namespace Raven
 

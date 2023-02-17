@@ -148,7 +148,7 @@ namespace Raven {
 	}
 
 	//基于点p采样圆上的一个点，返回的pdf为对立体角的积分
-	std::tuple<SurfaceInteraction, double> Sphere::sample(const SurfaceInteraction& inter, const Point2f& uv)const {
+	std::tuple<SurfaceInteraction, double> Sphere::sample(const Interaction& inter, const Point2f& uv)const {
 		Point3f pCenter = (*localToWorld)(Point3f(0.0));//圆心的世界坐标
 
 		//若p点在圆内，均匀采样
@@ -207,7 +207,7 @@ namespace Raven {
 		}
 	}
 
-	double Sphere::pdf(const SurfaceInteraction& inter, const Vector3f& wi)const {
+	double Sphere::pdf(const Interaction& inter, const Vector3f& wi)const {
 		Point3f pCenter = (*localToWorld)(Point3f(0.0));
 		double dc2 = DistanceSquared(pCenter, inter.p);
 

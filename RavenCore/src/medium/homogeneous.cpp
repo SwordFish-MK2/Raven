@@ -4,8 +4,6 @@
 
 #include <memory>
 
-#include "Raven/core/base.h"
-
 namespace Raven {
 HomogeneousMedium::HomogeneousMedium(const Spectrum& sa, const Spectrum& ss,
     double g)
@@ -32,7 +30,8 @@ Spectrum HomogeneousMedium::sample(const Ray& ray, Sampler& sampler,
   if (sampleMedium) {
     Ref<PhaseFunction> phase =
         std::make_shared<HenyeyGreensteinPhaseFunction>(g);
-    Ref<Medium> medium = std::make_shared<Medium>(this);
+        //TODO::SOVLE PROBLEM OF USING SHARED_PTR
+    Ref<Medium> medium = std::make_shared<HomogeneousMedium>(sigma_a,sigma_s,g);
     minter = std::make_shared<MediumInteraction>(ray(t), -ray.dir, ray.time, t,
         medium, phase);
   }

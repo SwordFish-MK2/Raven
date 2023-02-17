@@ -37,11 +37,11 @@ namespace Raven {
 		return f * f / (f * f + g * g);
 	}
 
-	Spectrum EvaluateLight(const SurfaceInteraction& record, const Scene& scene, const Light& light);
+	Spectrum EvaluateLight(const Interaction& record, const Scene& scene, const Light& light);
 
-	Spectrum SampleOneLight(const SurfaceInteraction& record, const Scene& scene, int nSample);
+	Spectrum SampleOneLight(const Interaction& record, const Scene& scene, int nSample);
 
-	Spectrum SampleAllLights(const SurfaceInteraction& record, const Scene& scene);
+	Spectrum SampleAllLights(const Interaction& record, const Scene& scene);
 }
 
 #endif

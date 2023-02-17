@@ -41,6 +41,7 @@ const Ref<Medium> Interaction::getMedium() const {
   assert(mediumInterface.inside == mediumInterface.outside);
   return mediumInterface.inside;
 }
+
 SurfaceInteraction::SurfaceInteraction(const Point3f&  p,
                                        const Normal3f& n,
                                        const Vector3f& wo,
@@ -70,7 +71,9 @@ MediumInteraction::MediumInteraction(const Point3f&            p,
                                      double                    t,
                                      const Ref<Medium>         medium,
                                      const Ref<PhaseFunction>& phase)
-    : Interaction(p, wo, time, t, MediumInterface(medium)), phase(phase) {}
+    : Interaction(p, wo, time, t, MediumInterface(medium)), phase(phase) 
+    {}
+
 
 // 根据微分光线计算交点的参数坐标(u,v)分别关于屏幕空间坐标(x,y)的偏导数
 void SurfaceInteraction::computeDifferential(const RayDifferential& rd) {
@@ -134,14 +137,6 @@ void SurfaceInteraction::setShadingGeometry(const Vector3f& dpdu,
   shading.dpdv = dpdv;
   shading.dndu = dndu;
   shading.dndv = dndv;
-}
-
-Ray SurfaceInteraction::scartterRay(const Vector3f& dir,bool reflection) const {
-  Point3f ori = p + dir * 0.001;
-  if(reflection)
-    return Ray(ori,dir,0,mediumInterface.outside);
-  else
-    return Ray(ori,dir,0,mediumInterface.inside);
 }
 
 Spectrum SurfaceInteraction::Le(const Vector3f& w) const {

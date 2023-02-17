@@ -11,7 +11,7 @@ namespace Raven {
 	/// <summary>
 	/// DiffuseAreaLight实现类，该光源上的任意一点向空间中的任意方向辐射同等大小的Radiance
 	/// </summary>
-	class DiffuseAreaLight :public AreaLight {
+	class DiffuseAreaLight final:public AreaLight {
 	public:
 		DiffuseAreaLight(
 			const Ref<Transform>& LTW,
@@ -21,14 +21,14 @@ namespace Raven {
 			const Spectrum& I) :
 			AreaLight(LTW, WTL, (int)LightFlag::AreaLight, nSamples, shape), emittedRadiance(I) {}
 
-		virtual Spectrum Li(const SurfaceInteraction& p, const Vector3f& wi)const;
+		virtual Spectrum Li(const Interaction& p, const Vector3f& wi)const override;
 
-		virtual Spectrum sampleLi(const SurfaceInteraction& inter, const Point2f& uv,
-			LightSample* lightSample)const;
+		virtual Spectrum sampleLi(const Interaction& inter, const Point2f& uv,
+			LightSample* lightSample)const override;
 
-		virtual Spectrum power()const;
+		virtual Spectrum power()const override;
 
-		virtual double pdf_Li(const SurfaceInteraction& inter, const Vector3f& wi)const;
+		virtual double pdf_Li(const Interaction& inter, const Vector3f& wi)const override;
 
 		static Ref<Light> construct(const PropertyList& param) {
 			const int n = param.getInteger("nSamples", 1);

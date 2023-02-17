@@ -4,8 +4,10 @@
 #include <Raven/core/base.h>
 #include <Raven/core/math.h>
 #include <Raven/core/object.h>
-#include <Raven/core/spectrum.h>
 #include <Raven/core/sampler.h>
+#include <Raven/core/spectrum.h>
+
+#include <tuple>
 
 namespace Raven {
 /// <summary>
@@ -18,7 +20,7 @@ struct MediumInterface {
       : outside(medium), inside(medium) {}
 
   MediumInterface(const std::shared_ptr<Medium>& outside,
-      const std::shared_ptr<Medium>&             inside)
+                  const std::shared_ptr<Medium>& inside)
       : outside(outside), inside(inside) {}
 
   MediumInterface() : outside(nullptr), inside(nullptr) {}
@@ -35,15 +37,23 @@ struct MediumInterface {
 class PhaseFunction {
  public:
   // 计算Phase Function 的值
-  virtual double p(const Vector3f& wi, const Vector3f& wo) const = 0;
+  virtual Float p(const Vector3f& wo, const Vector3f& wi) const = 0;
+
+  virtual std::tuple<Float, Vector3f> sample_p(const Vector3f& wo,
+                                               const Point2f   uv) const = 0;
 };
 
 /// <summary>
 /// 由Henyey Greenstein提出的各项同性phase funcion模型
 /// </summary>
-class HenyeyGreensteinPhaseFunction : public PhaseFunction {
+class HenyeyGreensteinPhaseFunction final : public PhaseFunction {
  public:
-  double p(const Vector3f& wi, const Vector3f& wo) const override;
+  HenyeyGreensteinPhaseFunction(Float g) : g(g) {}
+
+  double p(const Vector3f& wo, const Vector3f& wi) const override;
+
+  std::tuple<Float, Vector3f> sample_p(const Vector3f& wo,
+                                       const Point2f   uv) const override;
 
  private:
   double g;
@@ -60,8 +70,9 @@ class Medium {
 
   // sample a intersection point alone the ray,campute the ratio of the light
   // transmittence and sampling pdf
-  virtual Spectrum sample(const Ray& ray, Sampler& sampler,
-      Ref<MediumInteraction> minter) const = 0;
+  virtual Spectrum sample(const Ray&             ray,
+                          Sampler&               sampler,
+                          Ref<MediumInteraction> minter) const = 0;
 };
 
 inline double PhaseHG(double cosTheta, double g) {

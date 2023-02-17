@@ -12,22 +12,33 @@ struct Interaction {
  public:
   Interaction() : time(0), t(0) {}
 
-  Interaction(const Point3f& p, const Normal3f& n, const Vector3f& wo,
-      double time, const MediumInterface& mediumInterface);
-  Interaction(const Point3f& p, const Normal3f& n, const Vector3f& wo,
-      double time = 0.0, double t = 0.0);
+  Interaction(const Point3f&         p,
+              const Normal3f&        n,
+              const Vector3f&        wo,
+              double                 time,
+              const MediumInterface& mediumInterface);
+  Interaction(const Point3f&  p,
+              const Normal3f& n,
+              const Vector3f& wo,
+              double          time = 0.0,
+              double          t    = 0.0);
 
-  Interaction(const Point3f& p, const Vector3f& wo, double time, double t,
-      const MediumInterface& mediumInterface);
+  Interaction(const Point3f&         p,
+              const Vector3f&        wo,
+              double                 time,
+              double                 t,
+              const MediumInterface& mediumInterface);
 
-  Interaction(const Point3f& p, double time, double t,
-      const MediumInterface& mediumInterface);
+  Interaction(const Point3f&         p,
+              double                 time,
+              double                 t,
+              const MediumInterface& mediumInterface);
 
   // whether this interaction happened on geometric surface
-  bool isSurfaceInteraction() { return n == Normal3f(); }
+  bool isSurfaceInteraction() const { return n == Normal3f(); }
 
   // whether this interaction happened inside vulume medium
-  bool isMediumInteraction() { return !isSurfaceInteraction(); }
+  bool isMediumInteraction() const { return !isSurfaceInteraction(); }
 
   // getMedium函数只在存在medium的场景时使用
   // 对于SurfaceInteraction，调用该函数传入散射光线的方向
@@ -36,6 +47,12 @@ struct Interaction {
 
   // 对于MediumIntraction,调用该重载直接返回所处介质的指针
   const Ref<Medium> getMedium() const;
+
+  Ray scartterRay(const Vector3f& dir, bool reflection = true) const {
+    Point3f ori = p + dir * 0.001;
+    auto medi   = reflection ? mediumInterface.inside : mediumInterface.outside;
+    return Ray(ori, dir, time, medi);
+  }
 
  public:
   Point3f         p;                // 交点
@@ -46,24 +63,33 @@ struct Interaction {
   MediumInterface mediumInterface;  // 表面两边的介质
 };
 
+/// <summary>
+/// interaction on geometry surface
+/// </summary>
 struct SurfaceInteraction : public Interaction {
   // interface
   SurfaceInteraction() {}
 
-  SurfaceInteraction(const Point3f& p, const Normal3f& n, const Vector3f& wo,
-      const Point2f& uv, const Vector3f& dpdu, const Vector3f& dpdv,
-      const Vector3f& dndu, const Vector3f& dndv, double time = 0.0,
-      double t = 0.0);
+  SurfaceInteraction(const Point3f&  p,
+                     const Normal3f& n,
+                     const Vector3f& wo,
+                     const Point2f&  uv,
+                     const Vector3f& dpdu,
+                     const Vector3f& dpdv,
+                     const Vector3f& dndu,
+                     const Vector3f& dndv,
+                     double          time = 0.0,
+                     double          t    = 0.0);
 
-  void setShadingGeometry(const Vector3f& dpdu, const Vector3f& dpdv,
-      const Vector3f& dndu, const Vector3f& dndv);
+  void setShadingGeometry(const Vector3f& dpdu,
+                          const Vector3f& dpdv,
+                          const Vector3f& dndu,
+                          const Vector3f& dndv);
 
   // 计算dudx dudy dvdx dvdy
   void computeDifferential(const RayDifferential& rd);
 
   Spectrum Le(const Vector3f& wi) const;
-
-  Ray scartterRay(const Vector3f& dir, bool reflection = true) const;
 
   // data
   Material*             mate_ptr;  // surface material
@@ -92,8 +118,12 @@ struct SurfaceInteraction : public Interaction {
 };
 
 struct MediumInteraction : public Interaction {
-  MediumInteraction(const Point3f& p, const Vector3f& wo, double time, double t,
-      const Ref<Medium> medium, const Ref<PhaseFunction>& phase);
+  MediumInteraction(const Point3f&            p,
+                    const Vector3f&           wo,
+                    double                    time,
+                    double                    t,
+                    const Ref<Medium>         medium,
+                    const Ref<PhaseFunction>& phase);
 
   const Ref<PhaseFunction> phase;
 
