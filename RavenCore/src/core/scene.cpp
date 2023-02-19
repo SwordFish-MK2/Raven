@@ -64,6 +64,11 @@ void Scene::addLight(const std::shared_ptr<Light>& light_ptr) {
   lights.push_back(light_ptr);
 }
 
+std::optional<SurfaceInteraction> Scene::tr(const RayDifferential& ray,
+                                            Sampler& sampler) const {
+  return std::nullopt;
+}
+
 Scene Scene::buildCornellBox() {
   std::vector<std::shared_ptr<TriangleMesh>>      meshes;
   std::vector<std::shared_ptr<Transform>>         usedTransform;

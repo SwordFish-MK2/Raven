@@ -26,7 +26,9 @@ class PathTracingIntegrator : public Integrator {
                      int                    depth = 0) const;
   //	GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
 
-  const int maxDepth;
+ private:
+  std::unique_ptr<Sampler> sampler;
+  const int                maxDepth;
 };
 
 _RAVEN_CLASS_REG_(path, PathTracingIntegrator, PathTracingIntegrator::construct)

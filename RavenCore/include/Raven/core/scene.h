@@ -52,6 +52,9 @@ class Scene : public RavenObject {
     return objs->intersect(r);
   }
 
+  std::optional<SurfaceInteraction> tr(const RayDifferential& r,
+                                       Sampler&               sampler) const;
+
   // const Light* chooseLight(double rand)const;
 
   const Bound3f worldBound() const { return objs->worldBounds(); }

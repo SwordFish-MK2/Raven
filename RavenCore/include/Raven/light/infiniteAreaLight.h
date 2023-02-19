@@ -15,9 +15,8 @@ class InfiniteAreaLight final : public Light {
                     int                   nSamples,
                     const std::string&    textureMap);
   // 输入空间中的一个点p，在光源上随机采样，并计算出射的Radiance
-  Spectrum sampleLi(const Interaction& inter,
-                    const Point2f&     uv,
-                    LightSample*       lightSample) const override;
+  std::optional<LightSample> sampleLi(const Interaction& inter,
+                                      const Point2f&     uv) const override;
 
   // 返回光源向空间中辐射的总的能量
   virtual Spectrum power() const override;

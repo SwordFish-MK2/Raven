@@ -22,9 +22,8 @@ class DiffuseAreaLight final : public AreaLight {
 
   virtual Spectrum Li(const Interaction& p, const Vector3f& wi) const override;
 
-  virtual Spectrum sampleLi(const Interaction& inter,
-                            const Point2f&     uv,
-                            LightSample*       lightSample) const override;
+  virtual std::optional<LightSample> sampleLi(const Interaction& inter,
+                                              const Point2f& uv) const override;
 
   virtual Spectrum power() const override;
 

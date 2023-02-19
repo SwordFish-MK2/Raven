@@ -38,13 +38,20 @@ inline double PowerHeuristic(int fNum, double fPdf, int gNum, double gPdf) {
 
 Spectrum EvaluateLight(const Interaction& record,
                        const Scene&       scene,
-                       const Light&       light);
+                       const Light&       light,
+                       Sampler&           sampler,
+                       bool               handleMedium = false);
 
 Spectrum SampleOneLight(const Interaction& record,
                         const Scene&       scene,
-                        int                nSample);
+                        int                nSample,
+                        Sampler&           sampler,
+                        bool               handleMedium = false);
 
-Spectrum SampleAllLights(const Interaction& record, const Scene& scene);
+Spectrum SampleAllLights(const Interaction& record,
+                         const Scene&       scene,
+                         Sampler&           sampler,
+                         bool               handleMedium = false);
 }  // namespace Raven
 
 #endif

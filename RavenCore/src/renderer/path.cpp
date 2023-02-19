@@ -56,7 +56,7 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
                                           const RayDifferential& rayIn,
                                           int                    bounce) const {
   //	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451,
-  //0.843137));
+  // 0.843137));
   Spectrum        Li(0.0);
   Spectrum        beta(1.0);  // 光线的衰减参数
   RayDifferential ray = rayIn;
@@ -90,7 +90,7 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
       }
 
       // 采样光源
-      Spectrum L_dir = SampleAllLights(*record, scene);
+      Spectrum L_dir = SampleAllLights(*record, scene, *(sampler.get()), false);
       Li             += beta * L_dir;
 
       // 采样brdf，计算出射方向,更新beta

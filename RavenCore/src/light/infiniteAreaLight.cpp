@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "Raven/core/light.h"
+
 namespace Raven {
 InfiniteAreaLight::InfiniteAreaLight(const Ref<Transform>& lightToWorld,
                                      const Ref<Transform>& worldToLight,
@@ -53,14 +55,14 @@ Spectrum InfiniteAreaLight::power() const {
                   RGBType::RGBIllumination);
 }
 
-Spectrum InfiniteAreaLight::sampleLi(const Interaction& inter,
-                                     const Point2f&     rand,
-                                     LightSample*       lightSample) const {
+std::optional<LightSample> InfiniteAreaLight::sampleLi(
+    const Interaction& inter,
+    const Point2f&     rand) const {
   double  pdf = 0;
   Point2f uv =
       distribution->sampleContinuous(rand, &pdf);  // 根据光源强度分布生成样本
   if (pdf == 0)
-    return Spectrum(0);
+    return std::nullopt;
 
   // 计算采样光线的方向
   double   theta = M_PI * uv[1], phi = 2 * M_PI * uv[0];
@@ -75,11 +77,11 @@ Spectrum InfiniteAreaLight::sampleLi(const Interaction& inter,
     pdf = 0;
 
   // 将入射光原点设置在两倍场景半径之外
-  Point3f lightp   = inter.p + 2 * worldRadius * wi;
-  lightSample->p   = lightp;
-  lightSample->pdf = pdf;
-  lightSample->wi  = wi;
-  return Spectrum(lightMap->lookup(uv));
+  Point3f  lightp = inter.p + 2 * worldRadius * wi;
+  Spectrum le(lightMap->lookup(uv));
+  if (le.isBlack())
+    return std::nullopt;
+  return LightSample{le, lightp, wi, pdf};
 }
 
 double InfiniteAreaLight::pdf_Li(const Interaction& sinter,
