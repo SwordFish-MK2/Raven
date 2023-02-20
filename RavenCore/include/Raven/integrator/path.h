@@ -7,18 +7,18 @@
 #include <Raven/utils/propertylist.h>
 
 namespace Raven {
-class PathTracingIntegrator : public Integrator {
+class PathTracingIntegrator final : public Integrator {
  public:
-  PathTracingIntegrator(
-      // const std::shared_ptr<Camera>& c,
-      // const std::shared_ptr<Film>& f,
-      int    spp      = 100,
-      int    maxDepth = 64,
-      double epslion  = 1e-6)
-      : Integrator(spp, epslion), maxDepth(maxDepth) {}
-  void render(const Scene&, const Ref<Camera>&, Ref<Film>&) const override;
+  PathTracingIntegrator(std::unique_ptr<Camera>  c,
+                        std::unique_ptr<Sampler> s,
+                        int                      maxDepth = 64,
+                        double                   epslion  = 1e-6)
+      : Integrator(std::move(c), epslion),
+        sampler(std::move(s)),
+        maxDepth((maxDepth)) {}
+  void render(const Scene&) const override;
 
-  static Ref<PathTracingIntegrator> construct(const PropertyList& param);
+  // static Ref<PathTracingIntegrator> construct(const PropertyList& param);
 
  private:
   Spectrum integrate(const Scene&           scene,
@@ -27,11 +27,12 @@ class PathTracingIntegrator : public Integrator {
   //	GeometryData gBuffer(const Ray& ray, const Scene& scene)const;
 
  private:
+  const int maxDepth;
+
   std::unique_ptr<Sampler> sampler;
-  const int                maxDepth;
 };
 
-_RAVEN_CLASS_REG_(path, PathTracingIntegrator, PathTracingIntegrator::construct)
+// _RAVEN_CLASS_REG_(path, PathTracingIntegrator, PathTracingIntegrator::construct)
 }  // namespace Raven
 
 #endif

@@ -23,7 +23,7 @@ Spectrum EvaluateLight(const Interaction& record,
   Spectrum L(0.0);
 
   // take a sample from light sampling distribution
-  auto lSample = light.sampleLi(record, Point2f(GetRand(), GetRand()));
+  auto lSample = light.sampleLi(record, sampler.get2D());
 
   if (lSample.has_value()) {
     if (handleMedium) {
@@ -147,7 +147,7 @@ Spectrum SampleOneLight(const Interaction& record,
   Spectrum                                   totalPower(0.0);
   for (auto light : lights) { totalPower += light->power(); }
   Spectrum power;
-  double   pr = GetRand();
+  double   pr = sampler.get1D();
   double   p  = 1.0;
   Light*   chosen;
   for (size_t i = 0; i < lights.size(); i++) {

@@ -2,16 +2,18 @@
 #include <Raven/core/film.h>
 
 #include <iostream>
+#include <memory>
+#include <optional>
 
 namespace Raven {
-ProjectiveCamera::ProjectiveCamera(const Transform&   CTW,
-                                   const Transform&   CTS,
-                                   const Bound2f&     screenWindow,
-                                   double             lensRadius,
-                                   double             focalDistance,
-                                   const Ref<Film>&   film,
-                                   const Ref<Medium>& medium)
-    : Camera(CTW, film, medium),
+ProjectiveCamera::ProjectiveCamera(const Transform&        CTW,
+                                   const Transform&        CTS,
+                                   const Bound2f&          screenWindow,
+                                   double                  lensRadius,
+                                   double                  focalDistance,
+                                   std::unique_ptr<Film>   f,
+                                   std::shared_ptr<Medium> medium)
+    : Camera(CTW, std::move(f), medium),
       CameraToScreen(CTS),
       lensRadius(lensRadius),
       focalDistance(focalDistance) {
@@ -26,54 +28,51 @@ ProjectiveCamera::ProjectiveCamera(const Transform&   CTW,
   RasterToCamera = CameraToScreen.inverse() * RasterToScreen;
 }
 
-OrthographicCamera::OrthographicCamera(const Transform&   CTW,
-                                       const Bound2f&     screenWindow,
-                                       double             lensRadius,
-                                       double             focalDistance,
-                                       double             near,
-                                       double             far,
-                                       const Ref<Film>&   film,
-                                       const Ref<Medium>& medium)
+
+OrthographicCamera::OrthographicCamera(const Transform&        CTW,
+                                       const Bound2f&          screenWindow,
+                                       double                  lensRadius,
+                                       double                  focalDistance,
+                                       double                  near,
+                                       double                  far,
+                                       std::unique_ptr<Film>   film,
+                                       std::shared_ptr<Medium> medium)
     : ProjectiveCamera(CTW,
                        Orthographic(near, far),
                        screenWindow,
                        lensRadius,
                        focalDistance,
-                       film,
+                       std::move(film),
                        medium) {}
 
-int OrthographicCamera::GenerateRay(const CameraSample& sample,
-                                    Ray&                ray) const {
+std::optional<Ray> OrthographicCamera::generateRay(
+    const CameraSample& sample) const {
   Point3f         pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
   Point3f         pCamera = RasterToCamera(pRaster);
   RayDifferential sampleRay(pCamera, Vector3f(0, 0, 1), sample.time, medium);
-  ray = CameraToWorld(sampleRay);
-  return 1;
+  return CameraToWorld(sampleRay);
 }
 
-int OrthographicCamera::GenerateRayDifferential(
-    const CameraSample& sample,
-    RayDifferential&    rayDifferential) const {
+std::optional<RayDifferential> OrthographicCamera::generateRayDifferential(
+    const CameraSample& sample) const {
   Point3f         pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
   Point3f         pCamera = RasterToCamera(pRaster);
   RayDifferential sampleRay(pCamera, Vector3f{0, 0, 1}, sample.time, medium);
-  rayDifferential = CameraToWorld(sampleRay);
-
-  return 1;
+  return CameraToWorld(sampleRay);
 }
 
-PerspectiveCamera::PerspectiveCamera(const Transform&   CTW,
-                                     double             lensRadius,
-                                     double             focalDistance,
-                                     double             fov,
-                                     const Ref<Film>&   film,
-                                     const Ref<Medium>& medium)
+PerspectiveCamera::PerspectiveCamera(const Transform&        CTW,
+                                     double                  lensRadius,
+                                     double                  focalDistance,
+                                     double                  fov,
+                                     std::unique_ptr<Film>   film,
+                                     std::shared_ptr<Medium> medium)
     : ProjectiveCamera(CTW,
                        Perspective(fov, 1e-2f, 1000.f),
                        Bound2f(Point2f(-1, -1), Point2f(1, 1)),
                        lensRadius,
                        focalDistance,
-                       film,
+                       std::move(film),
                        medium) {
   // compute offset distance in camera space when sample point shift one pixel
   // from the film
@@ -83,7 +82,8 @@ PerspectiveCamera::PerspectiveCamera(const Transform&   CTW,
              RasterToCamera(Point3f(0.f, 0.f, 0.f)).y;
 }
 
-int PerspectiveCamera::GenerateRay(const CameraSample& sample, Ray& ray) const {
+std::optional<Ray> PerspectiveCamera::generateRay(
+    const CameraSample& sample) const {
   // starting the ray from the center of the lens
   Point3f  ori(0.0f, 0.0f, 0.0f);
   Point3f  pRaster(sample.filmSample[0], sample.filmSample[1],
@@ -103,13 +103,11 @@ int PerspectiveCamera::GenerateRay(const CameraSample& sample, Ray& ray) const {
     sampleRay.dir         = rayDirection;
   }
   // transform ray to the world space
-  ray = CameraToWorld(sampleRay);
-  return 1;
+  return CameraToWorld(sampleRay);
 }
 
-int PerspectiveCamera::GenerateRayDifferential(
-    const CameraSample& sample,
-    RayDifferential&    rayDifferential) const {
+std::optional<RayDifferential> PerspectiveCamera::generateRayDifferential(
+    const CameraSample& sample) const {
   // compute main ray,same with GenerateRay
   Point3f         ori(0.0f, 0.f, 0.f);
   Point3f         pRaster(sample.filmSample[0], sample.filmSample[1], 0.0f);
@@ -145,8 +143,7 @@ int PerspectiveCamera::GenerateRayDifferential(
     sampleRay.originY = lensSamplePoint;
     sampleRay.directionY = Normalize(py - lensSamplePoint);
   }
-  rayDifferential = CameraToWorld(sampleRay);
-  return 1;
+  return CameraToWorld(sampleRay);
 }
 
 // Ref<Camera> OrthographicCamera::construct(const PropertyList& param) {

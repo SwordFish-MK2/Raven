@@ -5,10 +5,11 @@
 #include <Raven/core/math.h>
 #include <Raven/core/object.h>
 
-
 namespace Raven {
 
 static const Float OneMinusEpsilon = 0x1.fffffffffffffp-1;
+
+struct CameraSample;
 
 /// <summary>
 /// 采样器接口
@@ -23,7 +24,7 @@ class Sampler : public RavenObject {
   virtual Float   get1D() = 0;
   virtual Point2f get2D() = 0;
 
-  // CameraSample getCameraSample(const Point2f& pRaster);
+  CameraSample getCameraSample(const Point2i& pRaster);
 
   void request1DArray(int n);
   void request2DArray(int n);
@@ -39,6 +40,8 @@ class Sampler : public RavenObject {
   // virtual std::unique_ptr<Sampler> clone(int seed) = 0;
 
   virtual bool setSampleNumber(int64_t num);
+
+  int64_t getSpp() const { return samplesPerPixel; }
 
  protected:
   const int64_t samplesPerPixel;
@@ -107,5 +110,18 @@ class GlobalSampler : public Sampler {
   static const int arrayStartDim = 5;
   int              arrayEndDim;
 };
+
+struct CameraSample {
+  CameraSample(const Point2f& film, double t, const Point2f& lens)
+      : filmSample(film), time(t), lensSample(lens) {}
+
+  CameraSample(double fu, double fv, double t, double lu, double lv)
+      : filmSample(Point2f(fu, fv)), time(t), lensSample(Point2f(lu, lv)) {}
+
+  Point2f filmSample;
+  double  time;
+  Point2f lensSample;
+};
+
 }  // namespace Raven
 #endif

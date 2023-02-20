@@ -14,6 +14,13 @@ bool Sampler::startNextSample() {
   return ++currentPixelSampleIndex < samplesPerPixel;
 }
 
+CameraSample Sampler::getCameraSample(const Point2i& pRaster) {
+  Point2f pFilm = Point2f((Float)pRaster.x, (Float)pRaster.y) + get2D();
+  Float   time  = get1D();
+  Point2f pLens = get2D();
+  return CameraSample(pFilm, time, pLens);
+}
+
 bool Sampler::setSampleNumber(int64_t num) {
   array1DOffset           = 0;
   array2DOffset           = 0;

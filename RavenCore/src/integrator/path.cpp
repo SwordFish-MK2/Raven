@@ -1,42 +1,46 @@
 #include <Raven/core/light.h>
+#include <Raven/core/sampler.h>
 #include <Raven/integrator/path.h>
 #include <Raven/light/infiniteAreaLight.h>
 #include <omp.h>
+
+#include "Raven/core/camera.h"
 
 static omp_lock_t lock;
 namespace Raven {
 // 渲染场景
 // 遍历Film中的每个像素，估计像素颜色的值
-void PathTracingIntegrator::render(const Scene&       scene,
-                                   const Ref<Camera>& camera,
-                                   Ref<Film>&         film) const {
+void PathTracingIntegrator::render(const Scene& scene) const {
   int    finishedLine = 1;
   double process      = 0.0;
+
+  Film* film = camera->film.get();
   omp_init_lock(&lock);
 #pragma omp parallel for
   for (int i = 0; i < film->yRes; ++i) {
     // 计算渲染的进度，输出进度条
+
     process = (double)finishedLine / film->yRes;
     omp_set_lock(&lock);
     UpdateProgress(process);
     omp_unset_lock(&lock);
 
     for (int j = 0; j < film->xRes; ++j) {
+      // start sampling one pixel
       Spectrum pixelColor(0.0);
-      for (int s = 0; s < spp; s++) {
+      sampler->startPixel(Point2i(j, i));
+
+      // iterate all samples of current pixel
+      do {
         // camera sample
-        auto         cu = double(j) + GetRand();
-        auto         cv = double(i) + GetRand();
-        auto         fu = GetRand();
-        auto         fv = GetRand();
-        auto         t  = GetRand();
-        CameraSample sample(cu, cv, t, fu, fv);
-        Ray          r;
-        if (camera->GenerateRay(sample, r)) {
-          pixelColor += integrate(scene, r);
+        CameraSample sample = sampler->getCameraSample(Point2i(j, i));
+        auto         ray    = camera->generateRay(sample);
+        if (ray.has_value()) {
+          pixelColor += integrate(scene, *ray);
         }
-      }
-      double scaler = 1.0 / spp;
+      } while (sampler->startNextSample());
+
+      double scaler = 1.0 / sampler->getSpp();
       pixelColor    *= scaler;
 
       (*film)(j, i) = pixelColor;
@@ -95,7 +99,7 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
 
       // 采样brdf，计算出射方向,更新beta
       auto [f, wi, pdf, sampledType] =
-          record->bsdf->sample_f(wo, Point2f(GetRand(), GetRand()));
+          record->bsdf->sample_f(wo, sampler->get2D());
       if (f == Spectrum(0.0) || pdf == 0.0)
         break;
 
@@ -118,15 +122,15 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
   return Li;
 }
 
-Ref<PathTracingIntegrator> PathTracingIntegrator::construct(
-    const PropertyList& param) {
-  int    spp      = param.getInteger("spp", 5);
-  int    maxDepth = param.getInteger("maxDepth", 10);
-  double epsilon  = param.getFloat("epsilon", 1e-6);
-  return std::make_shared<PathTracingIntegrator>(spp, maxDepth, epsilon);
-}
+// Ref<PathTracingIntegrator> PathTracingIntegrator::construct(
+//     const PropertyList& param) {
+//   int    spp      = param.getInteger("spp", 5);
+//   int    maxDepth = param.getInteger("maxDepth", 10);
+//   double epsilon  = param.getFloat("epsilon", 1e-6);
+//   return std::make_shared<PathTracingIntegrator>(spp, maxDepth, epsilon);
+// }
 
 // 实例化注册类静态对象
-PathTracingIntegratorReg PathTracingIntegratorReg::regHelper;
+// PathTracingIntegratorReg PathTracingIntegratorReg::regHelper;
 
 }  // namespace Raven

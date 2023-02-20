@@ -1,20 +1,20 @@
 #include <Raven/Raven.h>
 #include <Raven/camera/projectiveCamera.h>
 #include <Raven/core/camera.h>
+#include <Raven/core/film.h>
 #include <Raven/core/math.h>
 #include <Raven/core/programe.h>
 #include <Raven/core/scene.h>
 #include <Raven/core/transform.h>
+#include <Raven/integrator/path.h>
+#include <Raven/sampler/stratified.h>
 #include <Raven/shape/mesh.h>
 #include <Raven/textute/solidTexture.h>
 #include <Raven/utils/factory.h>
 #include <tinyxml2.h>
 
 #include <chrono>
-
-#include "Raven/camera/projectiveCamera.h"
-#include "Raven/core/film.h"
-#include "Raven/integrator/path.h"
+#include <memory>
 
 using namespace std;
 using namespace Raven;
@@ -23,30 +23,27 @@ int main(int agrc, char** argv) {
   ////if (agrc == 1) {
   auto         start = std::chrono::system_clock::now();
   Raven::Scene box   = Raven::Scene::buildCornellBox();
-  // Raven::Scene box = Raven::Scene::buildTestScene();
-  //	Raven::Scene sphere = Raven::Scene::buildTestSphere();
 
-  std::shared_ptr<Raven::Film> f = std::make_shared<Film>(128 * 3, 128 * 3);
-  // Eigen::Matrix4f cw;
-  // cw << 0. - 721367, -0.373123, -0.583445, -0,
-  //	-0, 0.842456, -0.538765, -0,
-  //	-0.692553, -0.388647, -0.60772, -0,
-  //	0.0258668, -0.29189, 5.43024, 1;
-  // auto cwt = cw.transpose();
-  // Raven::Transform cameraWorld(cwt);
+  std::unique_ptr<Raven::Film> f = std::make_unique<Film>(128 * 3, 128 * 3);
+
   Raven::Transform cameraToWorld = Raven::LookAt(
       Point3f(278, 273, -800), Point3f(278, 273, -799), Vector3f(0, 1, 0));
   Raven::Transform screenToRaster = Raven::Raster(f->yRes, f->xRes);
   Bound2f          viewport{Point2f(-300, -300), Point2f(300, 300)};
-  std::shared_ptr<Raven::Camera> cam =
-      std::make_shared<Raven::PerspectiveCamera>(cameraToWorld, 0.0, 1e6, 40.f,
-                                                 f, nullptr);
 
-  std::shared_ptr<Raven::Camera> ocam =
-      std::make_shared<Raven::OrthographicCamera>(cameraToWorld, viewport, 0,
-                                                  10, 0, 1, f, nullptr);
-  Raven::PathTracingIntegrator renderer(10, 2);
-  renderer.render(box, cam, f);
+  std::unique_ptr<Raven::Camera> cam =
+      std::make_unique<Raven::PerspectiveCamera>(cameraToWorld, 0.0, 1e6, 40.f,
+                                                 std::move(f), nullptr);
+
+  // std::unique_ptr<Raven::Camera> ocam =
+  //     std::make_unique<Raven::OrthographicCamera>(
+  //         cameraToWorld, viewport, 0, 10, 0, 1, std::move(f), nullptr);
+
+  std::unique_ptr<Raven::Sampler> sampler =
+      std::make_unique<Raven::StratifiedSampler>(5, 5, true, 2);
+
+  Raven::PathTracingIntegrator renderer(std::move(cam), std::move(sampler));
+  renderer.render(box);
 
   auto stop = std::chrono::system_clock::now();
   std::cout << "Render complete:\n";
