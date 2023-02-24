@@ -37,7 +37,7 @@ class Sampler : public RavenObject {
   // 直到最初被请求的n维样本被全部生成完毕前，该函数都return true
   virtual bool startNextSample();
 
-  // virtual std::unique_ptr<Sampler> clone(int seed) = 0;
+  virtual std::unique_ptr<Sampler> clone(int seed) = 0;
 
   virtual bool setSampleNumber(int64_t num);
 
@@ -64,6 +64,8 @@ class PixelSampler : public Sampler {
  public:
   PixelSampler(int64_t spp, int nDimensions);
 
+  PixelSampler(const PixelSampler& sampler);
+
   virtual void startPixel(const Point2i& p) override;
 
   virtual bool startNextSample() override;
@@ -78,9 +80,6 @@ class PixelSampler : public Sampler {
   std::vector<std::vector<Point2f>> samples2D;
   int                               current1DDimension = 0;
   int                               current2DDimension = 0;
-
- private:
-  const int nDimensions;
 };
 
 class GlobalSampler : public Sampler {

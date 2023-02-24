@@ -48,7 +48,7 @@ struct Interaction {
   // 对于MediumIntraction,调用该重载直接返回所处介质的指针
   const Ref<Medium> getMedium() const;
 
-  Ray scartterRay(const Vector3f& dir, bool reflection = true) const {
+  Ray scatterRay(const Vector3f& dir, bool reflection = true) const {
     Point3f ori = p + dir * 0.001;
     auto medi   = reflection ? mediumInterface.inside : mediumInterface.outside;
     return Ray(ori, dir, time, medi);

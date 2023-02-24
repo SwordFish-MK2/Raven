@@ -50,8 +50,7 @@ const Point2f* Sampler::get2DArray(int n) {
   return &array2D[array2DOffset++][n * currentPixelSampleIndex];
 }
 
-PixelSampler::PixelSampler(int64_t spp, int nDimensions)
-    : Sampler(spp), nDimensions(nDimensions) {
+PixelSampler::PixelSampler(int64_t spp, int nDimensions) : Sampler(spp) {
   for (int i = 0; i < nDimensions; i++) {
     samples1D.push_back(std::vector<Float>(samplesPerPixel));
     samples2D.push_back(std::vector<Point2f>(samplesPerPixel));  //?

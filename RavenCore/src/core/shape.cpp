@@ -28,7 +28,7 @@ std::tuple<SurfaceInteraction, double> Shape::sample(
 double Shape::pdf(const Interaction& inter, const Vector3f& wi) const {
   // intersect sample ray to light geometry
   Point3f origin = inter.p;
-  Ray     r      = inter.scartterRay(wi);
+  Ray     r      = inter.scatterRay(wi);
   HitInfo hitInfo;
   if (!intersect(r, hitInfo))
     return 0;

@@ -1,7 +1,6 @@
+#include <Raven/core/base.h>
+#include <Raven/core/sampler.h>
 #include <Raven/sampler/stratified.h>
-
-#include "Raven/core/base.h"
-#include "Raven/core/sampler.h"
 
 namespace Raven {
 StratifiedSampler::StratifiedSampler(int  xSample,
@@ -12,6 +11,18 @@ StratifiedSampler::StratifiedSampler(int  xSample,
       xPixelSamples(xSample),
       yPixelSamples(ySample),
       jitter(jitter) {}
+
+StratifiedSampler::StratifiedSampler(const StratifiedSampler &sampler)
+    : PixelSampler(sampler.samplesPerPixel, sampler.array1D.size()),
+      xPixelSamples(sampler.xPixelSamples),
+      yPixelSamples(sampler.yPixelSamples),
+      jitter((sampler.jitter)) {
+  //request sample arrays      
+  for (int i = 0; i < sampler.arraySize1D.size(); i++)
+    this->request1DArray(sampler.arraySize1D[i]);
+  for (int i = 0; i < sampler.arraySize2D.size(); i++)
+    this->request2DArray(sampler.arraySize2D[i]);
+}
 
 void StratifiedSampler::startPixel(const Point2i &p) {
   // generate single sample vector for every dimension
@@ -46,6 +57,7 @@ void StratifiedSampler::startPixel(const Point2i &p) {
       LatinHyperCube(&array2D[i][j * count].x, count, 2);
     }
   }
+  PixelSampler::startPixel(p);
 }
 
 void StratifiedSample1D(Float *sample, int nSamples, bool jitter) {
@@ -112,5 +124,9 @@ void LatinHyperCube(Float *sample, int nSamples, int nDimension) {
       std::swap(sample[nDimension * j + i], sample[nDimension * other + i]);
     }
   }
+}
+
+std::unique_ptr<Sampler> StratifiedSampler::clone(int seed) {
+  return std::make_unique<StratifiedSampler>(*this);
 }
 }  // namespace Raven

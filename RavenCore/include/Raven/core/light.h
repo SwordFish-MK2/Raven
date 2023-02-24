@@ -2,13 +2,12 @@
 #define _RAVEN_CORE_LIGHT_H_
 
 #include <Raven/core/base.h>
+#include <Raven/core/interaction.h>
 #include <Raven/core/math.h>
 #include <Raven/core/object.h>
+#include <Raven/core/sampler.h>
 #include <Raven/core/shape.h>
 #include <Raven/core/spectrum.h>
-
-#include "Raven/core/interaction.h"
-#include "Raven/core/sampler.h"
 
 namespace Raven {
 enum class LightFlag : int {
@@ -67,13 +66,13 @@ class Light : public RavenObject {
            flag & (int)LightFlag::DeltaDirection;
   }
 
-  int getSampleNumber() const { return nSamples; }
+ public:
+  const int nSamples;  // n shadow rays prefered by the integrater
 
  protected:
   const int            flag;  // whether light contines delta distribution
   const Ref<Transform> lightToWorld;
   const Ref<Transform> worldToLight;
-  const int            nSamples;  // n shadow rays prefered by the integrater
 };
 
 /// <summary>

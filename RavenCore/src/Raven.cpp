@@ -16,6 +16,8 @@
 #include <chrono>
 #include <memory>
 
+#include "Raven/core/integrator.h"
+
 using namespace std;
 using namespace Raven;
 
@@ -42,7 +44,10 @@ int main(int agrc, char** argv) {
   std::unique_ptr<Raven::Sampler> sampler =
       std::make_unique<Raven::StratifiedSampler>(5, 5, true, 2);
 
-  Raven::PathTracingIntegrator renderer(std::move(cam), std::move(sampler));
+  Raven::PathTracingIntegrator renderer(
+      std::move(cam), std::move(sampler),
+      LightSampleStrategy::UniformlySampleAllLights, 10);
+  renderer.preProcess(box);
   renderer.render(box);
 
   auto stop = std::chrono::system_clock::now();

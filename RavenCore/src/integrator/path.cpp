@@ -4,7 +4,7 @@
 #include <Raven/light/infiniteAreaLight.h>
 #include <omp.h>
 
-#include "Raven/core/camera.h"
+#include "Raven/core/integrator.h"
 
 static omp_lock_t lock;
 namespace Raven {
@@ -18,8 +18,9 @@ void PathTracingIntegrator::render(const Scene& scene) const {
   omp_init_lock(&lock);
 #pragma omp parallel for
   for (int i = 0; i < film->yRes; ++i) {
-    // 计算渲染的进度，输出进度条
+    std::unique_ptr<Sampler> threadSampler = sampler->clone(0);
 
+    // 计算渲染的进度，输出进度条
     process = (double)finishedLine / film->yRes;
     omp_set_lock(&lock);
     UpdateProgress(process);
@@ -28,7 +29,7 @@ void PathTracingIntegrator::render(const Scene& scene) const {
     for (int j = 0; j < film->xRes; ++j) {
       // start sampling one pixel
       Spectrum pixelColor(0.0);
-      sampler->startPixel(Point2i(j, i));
+      threadSampler->startPixel(Point2i(j, i));
 
       // iterate all samples of current pixel
       do {
@@ -36,9 +37,9 @@ void PathTracingIntegrator::render(const Scene& scene) const {
         CameraSample sample = sampler->getCameraSample(Point2i(j, i));
         auto         ray    = camera->generateRay(sample);
         if (ray.has_value()) {
-          pixelColor += integrate(scene, *ray);
+          pixelColor += integrate(scene, *ray, threadSampler.get(), 0);
         }
-      } while (sampler->startNextSample());
+      } while (threadSampler->startNextSample());
 
       double scaler = 1.0 / sampler->getSpp();
       pixelColor    *= scaler;
@@ -58,6 +59,7 @@ void PathTracingIntegrator::render(const Scene& scene) const {
 // 路径追踪算法
 Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
                                           const RayDifferential& rayIn,
+                                          Sampler*               threadSampler,
                                           int                    bounce) const {
   //	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451,
   // 0.843137));
@@ -94,12 +96,18 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
       }
 
       // 采样光源
-      Spectrum L_dir = SampleAllLights(*record, scene, *(sampler.get()), false);
-      Li             += beta * L_dir;
+      if (strategy == LightSampleStrategy::UniformlySampleAllLights) {
+        Spectrum L_dir = SampleAllLights(*record, scene, *(threadSampler),
+                                         nLightSamples, false);
+        Li             += beta * L_dir;
+      } else {
+        Spectrum L_dir =
+            SampleOneLight(*record, scene, *(threadSampler), false);
+      }
 
       // 采样brdf，计算出射方向,更新beta
       auto [f, wi, pdf, sampledType] =
-          record->bsdf->sample_f(wo, sampler->get2D());
+          record->bsdf->sample_f(wo, threadSampler->get2D());
       if (f == Spectrum(0.0) || pdf == 0.0)
         break;
 
@@ -108,18 +116,34 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
       beta            *= f * cosTheta / pdf;
       // std::cout <<f<< beta << std::endl;
       specularBounce = (sampledType & BxDFType::Specular) != 0;
-      ray            = record->scartterRay(wi);
+      ray            = record->scatterRay(wi);
 
       // 俄罗斯轮盘赌结束循环
       if (bounce > 3) {
         double q = Max((double).05, 1 - beta.y());
-        if (GetRand() < q)
+        if (threadSampler->get1D() < q)
           break;
         beta /= 1 - q;
       }
     }
   }
   return Li;
+}
+
+void PathTracingIntegrator::preProcess(const Scene& scene) {
+  if (strategy == LightSampleStrategy::UniformlySampleAllLights) {
+    for (const auto& light : scene.lights)
+      nLightSamples.push_back(sampler->roundCount(light->nSamples));
+
+    // request sample arrays
+    for (int i = 0; i < maxDepth; i++)
+      for (size_t j = 0; j < scene.lights.size(); j++) {
+        // two 2D arrays will be used per intersection per light
+        sampler->request2DArray(nLightSamples[j]);
+        sampler->request2DArray(nLightSamples[j]);
+      }
+  }
+  // request sampler array
 }
 
 // Ref<PathTracingIntegrator> PathTracingIntegrator::construct(

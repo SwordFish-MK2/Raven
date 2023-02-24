@@ -5,6 +5,7 @@
 #include <Raven/core/shape.h>
 #include <Raven/utils/factory.h>
 #include <Raven/utils/propertylist.h>
+
 namespace Raven {
 class Sphere final : public Shape {
  public:

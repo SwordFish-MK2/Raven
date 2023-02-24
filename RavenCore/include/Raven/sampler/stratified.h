@@ -14,9 +14,11 @@ class StratifiedSampler final : public PixelSampler {
  public:
   StratifiedSampler(int xSamples, int ySamples, bool jitter, int nDimensions);
 
+  StratifiedSampler(const StratifiedSampler& sampler);
+
   void startPixel(const Point2i &p) override;
 
-  //  std::unique_ptr<Sampler> clone(int seed) override;
+   std::unique_ptr<Sampler> clone(int seed) override;
 
  private:
   const int xPixelSamples;

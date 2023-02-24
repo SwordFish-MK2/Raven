@@ -14,19 +14,29 @@
 
 namespace Raven {
 
+enum class LightSampleStrategy {
+  UniformlySampleAllLights,
+  UniformlySampleOneLight
+};
+
 class Integrator : public RavenObject {
  public:
-  Integrator(std::unique_ptr<Camera> c, double epsilon = 0.0001)
-      : camera(std::move(c)), epsilon(epsilon) {}
+  Integrator(std::unique_ptr<Camera> c,
+             LightSampleStrategy     strategy,
+             double                  epsilon = 0.0001)
+      : camera(std::move(c)), strategy(strategy), epsilon(epsilon) {}
 
   // 利用传入的Camera渲染场景
   // 渲染的结果输出传入的到Film中，
   // 传入的camera与film为指针以实现多态
   virtual void render(const Scene&) const = 0;
 
+  virtual void preProcess(const Scene& scene) {}
+
  protected:
   const double            epsilon;
   std::unique_ptr<Camera> camera;
+  LightSampleStrategy     strategy;
 };
 
 // 计算MIS weight
@@ -44,14 +54,14 @@ Spectrum EvaluateLight(const Interaction& record,
 
 Spectrum SampleOneLight(const Interaction& record,
                         const Scene&       scene,
-                        int                nSample,
                         Sampler&           sampler,
                         bool               handleMedium = false);
 
-Spectrum SampleAllLights(const Interaction& record,
-                         const Scene&       scene,
-                         Sampler&           sampler,
-                         bool               handleMedium = false);
+Spectrum SampleAllLights(const Interaction&      record,
+                         const Scene&            scene,
+                         Sampler&                sampler,
+                         const std::vector<int>& nLightSamples,
+                         bool                    handleMedium);
 }  // namespace Raven
 
 #endif

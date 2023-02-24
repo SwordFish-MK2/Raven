@@ -1,14 +1,17 @@
 #include <Raven/core/base.h>
+#include <Raven/core/bxdf.h>
 #include <Raven/core/integrator.h>
 #include <Raven/core/light.h>
 
-#include "Raven/core/bxdf.h"
+#include <memory>
 
 namespace Raven {
 
 Spectrum EvaluateLight(const Interaction& record,
                        const Scene&       scene,
                        const Light&       light,
+                       const Point2f&     uLight,
+                       const Point2f&     uScatter,
                        Sampler&           sampler,
                        bool               handleMedium) {
   // 处理光源
@@ -23,7 +26,7 @@ Spectrum EvaluateLight(const Interaction& record,
   Spectrum L(0.0);
 
   // take a sample from light sampling distribution
-  auto lSample = light.sampleLi(record, sampler.get2D());
+  auto lSample = light.sampleLi(record, uLight);
 
   if (lSample.has_value()) {
     if (handleMedium) {
@@ -75,7 +78,7 @@ Spectrum EvaluateLight(const Interaction& record,
     if (isSurface) {
       const SurfaceInteraction& si = (const SurfaceInteraction&)record;
       auto [fValue, wiSurface, pdf, sampledType] =
-          si.bsdf->sample_f(record.wo, Point2f(GetRand(), GetRand()));
+          si.bsdf->sample_f(record.wo, uScatter);
       double cosTheta = std::abs(Dot(wiSurface, si.shading.n));
       f               = fValue * cosTheta;
       wi              = wiSurface;
@@ -83,11 +86,10 @@ Spectrum EvaluateLight(const Interaction& record,
       sampledSpecular = sampledType & BxDFType::Specular;
     } else {
       const MediumInteraction& mi = (const MediumInteraction&)record;
-      auto [phase, wiMedium] =
-          mi.phase->sample_p(mi.wo, Point2f(GetRand(), GetRand()));
-      f             = Spectrum(phase);
-      wi            = wiMedium;
-      scatteringPdf = phase;
+      auto [phase, wiMedium]      = mi.phase->sample_p(mi.wo, uScatter);
+      f                           = Spectrum(phase);
+      wi                          = wiMedium;
+      scatteringPdf               = phase;
     }
 
     // compute pdf from light distribution of current sampled direction
@@ -106,7 +108,7 @@ Spectrum EvaluateLight(const Interaction& record,
         // sample ray hits light, perform mis
         weight = PowerHeuristic(1, scatteringPdf, 1, lightPdf);
       }
-      Ray  shadowRay = record.scartterRay(wi);
+      Ray  shadowRay = record.scatterRay(wi);
       auto lightSi   = handleMedium ? scene.intersect(shadowRay)
                                     : scene.tr(shadowRay, sampler);
 
@@ -126,41 +128,78 @@ Spectrum EvaluateLight(const Interaction& record,
 }
 
 // 在每个光源上采样一个点，计算Radiance
-Spectrum SampleAllLights(const Interaction& record,
-                         const Scene&       scene,
-                         Sampler&           sampler,
-                         bool               handleMedium) {
+Spectrum SampleAllLights(const Interaction&      record,
+                         const Scene&            scene,
+                         Sampler&                sampler,
+                         const std::vector<int>& nLightSamples,
+                         bool                    handleMedium) {
   Spectrum Le(0.0);
-  for (auto light : scene.lights) {
-    Le += EvaluateLight(record, scene, *light.get(), sampler, handleMedium);
+
+  for (int i = 0; i < scene.lights.size(); i++) {
+    const std::shared_ptr<Light>& light = scene.lights[i];
+
+    // retrive sample arrays from sampler
+    int            nSamples       = nLightSamples[i];
+    const Point2f* uLightArray    = sampler.get2DArray(nSamples);
+    const Point2f* uScartterArray = sampler.get2DArray(nSamples);
+
+    // all prerequested sample arrays is consumed, use single sample instead
+    if (!uLightArray || !uScartterArray) {
+      Point2f uLight   = sampler.get2D();
+      Point2f uScatter = sampler.get2D();
+      Le += EvaluateLight(record, scene, *light.get(), uLight, uScatter,
+                          sampler, handleMedium);
+    }
+
+    // use sample arrays to estimate light
+    else {
+      Spectrum L(0.);
+      for (int j = 0; j < nSamples; j++)
+        L += EvaluateLight(record, scene, *light.get(), uLightArray[j],
+                           uScartterArray[j], sampler, handleMedium);
+      Le += L / nSamples;
+    }
   }
   return Le;
 }
 
 Spectrum SampleOneLight(const Interaction& record,
                         const Scene&       scene,
-                        int                nSample,
                         Sampler&           sampler,
                         bool               handleMedium) {
-  Spectrum                                   Le(0.0);
   const std::vector<std::shared_ptr<Light>>& lights = scene.lights;
-  Spectrum                                   totalPower(0.0);
+
+  Spectrum Le(0.0);
+
+  if (lights.size() == 0)
+    return Spectrum(0.0);
+
+  // randomly choose a light to sample at a posibilty proportional to its
+  // emitted power
+  Spectrum totalPower(0.0);
   for (auto light : lights) { totalPower += light->power(); }
-  Spectrum power;
-  double   pr = sampler.get1D();
-  double   p  = 1.0;
+  Spectrum accumulatedPower{0.0};
+  double   pr  = sampler.get1D();
+  double   p   = 1.0;
+  Float    pdf = 1.0;
   Light*   chosen;
   for (size_t i = 0; i < lights.size(); i++) {
-    power += lights[i]->power();
-    p     = power.y() / totalPower.y();
+    Spectrum power   = lights[i]->power();
+    accumulatedPower += power;
+    p                = accumulatedPower.y() / totalPower.y();
+    pdf              = power.y() / totalPower.y();
     if (p >= pr || i == lights.size() - 1) {
       chosen = lights[i].get();
       break;
     }
   }
 
-  for (int i = 0; i < nSample; i++)
-    Le += EvaluateLight(record, scene, *chosen, sampler, handleMedium) / p;
-  return Le / nSample;
+  // sample chosen light
+  Point2f uLight   = sampler.get2D();
+  Point2f uScatter = sampler.get2D();
+
+  Le        += EvaluateLight(record, scene, *chosen, uLight, uScatter, sampler,
+                             handleMedium);
+  return Le /= pdf;
 }
 }  // namespace Raven
