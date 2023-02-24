@@ -15,14 +15,12 @@
 
 #include <chrono>
 #include <memory>
-
-#include "Raven/core/integrator.h"
-
-using namespace std;
 using namespace Raven;
 
 int main(int agrc, char** argv) {
-  ////if (agrc == 1) {
+#ifdef _RAVEN_DEBUG_
+  std::cout << "Raven Debug" << std::endl;
+#endif
   auto         start = std::chrono::system_clock::now();
   Raven::Scene box   = Raven::Scene::buildCornellBox();
 
@@ -66,30 +64,32 @@ int main(int agrc, char** argv) {
   std::cout << seconds << "seconds\n";
 
   return 0;
-
-  // Parser parser;
-  // parser.parse("D:/MyWorks/Raven/models/mateball/scene.xml");
-  // std::shared_ptr<RavenRenderingPrograme> pipeline = parser.makePrograme();
-  // pipeline->render();
-  // return 0;
-  //}
-  // else {
-  //	std::cout << "Raven start build scene." << std::endl;
-  //	std::string path = argv[1];
-  //	Parser parser;
-  //	parser.parse(path);
-  //	std::shared_ptr<RavenRenderingPrograme> pipeline =
-  // parser.makePrograme(); 	pipeline->render(); 	return 0;
-  //
-  //
-  //	Transform I = Identity();
-  //	Transform t = RotateX(45.0);
-  //
-  //	Point3f p(1, 0, 0);
-  //	Point3f pPrime = I(p);
-  //
-  //}
 }
+
+// Parser parser;
+// parser.parse("D:/MyWorks/Raven/models/mateball/scene.xml");
+// std::shared_ptr<RavenRenderingPrograme> pipeline =
+// parser.makePrograme();
+// pipeline->render();
+// return 0;
+//}
+// else {
+//	std::cout << "Raven start build scene." << std::endl;
+//	std::string path = argv[1];
+//	Parser parser;
+//	parser.parse(path);
+//	std::shared_ptr<RavenRenderingPrograme> pipeline =
+// parser.makePrograme(); 	pipeline->render(); 	return 0;
+//
+//
+//	Transform I = Identity();
+//	Transform t = RotateX(45.0);
+//
+//	Point3f p(1, 0, 0);
+//	Point3f pPrime = I(p);
+//
+//}
+// }
 
 // int main() {
 //	PropertyList list;
@@ -119,8 +119,24 @@ int main(int agrc, char** argv) {
 //
 //
 ////	Ref<Camera> c =
-/// std::dynamic_pointer_cast<Camera>(myfactory.generate("perspective", list));
+/// std::dynamic_pointer_cast<Camera>(myfactory.generate("perspective",
+// list));
 //
 //	//std::cout << decltype(*c);
 //
 //}
+
+// #include "Raven/core/math.h"
+// #include "Raven/sampler/stratified.h"
+
+// int main() {
+//   const int n = 10;
+
+//   Raven::StratifiedSampler sampler{5, 5, true, 10};
+//   sampler.request2DArray(n);
+//   sampler.startPixel(Raven::Point2i(0,0));
+//   const Raven::Point2f* samples = sampler.get2DArray(n);
+//   for(int i=0;i<n;i++)
+//     std::cout<<samples[i];
+//   return 0;
+// }

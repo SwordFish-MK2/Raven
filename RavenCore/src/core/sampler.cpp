@@ -33,6 +33,7 @@ void Sampler::request1DArray(int n) {
   array1D.push_back(std::vector<Float>(n * samplesPerPixel));
 }
 
+
 void Sampler::request2DArray(int n) {
   arraySize2D.push_back(n);
   array2D.push_back(std::vector<Point2f>(n * samplesPerPixel));

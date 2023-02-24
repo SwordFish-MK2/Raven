@@ -17,7 +17,7 @@ StratifiedSampler::StratifiedSampler(const StratifiedSampler &sampler)
       xPixelSamples(sampler.xPixelSamples),
       yPixelSamples(sampler.yPixelSamples),
       jitter((sampler.jitter)) {
-  //request sample arrays      
+  // request sample arrays
   for (int i = 0; i < sampler.arraySize1D.size(); i++)
     this->request1DArray(sampler.arraySize1D[i]);
   for (int i = 0; i < sampler.arraySize2D.size(); i++)
@@ -54,6 +54,8 @@ void StratifiedSampler::startPixel(const Point2i &p) {
   for (size_t i = 0; i < arraySize2D.size(); i++) {
     for (int64_t j = 0; j < samplesPerPixel; j++) {
       int count = arraySize2D[i];
+
+      // generate each array per sample in pixel
       LatinHyperCube(&array2D[i][j * count].x, count, 2);
     }
   }
@@ -108,12 +110,11 @@ void Shuffle(T *samples, int count, int nDimension) {
 //
 void LatinHyperCube(Float *sample, int nSamples, int nDimension) {
   // uniformly generqte n jittered samples alone the diagnal of nDimension space
-  int invNSample = 1.0 / nSamples;
+  Float invNSample = 1.0 / nSamples;
   for (int i = 0; i < nDimension; i++)
     for (int j = 0; j < nSamples; j++) {
       Float delta        = GetRand();
       Float sampleLocate = (i + delta) * invNSample;
-
       sample[nDimension * i + j] = Min(sampleLocate, OneMinusEpsilon);
     }
 

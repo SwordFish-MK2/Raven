@@ -66,8 +66,21 @@ void Scene::addLight(const std::shared_ptr<Light>& light_ptr) {
 
 std::optional<SurfaceInteraction> Scene::tr(const RayDifferential& ray,
                                             Sampler& sampler) const {
-  return std::nullopt;
+  Spectrum tr{1.0};
+  Ray      shadowRay = ray;
+  while (true) {
+    auto isect = intersect(shadowRay);
+    if (ray.medium)
+      tr *= shadowRay.medium->tr(shadowRay, sampler);
+
+    if (!isect.has_value())
+      return std::nullopt;
+    if (isect->mate_ptr != nullptr)
+      return isect;
+    shadowRay = isect->scatterRay(shadowRay.dir);
+  }
 }
+
 
 Scene Scene::buildCornellBox() {
   std::vector<std::shared_ptr<TriangleMesh>>      meshes;
@@ -341,7 +354,7 @@ Scene Scene::buildTestSphere() {
         MatteMaterial::buildConst(0.0, RGBSpectrum::fromRGB(0.5));
 
     for (size_t i = 0; i < shapes.size(); i++) {
-      auto l = std::make_shared<DiffuseAreaLight>(identity, identity, 5,
+      auto l = std::make_shared<DiffuseAreaLight>(identity, identity, 1,
                                                   shapes[i], lightEmit);
       auto p = std::make_shared<GeometryPrimitive>(shapes[i], material, l);
       lights.push_back(l);

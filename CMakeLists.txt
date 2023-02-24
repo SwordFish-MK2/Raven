@@ -21,5 +21,14 @@ add_compile_definitions(RAVEN_PATH="${PROJECT_SOURCE_DIR}")
 
 FIND_PACKAGE(OpenMP REQUIRED)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+  message(STATUS "No build type select, defaulting to ${CMAKE_BUILD_TYPE}") 
+endif()
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+  add_definitions(-D _RAVEN_DEBUG_)
+endif()
+
 # 包含子项目。
 ADD_SUBDIRECTORY(RavenCore)

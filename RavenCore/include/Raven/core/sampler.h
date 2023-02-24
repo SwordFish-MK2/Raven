@@ -26,6 +26,8 @@ class Sampler : public RavenObject {
 
   CameraSample getCameraSample(const Point2i& pRaster);
 
+  //allocate memory for sample arrays 
+  //allocate size of n 1D/2D samples for each sample in pixel
   void request1DArray(int n);
   void request2DArray(int n);
 
