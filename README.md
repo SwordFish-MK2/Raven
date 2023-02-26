@@ -60,14 +60,14 @@ Raven only supports reflective materials by now, transmissive materials and volu
 
 ### Materials
 
-- Mirror(Undebuged)
+- Mirror
 - Glass 
 - Matte
-- Plastic(Undebuged)
+- Plastic
 
 ### Textures
 
 - Constant Texture
 - Checkered Texture
-- Image Texture (Under developing)
+- Image Texture 
 
