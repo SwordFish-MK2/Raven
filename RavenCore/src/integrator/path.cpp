@@ -6,62 +6,13 @@
 
 #include "Raven/core/integrator.h"
 
-static omp_lock_t lock;
 namespace Raven {
-// 渲染场景
-// 遍历Film中的每个像素，估计像素颜色的值
-void PathTracingIntegrator::render(const Scene& scene) const {
-  int    finishedLine = 1;
-  double process      = 0.0;
-
-  Film* film = camera->film.get();
-  omp_init_lock(&lock);
-#pragma omp parallel for
-  for (int i = 0; i < film->yRes; ++i) {
-    std::unique_ptr<Sampler> threadSampler = sampler->clone(0);
-
-    // 计算渲染的进度，输出进度条
-    process = (double)finishedLine / film->yRes;
-    omp_set_lock(&lock);
-    UpdateProgress(process);
-    omp_unset_lock(&lock);
-
-    for (int j = 0; j < film->xRes; ++j) {
-      // start sampling one pixel
-      Spectrum pixelColor(0.0);
-      threadSampler->startPixel(Point2i(j, i));
-
-      // iterate all samples of current pixel
-      do {
-        // camera sample
-        CameraSample sample = sampler->getCameraSample(Point2i(j, i));
-        auto         ray    = camera->generateRay(sample);
-        if (ray.has_value()) {
-          pixelColor += integrate(scene, *ray, threadSampler.get(), 0);
-        }
-      } while (threadSampler->startNextSample());
-
-      double scaler = 1.0 / sampler->getSpp();
-      pixelColor    *= scaler;
-
-      (*film)(j, i) = pixelColor;
-    }
-
-    finishedLine++;
-  }
-  process = (double)finishedLine / film->yRes;
-  UpdateProgress(process);
-  omp_destroy_lock(&lock);
-
-  film->write();
-}
-
 // 路径追踪算法
-Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
-                                          const RayDifferential& rayIn,
-                                          Sampler*               threadSampler,
-                                          int                    bounce) const {
-  //	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294, 0.67451,
+Spectrum PathTracingIntegrator::renderPixel(const Scene&           scene,
+                                            const RayDifferential& rayIn,
+                                            Sampler* threadSampler) const {
+  //	Spectrum backgroundColor = Spectrum(Spectrum::fromRGB(0.235294,
+  // 0.67451,
   // 0.843137));
   Spectrum        Li(0.0);
   Spectrum        beta(1.0);  // 光线的衰减参数
@@ -69,7 +20,7 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
 
   bool   specularBounce = false;
   double etaScale       = 1;
-  for (; bounce < maxDepth; bounce++) {
+  for (int bounce = 0; bounce < maxDepth; bounce++) {
     // 获取场景与光线的相交信息
     std::optional<SurfaceInteraction> record = scene.intersect(ray);
     // 光线未与场景相交
@@ -103,6 +54,7 @@ Spectrum PathTracingIntegrator::integrate(const Scene&           scene,
       } else {
         Spectrum L_dir =
             SampleOneLight(*record, scene, *(threadSampler), false);
+        Li += beta * L_dir;
       }
 
       // 采样brdf，计算出射方向,更新beta

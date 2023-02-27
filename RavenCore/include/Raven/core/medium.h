@@ -70,8 +70,8 @@ class Medium {
 
   // sample a intersection point alone the ray,campute the ratio of the light
   // transmittence and sampling pdf
-  virtual Spectrum sample(const Ray&             ray,
-                          Sampler&               sampler,
+  virtual Spectrum sample(const Ray&         ray,
+                          Sampler&           sampler,
                           Ref<MediumInteraction> minter) const = 0;
 };
 

@@ -27,6 +27,7 @@ Spectrum HomogeneousMedium::sample(const Ray&             ray,
   Float t = Min(dist * ray.dir.length(), ray.tMax);  // ray distance coefficent
 
   bool sampleMedium = t < ray.tMax;
+
   // if the sample point is within the light transport interval, generate a
   // medium interaction
   if (sampleMedium) {
@@ -38,6 +39,8 @@ Spectrum HomogeneousMedium::sample(const Ray&             ray,
     minter = std::make_shared<MediumInteraction>(ray(t), -ray.dir, ray.time, t,
                                                  medium, phase);
   }
+
+  // compute transmittence of ray traveling distane t along its direction
   Spectrum Tr      = Exp(-sigma_t * Min(t, MaxFloat) * ray.dir.length());
   Spectrum density = sampleMedium ? (sigma_t * Tr) : Tr;
   Float    pdf     = 0;

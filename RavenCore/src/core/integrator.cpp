@@ -1,11 +1,60 @@
-#include <Raven/core/base.h>
+﻿#include <Raven/core/base.h>
 #include <Raven/core/bxdf.h>
 #include <Raven/core/integrator.h>
 #include <Raven/core/light.h>
+#include <omp.h>
 
 #include <memory>
 
 namespace Raven {
+static omp_lock_t lock;
+
+void Integrator::render(const Scene& scene, int threadNumber) const {
+  int    finishedLine = 1;
+  double process      = 0.0;
+  int nThreads = threadNumber == 0 ? 2 * omp_get_num_procs() - 1 : threadNumber;
+
+  Film* film = camera->film.get();
+  omp_init_lock(&lock);
+#pragma omp parallel for num_threads(nThreads)
+  for (int i = 0; i < film->yRes; ++i) {
+    std::unique_ptr<Sampler> threadSampler = sampler->clone(0);
+
+    // 计算渲染的进度，输出进度条
+    process = (double)finishedLine / film->yRes;
+    omp_set_lock(&lock);
+    UpdateProgress(process);
+    omp_unset_lock(&lock);
+
+    for (int j = 0; j < film->xRes; ++j) {
+      // start sampling one pixel
+      Spectrum pixelColor(0.0);
+      threadSampler->startPixel(Point2i(j, i));
+
+      // iterate all samples of current pixel
+      do {
+        // camera sample
+        CameraSample sample = sampler->getCameraSample(Point2i(j, i));
+        auto         ray    = camera->generateRay(sample);
+        if (ray.has_value()) {
+          pixelColor += renderPixel(scene, *ray, threadSampler.get());
+        }
+      } while (threadSampler->startNextSample());
+
+      double scaler = 1.0 / sampler->getSpp();
+      pixelColor    *= scaler;
+
+      (*film)(j, i) = pixelColor;
+    }
+
+    finishedLine++;
+  }
+  process = (double)finishedLine / film->yRes;
+  UpdateProgress(process);
+  omp_destroy_lock(&lock);
+
+  film->write();
+}
 
 Spectrum EvaluateLight(const Interaction& record,
                        const Scene&       scene,
@@ -202,4 +251,5 @@ Spectrum SampleOneLight(const Interaction& record,
                              handleMedium);
   return Le /= pdf;
 }
+
 }  // namespace Raven
