@@ -19,27 +19,33 @@ Spectrum VolumePathTracingIntegrator::renderPixel(
   bool  specularBounce = false;
   Float etaScale       = 1;
   for (int bounce = 0; bounce < maxDepth; bounce++) {
-    // find closet surface interaction
+    // find closet surface intersection
     std::optional<SurfaceInteraction> record = scene.intersect(ray);
 
-    // account paticipating media
+    // handle ray-media intersection
     std::shared_ptr<MediumInteraction> mi;
     if (ray.medium)
       beta *= ray.medium->sample(ray, *sampler, mi);
     if (beta.isBlack())
       break;
 
+    // account for medium intersection or surface intersection according to
     // whether medium interaction is found
+
+    // found medium intersection
     if (mi->isValid()) {
       Spectrum emit    = SampleOneLight(*mi, scene, *sampler, true);
       Li               += beta * emit;
       Vector3f wo      = -ray.dir;
       auto [phase, wi] = mi->phase->sample_p(wo, sampler->get2D());
       ray              = mi->scatterRay(wi);
-    } else {
-      // 只有从相机出发的光线击中光源才直接返回光源的emittion
+    }
+
+    // not found medium intersection
+    else {
+      // if the ray started from camera hits light source directly
       if (bounce == 0 || specularBounce) {
-        // handle cases that ray hits lights directly
+        // handle cases that ray hits area lights directly
         if (record.has_value())
           Li += beta * record->Le(-ray.dir);
 
@@ -64,21 +70,20 @@ Spectrum VolumePathTracingIntegrator::renderPixel(
       Vector3f wo = Normalize(-ray.dir);
       Normal3f n  = record->n;
 
-      // 采样brdf，计算出射方向,更新beta
+      // sample brdf and ray scatting direction
       auto [f, wi, pdf, sampledType] =
           record->bsdf->sample_f(wo, threadSampler->get2D());
       if (f == Spectrum(0.0) || pdf == 0.0)
         break;
 
-      // 计算衰减
+      // update beta
       double cosTheta = abs(Dot(wi, n));
       beta            *= f * cosTheta / pdf;
-      // std::cout <<f<< beta << std::endl;
-      specularBounce = (sampledType & BxDFType::Specular) != 0;
-      ray            = record->scatterRay(wi);
+      specularBounce  = (sampledType & BxDFType::Specular) != 0;
+      ray             = record->scatterRay(wi);
     }
 
-    // 俄罗斯轮盘赌结束循环
+    // perform russian roulette
     if (bounce > 3) {
       double q = Max((double).05, 1 - beta.y());
       if (threadSampler->get1D() < q)

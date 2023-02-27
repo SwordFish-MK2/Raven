@@ -33,7 +33,7 @@ Raven only supports reflective materials by now, transmissive materials and volu
 ### Integrators
 
 - Path Tracing
-
+- Volume Path Tracing
 - Direct Lighting
 
 ### Cameras
