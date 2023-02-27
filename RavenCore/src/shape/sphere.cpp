@@ -224,5 +224,5 @@ double Sphere::pdf(const Interaction& inter, const Vector3f& wi) const {
   return UniformConePdf(cosThetaMax);
 }
 
-SphereReg SphereReg::regHelper;
+// SphereReg SphereReg::regHelper;
 }  // namespace Raven

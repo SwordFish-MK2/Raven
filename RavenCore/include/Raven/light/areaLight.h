@@ -30,19 +30,19 @@ class DiffuseAreaLight final : public AreaLight {
   virtual double pdf_Li(const Interaction& inter,
                         const Vector3f&    wi) const override;
 
-  static Ref<Light> construct(const PropertyList& param) {
-    const int        n     = param.getInteger("nSamples", 1);
-    const Spectrum   I     = param.getSpectra("intansity", Spectrum(1.0));
-    const ObjectRef  s     = param.getObjectRef(0);
-    const Ref<Shape> shape = std::dynamic_pointer_cast<Shape>(s.getRef());
-    return std::make_shared<DiffuseAreaLight>(nullptr, nullptr, n, shape, I);
-  }
+  // static Ref<Light> construct(const PropertyList& param) {
+  //   const int        n     = param.getInteger("nSamples", 1);
+  //   const Spectrum   I     = param.getSpectra("intansity", Spectrum(1.0));
+  //   const ObjectRef  s     = param.getObjectRef(0);
+  //   const Ref<Shape> shape = std::dynamic_pointer_cast<Shape>(s.getRef());
+  //   return std::make_shared<DiffuseAreaLight>(nullptr, nullptr, n, shape, I);
+  // }
 
  private:
   const Spectrum emittedRadiance;
 };
 
-_RAVEN_CLASS_REG_(area, DiffuseAreaLight, DiffuseAreaLight::construct)
+// _RAVEN_CLASS_REG_(area, DiffuseAreaLight, DiffuseAreaLight::construct)
 
 }  // namespace Raven
 

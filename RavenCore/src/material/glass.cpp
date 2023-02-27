@@ -50,5 +50,5 @@ namespace Raven {
 		}
 	}
 
-	GlassReg GlassReg::regHelper;
+	// GlassReg GlassReg::regHelper;
 }

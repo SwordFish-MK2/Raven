@@ -10,18 +10,20 @@
 #include <queue>
 
 namespace Raven {
-struct ObjectRef {
+
+// 封装指针数据,only used inside the property list
+struct Pointer {
  public:
-  inline Ref<RavenObject> getRef() const { return my_ref; }
+  inline RavenObject* getRef() const { return my_pointer; }
 
   inline bool matchType(const std::string& type) { return type == my_type; }
-  ObjectRef() : my_type("nullptr"), my_ref(nullptr) {}
-  ObjectRef(const std::string& type, const Ref<RavenObject>& ref)
-      : my_type(type), my_ref(ref) {}
+  Pointer(const std::string& type, RavenObject* p, bool byRef = false)
+      : my_type(type), my_pointer(p), ref(byRef) {}
 
  private:
-  std::string      my_type;
-  Ref<RavenObject> my_ref;
+  std::string  my_type;     // 指针指向的对象类型
+  RavenObject* my_pointer;  // 指针
+  bool         ref;         // 是否包含id
 };
 
 class PropertyList {
@@ -43,12 +45,12 @@ class PropertyList {
   void setNormal3f(const std::string&, const Normal3f& value);
   void setSpectra(const std::string&, const Spectrum& value);
   void setString(const std::string&, const std::string& value);
-  void setObjectRef(const std::string& type, const Ref<RavenObject>& ref);
+  void setPointer(const std::string& type, const Pointer& ref);
 
-  static void setObjectRefById(const std::string&      refid,
-                               const std::string&      type,
-                               const Ref<RavenObject>& ref,
-                               PropertyList&           currentPropertyList);
+  static void setPointerById(const std::string& refid,
+                             const std::string& type,
+                             RavenObject*       ref,
+                             PropertyList&      currentPropertyList);
 
   bool        getBoolean(const std::string&, const bool&) const;
   int         getInteger(const std::string&, const int&) const;
@@ -61,16 +63,16 @@ class PropertyList {
   Spectrum    getSpectra(const std::string&, const Spectrum&) const;
   std::string getString(const std::string&, const std::string&) const;
 
-  ObjectRef getObjectRef(int) const;
+  Pointer getObjectRef(int) const;
 
-  static void clearCache() {
+  static void clear() {
     auto& refMap = getRefMap();
     refMap.erase(refMap.begin(), refMap.end());
   }
 
  private:
-  static std::map<std::string, ObjectRef>& getRefMap() {
-    static std::map<std::string, ObjectRef> refMap;  // 用于存放声明在外部的指针
+  static std::map<std::string, Pointer>& getRefMap() {
+    static std::map<std::string, Pointer> refMap;  // 用于存放声明在外部的指针
     return refMap;
   }
 
@@ -109,7 +111,7 @@ class PropertyList {
   int refCount;
 
   std::map<std::string, Property> propertyMap;
-  std::vector<ObjectRef> refQueue;  // 用于存放直接声明在class内部的对象指针
+  std::vector<Pointer> refQueue;  // 用于存放直接声明在class内部的对象指针
   std::vector<RefType>     refTypeList;
   std::vector<std::string> refIds;
 };

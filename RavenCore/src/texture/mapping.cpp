@@ -1,9 +1,9 @@
 #include <Raven/textute/mapping.h>
 
 namespace Raven {
-UVMapping2DReg UVMapping2DReg::regHelper;
+// UVMapping2DReg UVMapping2DReg::regHelper;
 
-SphericalMapping2DReg SphericalMapping2DReg::regHelper;
+// SphericalMapping2DReg SphericalMapping2DReg::regHelper;
 
 std::tuple<Point2f, Vector2f, Vector2f> UVMapping2D::map(
     const SurfaceInteraction& si) const {

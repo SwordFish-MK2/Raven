@@ -47,5 +47,5 @@ double DiffuseAreaLight::pdf_Li(const Interaction& inter,
   return shape_ptr->pdf(inter, wi);
 }
 
-DiffuseAreaLightReg DiffuseAreaLightReg::regHelper;
+// DiffuseAreaLightReg DiffuseAreaLightReg::regHelper;
 }  // namespace Raven

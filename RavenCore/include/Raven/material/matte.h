@@ -31,21 +31,21 @@ class MatteMaterial : public Material {
     return std::make_shared<MatteMaterial>(sigmaTex, kdTex, nullptr);
   }
 
-  static Ref<Material> construct(const PropertyList& param) {
-    const ObjectRef& sigmaRef = param.getObjectRef(0);
-    const ObjectRef& kdRef    = param.getObjectRef(1);
-    // const ObjectRef& bump = param.getObjectRef(2);
+  // static Ref<Material> construct(const PropertyList& param) {
+  //   const ObjectRef& sigmaRef = param.getObjectRef(0);
+  //   const ObjectRef& kdRef    = param.getObjectRef(1);
+  //   // const ObjectRef& bump = param.getObjectRef(2);
 
-    const Ref<Texture<double>>& sigma =
-        std::dynamic_pointer_cast<Texture<double>>(sigmaRef.getRef());
-    const Ref<Texture<Spectrum>>& kd =
-        std::dynamic_pointer_cast<Texture<Spectrum>>(kdRef.getRef());
+  //   const Ref<Texture<double>>& sigma =
+  //       std::dynamic_pointer_cast<Texture<double>>(sigmaRef.getRef());
+  //   const Ref<Texture<Spectrum>>& kd =
+  //       std::dynamic_pointer_cast<Texture<Spectrum>>(kdRef.getRef());
 
-    return std::make_shared<MatteMaterial>(sigma, kd, nullptr);
-  }
+  //   return std::make_shared<MatteMaterial>(sigma, kd, nullptr);
+  // }
 };
 
-_RAVEN_CLASS_REG_(matte, MatteMaterial, MatteMaterial::construct)
+// _RAVEN_CLASS_REG_(matte, MatteMaterial, MatteMaterial::construct)
 }  // namespace Raven
 
 #endif

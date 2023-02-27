@@ -35,19 +35,19 @@ class Sphere final : public Shape {
 
   double pdf(const Interaction& inter, const Vector3f& wi) const override;
 
-  static Ref<Shape> construct(const PropertyList& param) {
-    ObjectRef             ltwRef = param.getObjectRef(0);
-    const Ref<Transform>& ltw =
-        std::dynamic_pointer_cast<Transform>(ltwRef.getRef());
-    const Ref<Transform> wtl    = std::make_shared<Transform>(Inverse(*ltw));
-    double               radius = param.getFloat("radius", 1.0);
-    return std::make_shared<Sphere>(ltw, wtl, radius);
-  }
+  // static Ref<Shape> construct(const PropertyList& param) {
+  //   ObjectRef             ltwRef = param.getObjectRef(0);
+  //   const Ref<Transform>& ltw =
+  //       std::dynamic_pointer_cast<Transform>(ltwRef.getRef());
+  //   const Ref<Transform> wtl    = std::make_shared<Transform>(Inverse(*ltw));
+  //   double               radius = param.getFloat("radius", 1.0);
+  //   return std::make_shared<Sphere>(ltw, wtl, radius);
+  // }
 
  private:
   const double radius;
 };
 
-_RAVEN_CLASS_REG_(sphere, Sphere, Sphere::construct)
+// _RAVEN_CLASS_REG_(sphere, Sphere, Sphere::construct)
 }  // namespace Raven
 #endif

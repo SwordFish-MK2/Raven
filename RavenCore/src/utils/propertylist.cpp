@@ -27,13 +27,13 @@ void PropertyList::setObjectRef(const std::string&      type,
   refQueue.push_back(objref);
 }
 
-void PropertyList::setObjectRefById(const std::string&      refId,
-                                    const std::string&      type,
-                                    const Ref<RavenObject>& ref,
-                                    PropertyList&           list) {
+void PropertyList::setPointerById(const std::string& refId,
+                                    const std::string& type,
+                                    RavenObject*       ref,
+                                    PropertyList&      list) {
   list.refTypeList.push_back(RefType::RefById);
   list.refCount++;
-  ObjectRef objref(type, ref);
+  Pointer objref(type, ref);
   auto&     refMap = getRefMap();
   refMap[refId]    = objref;
 }

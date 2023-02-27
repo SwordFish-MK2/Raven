@@ -23,6 +23,6 @@ namespace Raven {
 		}
 	}
 
-	MatteMaterialReg MatteMaterialReg::regHelper;
+	// MatteMaterialReg MatteMaterialReg::regHelper;
 
 }

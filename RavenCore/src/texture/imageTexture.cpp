@@ -60,62 +60,62 @@ Mipmap<TMemory>* ImageTexture<TMemory, TReturn>::getTexture(
   }
 }
 
-namespace TextureBuild {
-Ref<ImageTexture<double, double>> makeImageTextureFloat(
-    const PropertyList& param) {
-  ObjectRef   mappingRef = param.getObjectRef(0);
-  const auto& mapping =
-      std::dynamic_pointer_cast<TextureMapping2D>(mappingRef.getRef());
-  std::string path        = param.getString("filename", "");
-  bool        doTrilinear = param.getBoolean("trilinear", false);
-  int         wrap        = param.getInteger("wrap", 0);
-  bool        gamma       = param.getBoolean("gamma", false);
-  ImageWrap   iwrap;
-  switch (wrap) {
-    case 0:
-      iwrap = ImageWrap::ImClamp;
-      break;
-    case 1:
-      iwrap = ImageWrap::ImRepeat;
-      break;
-    case 2:
-      iwrap = ImageWrap::ImBlack;
-      break;
-  }
-  return std::make_shared<ImageTexture<double, double>>(
-      path, mapping, doTrilinear, iwrap, gamma);
-}
+// namespace TextureBuild {
+// Ref<ImageTexture<double, double>> makeImageTextureFloat(
+//     const PropertyList& param) {
+//   ObjectRef   mappingRef = param.getObjectRef(0);
+//   const auto& mapping =
+//       std::dynamic_pointer_cast<TextureMapping2D>(mappingRef.getRef());
+//   std::string path        = param.getString("filename", "");
+//   bool        doTrilinear = param.getBoolean("trilinear", false);
+//   int         wrap        = param.getInteger("wrap", 0);
+//   bool        gamma       = param.getBoolean("gamma", false);
+//   ImageWrap   iwrap;
+//   switch (wrap) {
+//     case 0:
+//       iwrap = ImageWrap::ImClamp;
+//       break;
+//     case 1:
+//       iwrap = ImageWrap::ImRepeat;
+//       break;
+//     case 2:
+//       iwrap = ImageWrap::ImBlack;
+//       break;
+//   }
+//   return std::make_shared<ImageTexture<double, double>>(
+//       path, mapping, doTrilinear, iwrap, gamma);
+// }
 
-std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>> makeImageTextureSpectrum(
-    const PropertyList& param) {
-  ObjectRef   mappingRef = param.getObjectRef(0);
-  const auto& mapping =
-      std::dynamic_pointer_cast<TextureMapping2D>(mappingRef.getRef());
-  std::string path        = param.getString("filename", "");
-  bool        doTrilinear = param.getBoolean("trilinear", false);
-  int         wrap        = param.getInteger("wrap", 0);
-  ImageWrap   iwrap;
-  switch (wrap) {
-    case 0:
-      iwrap = ImageWrap::ImClamp;
-      break;
-    case 1:
-      iwrap = ImageWrap::ImRepeat;
-      break;
-    case 2:
-      iwrap = ImageWrap::ImBlack;
-      break;
-  }
-  bool gamma = param.getBoolean("gamma", false);
+// std::shared_ptr<ImageTexture<RGBSpectrum, Spectrum>> makeImageTextureSpectrum(
+//     const PropertyList& param) {
+//   ObjectRef   mappingRef = param.getObjectRef(0);
+//   const auto& mapping =
+//       std::dynamic_pointer_cast<TextureMapping2D>(mappingRef.getRef());
+//   std::string path        = param.getString("filename", "");
+//   bool        doTrilinear = param.getBoolean("trilinear", false);
+//   int         wrap        = param.getInteger("wrap", 0);
+//   ImageWrap   iwrap;
+//   switch (wrap) {
+//     case 0:
+//       iwrap = ImageWrap::ImClamp;
+//       break;
+//     case 1:
+//       iwrap = ImageWrap::ImRepeat;
+//       break;
+//     case 2:
+//       iwrap = ImageWrap::ImBlack;
+//       break;
+//   }
+//   bool gamma = param.getBoolean("gamma", false);
 
-  return std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(
-      path, mapping, doTrilinear, iwrap, gamma);
-}
-}  // namespace TextureBuild
+//   return std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(
+//       path, mapping, doTrilinear, iwrap, gamma);
+// }
+// }  // namespace TextureBuild
 
-ImageTextureFloatReg ImageTextureFloatReg::regHelper;
+// ImageTextureFloatReg ImageTextureFloatReg::regHelper;
 
-ImageTextureSpectraReg ImageTextureSpectraReg::regHelper;
+// ImageTextureSpectraReg ImageTextureSpectraReg::regHelper;
 
 // ImageTexture有两种形式
 template class ImageTexture<

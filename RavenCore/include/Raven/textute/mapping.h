@@ -45,21 +45,21 @@ class SphericalMapping2D : public TextureMapping2D {
   virtual std::tuple<Point2f, Vector2f, Vector2f> map(
       const SurfaceInteraction& si) const;
 
-  static Ref<TextureMapping2D> construct(const PropertyList& param) {
-    ObjectRef   worldToTexture = param.getObjectRef(0);
-    const auto& wtt =
-        std::dynamic_pointer_cast<Transform>(worldToTexture.getRef());
-    return std::make_shared<SphericalMapping2D>(wtt);
-  }
+  // static Ref<TextureMapping2D> construct(const PropertyList& param) {
+  //   // ObjectRef   worldToTexture = param.getObjectRef(0);
+  //   const auto& wtt =
+  //       std::dynamic_pointer_cast<Transform>(worldToTexture.getRef());
+  //   return std::make_shared<SphericalMapping2D>(wtt);
+  // }
 
  private:
   Point2f mapSphere(const Point3f& p) const;
 
   const Ref<Transform> worldToTexture;
 };
-_RAVEN_CLASS_REG_(uv, UVMapping2D, UVMapping2D::construct)
+// _RAVEN_CLASS_REG_(uv, UVMapping2D, UVMapping2D::construct)
 
-_RAVEN_CLASS_REG_(spherical, SphericalMapping2D, SphericalMapping2D::construct)
+// _RAVEN_CLASS_REG_(spherical, SphericalMapping2D, SphericalMapping2D::construct)
 
 }  // namespace Raven
 #endif

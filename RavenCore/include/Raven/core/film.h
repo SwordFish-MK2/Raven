@@ -54,6 +54,6 @@ class Film : public RavenObject {
   Image<RGBSpectrum> frameBuffer;
 };
 
-_RAVEN_CLASS_REG_(film, Film, Film::construct)
+//_RAVEN_CLASS_REG_(film, Film, Film::construct)
 }  // namespace Raven
 #endif

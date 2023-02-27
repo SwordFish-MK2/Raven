@@ -24,21 +24,21 @@ class Mirror final : public Material {
     return std::make_shared<Mirror>(r, bump);
   }
 
-  static Ref<Material> construct(const PropertyList& param) {
-    const auto& r = std::dynamic_pointer_cast<Texture<Spectrum>>(
-        param.getObjectRef(0).getRef());
-    // const auto&
-    // bump=std::dynamic_pointer_cast<Texture<double>>(param.getObjectRef(1).getRef());
+  // static Ref<Material> construct(const PropertyList& param) {
+  //   const auto& r = std::dynamic_pointer_cast<Texture<Spectrum>>(
+  //       param.getObjectRef(0).getRef());
+  //   // const auto&
+  //   // bump=std::dynamic_pointer_cast<Texture<double>>(param.getObjectRef(1).getRef());
 
-    return std::make_shared<Mirror>(r, nullptr);
-  }
+  //   return std::make_shared<Mirror>(r, nullptr);
+  // }
 
  private:
   std::shared_ptr<Texture<Spectrum>> rTex;
   std::shared_ptr<Texture<double>>   bumpTex;
 };
 
-_RAVEN_CLASS_REG_(mirror, Mirror, Mirror::construct)
+// _RAVEN_CLASS_REG_(mirror, Mirror, Mirror::construct)
 }  // namespace Raven
 
 #endif
