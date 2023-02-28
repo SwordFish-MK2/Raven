@@ -12,8 +12,9 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include "Raven/core/integrator.h"
 
+#include "Raven/core/integrator.h"
+#include "Raven/core/primitive.h"
 
 namespace Raven {
 enum RavenFilmType {
@@ -80,14 +81,16 @@ class Parser {
  private:
   AccelType accelerate;
 
-  std::shared_ptr<Camera>     cam;
-  std::shared_ptr<Integrator> renderer;
-  std::unique_ptr<Integrator> integrator;
+  std::shared_ptr<Camera>                 cam;
+  std::shared_ptr<Integrator>             renderer;
+  std::unique_ptr<Integrator>             integrator;
+  std::vector<std::shared_ptr<Primitive>> prims;
+  void                                    postProcess();
 
   std::pair<RavenCameraType, PropertyList>   cameraProperty;
   std::pair<RavenRendererType, PropertyList> integratorProperty;
   std::pair<RavenFilmType, PropertyList>     filmProperty;
-
+  
   std::vector<std::tuple<std::string, RavenTransformType, PropertyList>>
       transformProperty;
   std::vector<std::tuple<std::string, RavenTextureType, PropertyList>>

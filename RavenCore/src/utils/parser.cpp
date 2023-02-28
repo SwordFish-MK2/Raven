@@ -3,6 +3,7 @@
 #include <Raven/core/integrator.h>
 #include <Raven/core/object.h>
 #include <Raven/core/shape.h>
+#include <Raven/core/spectrum.h>
 #include <Raven/core/texture.h>
 #include <Raven/core/transform.h>
 #include <Raven/light/areaLight.h>
@@ -19,12 +20,15 @@
 #include <Raven/utils/loader.h>
 #include <Raven/utils/log.h>
 #include <Raven/utils/parser.h>
+#include <tinyxml2.h>
 
 #include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
+
+#include "Raven/core/primitive.h"
 
 #define ParserErorr(x) std::cerr << x << std::endl
 
@@ -287,6 +291,7 @@ bool Parser::parse(const std::string& file) {
                 break;
               }
             }
+
             case RSampler: {
               // 获取相机类型
               if (fatherNode == nullptr ||
@@ -314,7 +319,8 @@ bool Parser::parse(const std::string& file) {
                 // 在xml中指定的对象类型未在工厂中注册（即指定了raven不支持的对象
                 if (factory.registed(type) == false) {
                   RERROR(
-                      "Parsing xml failed, defined unsupported {0} class: {1}",
+                      "Parsing xml failed, defined unsupported {0} class: "
+                      "{1}",
                       "sampler", "type");
                   exit(EXIT_FAILURE);
                 }
@@ -325,6 +331,7 @@ bool Parser::parse(const std::string& file) {
                 break;
               }
             }
+
             case RIntegrator: {
               // 获取相机类型
               if (fatherNode == nullptr ||
@@ -352,7 +359,8 @@ bool Parser::parse(const std::string& file) {
                 // 在xml中指定的对象类型未在工厂中注册（即指定了raven不支持的对象
                 if (factory.registed(type) == false) {
                   RERROR(
-                      "Parsing xml failed, defined unsupported {0} class: {1}",
+                      "Parsing xml failed, defined unsupported {0} class: "
+                      "{1}",
                       "integrator", type);
                   exit(EXIT_FAILURE);
                 }
@@ -363,132 +371,157 @@ bool Parser::parse(const std::string& file) {
                 break;
               }
             }
+
+            // TODO::finish texture
+            // referring to solid texture and image texture, (const textures
+            // are not included)
             case RTexture: {
-              // 获取纹理的类型
+              // get type
               const tinyxml2::XMLAttribute* typeAttr =
                   node->FindAttribute("type");
+              const tinyxml2::XMLAttribute* nameAttr =
+                  node->FindAttribute("name");
 
-              // 输入中不包含纹理类型，出错
+              // type is not set
               if (!typeAttr) {
-                std::cout << "";
-                return;
+                RERROR("Parsing xml failed, {0} type unset", "texture");
+                exit(EXIT_FAILURE);
+              }
+              if (!nameAttr) {
+                RERROR("Parsing xml failed,{0} name unset", "texture");
+                exit(EXIT_FAILURE);
               }
 
               // 生成纹理
 
               const std::string& type    = typeAttr->Value();
               const auto&        factory = Factory::getInstance();
-              if (!factory.registed(type))
-                return;
-              Ref<Texture<Spectrum>> my_object =
-                  std::dynamic_pointer_cast<Texture<Spectrum>>(
-                      factory.generate(type, list));
-
-              // 判断纹理是否包含id属性
-              const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
-              // 当前结点对应的对象位于其他对象内部，未指定id，直接将当前纹理加入父节点的propertylist
-              if (!idAttr && fatherNode != nullptr)
-                pList->setObjectRef("texture", my_object);
-
-              // 当前纹理指定了id
-              else if (idAttr) {
-                std::string id = idAttr->Value();
-                PropertyList::setObjectRefById(id, "texture", my_object,
-                                               *pList);
+              if (factory.registed(type) == false) {
+                RERROR("Parsing xml failed, defined unsupported {0} class",
+                       "film");
+                exit(EXIT_FAILURE);
               }
+
+              std::string        name = nameAttr->Value();
+              Texture<Spectrum>* p =
+                  (Texture<Spectrum>*)factory.generate(type, list);
+
+              pList->setSTexture(name, p);
               break;
             }
+
+            //
             case RMaterial: {
               const tinyxml2::XMLAttribute* typeAttr =
                   node->FindAttribute("type");
-
               if (!typeAttr) {
-                // 输入中不包含材质类型，出错
-                if (!typeAttr) {
-                  std::cout << "";
-                  return;
-                }
+                RERROR("Parsing xml failed, {0} type unset", "material");
+                exit(EXIT_FAILURE);
               }
+              std::string type = typeAttr->Value();
 
-              std::string type    = typeAttr->Value();
+              // get factory instance and generate object
               const auto& factory = Factory::getInstance();
-              if (!factory.registed(type))
-                return;
-              Ref<RavenObject> my_object = factory.generate(type, list);
+              if (!factory.registed(type)) {
+                RERROR("Parsing xml failed, declared unsupported {0} class {1}",
+                       "material", type);
+                exit(EXIT_FAILURE);
+              }
+              RavenObject* my_object = factory.generate(type, list);
 
-              const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
-
-              if (!idAttr)
-                pList->setObjectRef(type, my_object);
-
-              else {
-                const std::string& id = idAttr->Value();
-                PropertyList::setObjectRefById(type, id, my_object, *pList);
+              // get id
+              bool        external = fatherNode->Name() == std::string("scene");
+              const auto& idAttr   = node->FindAttribute("id");
+              if (external && !idAttr) {
+                RERROR(
+                    "Parsing xml failed, defining {0} under scene node "
+                    "without assigning id",
+                    "material");
+                exit(EXIT_FAILURE);
+              } else if (!external && idAttr) {
+                RERROR(
+                    "Parsing xml failed, can not assign id while defing {0} "
+                    "inside class",
+                    "material");
+                exit(EXIT_FAILURE);
+              } else if (external && idAttr) {
+                std::string id = idAttr->Value();
+                list.storeExternalPointer(id, my_object);
+              } else {
+                list.setInternalPointer(my_object);
               }
               break;
             }
+
             case RShape: {
+              // get type
               const tinyxml2::XMLAttribute* typeAttr =
                   node->FindAttribute("type");
-
               if (!typeAttr) {
-                std::cout << "";
-                return;
+                RERROR("Parsing xml failed, {0} type unset", "shape");
+                exit(EXIT_FAILURE);
+              }
+              std::string type = typeAttr->Value();
+
+              // get factory instance and generate object
+              const auto& factory = Factory::getInstance();
+              if (!factory.registed(type)) {
+                RERROR("Parsing xml failed, declared unsupported {0} class {1}",
+                       "material", type);
+                exit(EXIT_FAILURE);
               }
 
-              std::string type    = typeAttr->Value();
-              const auto& factory = Factory::getInstance();
-              if (!factory.registed(type))
-                return;
-              Ref<RavenObject> my_object = factory.generate(type, list);
+              // pointer of primitive
+              Shape* p = (Shape*)factory.generate(type, list);
+
+              // std::shared_ptr<Primitive>
+              // sharedp=std::make_shared<Primitive>(p);
+              break;
             }
+
             case REmit: {
-              std::map<std::string, RavenLightType> lightMap;
-              lightMap["diffuseArea"] = RavenLightType::RDiffuseArea;
+              const tinyxml2::XMLAttribute* typeAttr =
+                  node->FindAttribute("type");
+              if (!typeAttr) {
+                RERROR("Parsing xml failed, {0} type unset", "emitter");
+                exit(EXIT_FAILURE);
+              }
+              std::string type = typeAttr->Value();
 
-              std::string type    = node->FindAttribute("type")->Value();
-              std::string id      = node->FindAttribute("id")->Value();
-              auto        lightIt = lightMap.find(type);
+              // get factory instance and generate object
+              const auto& factory = Factory::getInstance();
+              if (!factory.registed(type)) {
+                RERROR("Parsing xml failed, declared unsupported {0} class {1}",
+                       "emitter", type);
+                exit(EXIT_FAILURE);
+              }
+              RavenObject* my_object = factory.generate(type, list);
 
-              std::tuple<std::string, RavenLightType, PropertyList> lProperty =
-                  std::make_tuple(id, lightIt->second, list);
-              lightProperty.push_back(lProperty);
+              // get id
+              bool        external = fatherNode->Name() == std::string("scene");
+              const auto& idAttr   = node->FindAttribute("id");
+              if (external && !idAttr) {
+                RERROR(
+                    "Parsing xml failed, defining {0} under scene node "
+                    "without assigning id",
+                    "emitter");
+                exit(EXIT_FAILURE);
+              } else if (!external && idAttr) {
+                RERROR(
+                    "Parsing xml failed, can not assign id while defing {0} "
+                    "inside class",
+                    "emitter");
+                exit(EXIT_FAILURE);
+              } else if (external && idAttr) {
+                std::string id = idAttr->Value();
+                list.storeExternalPointer(id, my_object);
+              } else {
+                list.setInternalPointer(my_object);
+              }
               break;
             }
 
             case RTransform: {
-              std::map<std::string, RavenTransformType> tranMap;
-              tranMap["identity"]  = RavenTransformType::RIdentity;
-              tranMap["lookat"]    = RavenTransformType::RLookat;
-              tranMap["translate"] = RavenTransformType::RTranslate;
-              tranMap["rotate"]    = RavenTransformType::RRotate;
-              tranMap["rotatex"]   = RavenTransformType::RRotateX;
-              tranMap["rotatey"]   = RavenTransformType::RRotateY;
-              tranMap["rotatez"]   = RavenTransformType::RRotateZ;
-              tranMap["inverse"]   = RavenTransformType::RInverse;
-              tranMap["scale"]     = RavenTransformType::RScale;
-
-              std::string type   = node->FindAttribute("type")->Value();
-              std::string id     = node->FindAttribute("id")->Value();
-              auto        tranIt = tranMap.find(type);
-
-              std::tuple<std::string, RavenTransformType, PropertyList>
-                  tProperty = std::make_tuple(id, tranIt->second, list);
-              transformProperty.push_back(tProperty);
-              break;
-            }
-            case RMapping: {
-              std::map<std::string, RavenMappingType> mappingMap;
-              mappingMap["uv"]        = RavenMappingType::RUVMapping;
-              mappingMap["spherical"] = RavenMappingType::RSphereMapping;
-
-              std::string type      = node->FindAttribute("type")->Value();
-              std::string id        = node->FindAttribute("id")->Value();
-              auto        mappingIt = mappingMap.find(type);
-
-              std::tuple<std::string, RavenMappingType, PropertyList>
-                  mProperty = std::make_tuple(id, mappingIt->second, list);
-              mappingProperty.push_back(mProperty);
               break;
             }
           }
@@ -559,73 +592,62 @@ bool Parser::parse(const std::string& file) {
             }
             case RSpectraRGB: {
               // 获取rgb的值
-              std::string name     = node->FindAttribute("name")->Value();
-              std::string vstr     = node->FindAttribute("value")->Value();
-              Vector3f    rgbValue = toVector3f(vstr);
-              Spectrum    rgb      = RGBSpectrum::fromRGB(rgbValue);
-
-              // 获取父节点类型，根据父节点类型判断生成Spectrum对象或ConstTexture指针
-              std::string fathername = fatherNode->Name();
-
-              // 父节点为Material，
-              // 此时Spectra为Material的reflectance属性，
-              //   生成ConstTexture<Spectrum>对象
-              if (fathername == "bsdf" && name == "reflectance") {
-                Ref<ConstTexture<Spectrum>> spectra =
-                    std::make_shared<ConstTexture<Spectrum>>(rgb);
-                pList->setObjectRef(name, spectra);
+              const auto& nameAttr = node->FindAttribute("name");
+              const auto& vstrAttr = node->FindAttribute("value");
+              if (!nameAttr) {
+                RERROR("Parsing xml failed, rgb name unset");
+                exit(EXIT_FAILURE);
               }
+              if (!vstrAttr) {
+                RERROR("Parsing xml failed,rgb value unset");
+                exit(EXIT_FAILURE);
+              }
+              std::string name = nameAttr->Value();
+              std::string vstr = vstrAttr->Value();
+
+              Vector3f rgbValue = toVector3f(vstr);
+              Spectrum value    = Spectrum::fromRGB(rgbValue);
+              pList->setSpectra(name, value);
               break;
             }
             case RSpectra: {
-              std::string name = node->FindAttribute("name")->Value();
-              std::string type = node->FindAttribute("type")->Value();
-              const tinyxml2::XMLAttribute* v = node->FindAttribute("value");
-              if (type == "rgb") {
-                Vector3f rgbVec     = toVector3f(v->Value());
-                Spectrum rgbSpectra = Spectrum::fromRGB(rgbVec);
+              // const auto& nameAttr  = node->FindAttribute("name");
+              // const auto& valueAttr = node->FindAttribute("value");
+              // if (!nameAttr) {
+              //   RERROR("Parsing xml failed,spectra name unset");
+              //   exit(EXIT_FAILURE);
+              // }
+              // if (!valueAttr) {
+              //   RERROR("Parsing xml failed,spectra value unset");
+              //   exit(EXIT_FAILURE);
+              // }
+              // std::string name    = nameAttr->Value();
+              // std::string vString = valueAttr->Value();
 
-                pList->setSpectra(name, rgbSpectra);
-              } else {
-                std::string vString = v->Value();
+              // std::shared_ptr<double[]> lambda;
 
-                std::shared_ptr<double[]> lambda;
+              // std::shared_ptr<double[]> spectrumValue;
+              // int                       n;
 
-                std::shared_ptr<double[]> spectrumValue;
-                int                       n;
+              // getSpectrumSample(lambda, spectrumValue, &n, vString);
+              // Spectrum sampledSpectra =
+              //     Spectrum::fromSampled(&lambda[0], &spectrumValue[0], n);
 
-                getSpectrumSample(lambda, spectrumValue, &n, vString);
-                Spectrum sampledSpectra =
-                    Spectrum::fromSampled(&lambda[0], &spectrumValue[0], n);
+              // pList->setSpectra(name, sampledSpectra);
+              RINFO("{0}", "Spectra unsupported");
 
-                pList->setSpectra(name, sampledSpectra);
-              }
               break;
             }
+
+            // set pointer
             case RPointer: {
-              std::map<std::string, RavenPointerType> pointerMap;
-
-              pointerMap["transform"] = RavenPointerType::transform_pointer;
-              pointerMap["mapping"]   = RavenPointerType::mapping_pointer;
-              pointerMap["shape"]     = RavenPointerType::shape_pointer;
-
-              pointerMap["texturefloat"] =
-                  RavenPointerType::texture_float_pointer;
-
-              pointerMap["texturespectrum"] =
-                  RavenPointerType::texture_spectrum_pointer;
-              pointerMap["emit"]     = RavenPointerType::emit_pointer;
-              pointerMap["material"] = RavenPointerType::material_pointer;
-
-              pointerMap["primitive"] = RavenPointerType::primitive_pointer;
-
-              std::string type = node->FindAttribute("type")->Value();
-              std::string id   = node->FindAttribute("id")->Value();
-              auto        pIt  = pointerMap.find(type);
-
-              pList->setPointer(id, pIt->second);
-
-              pList->pointerList.push_back(Pointer(id, pIt->second));
+              const tinyxml2::XMLAttribute* idAttr = node->FindAttribute("id");
+              if (!idAttr) {
+                RERROR("Parsing xml failed, ref id undefined");
+                exit(EXIT_FAILURE);
+              }
+              std::string id = idAttr->Value();
+              pList->setExternalPointer(id);
               break;
             }
           }

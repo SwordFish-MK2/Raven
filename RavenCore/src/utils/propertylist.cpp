@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 
+#include "Raven/core/texture.h"
 #include "Raven/utils/log.h"
 
 namespace Raven {
@@ -27,6 +28,7 @@ namespace Raven {
 void PropertyList::setInternalPointer(RavenObject* p) {
   pointerList.push_back(p);
 }
+
 void PropertyList::setExternalPointer(const std::string& id) {
   const auto& refMap = getRefMap();
   const auto& pIt    = refMap.find(id);
@@ -45,13 +47,13 @@ void PropertyList::storeExternalPointer(const std::string& id, RavenObject* p) {
   auto&       refMap = getRefMap();
   const auto& pIt    = refMap.find(id);
 
-  //test if there is a pointer with same id
+  // test if there is a pointer with same id
   if (pIt != refMap.end()) {
     RERROR("Parsing xml failed, ref id {0} duplicated", id);
     exit(EXIT_FAILURE);
   }
 
-  //set pointer
+  // set pointer
   refMap[id] = p;
 }
 
@@ -59,6 +61,78 @@ RavenObject* PropertyList::getObject(int n) {
   if (index >= n)
     return nullptr;
   return pointerList[index++];
+}
+
+void PropertyList::setSTexture(const std::string& name, Texture<Spectrum>* t) {
+  const auto& it = stMap.find(name);
+  if (it != stMap.end()) {
+    RERROR("Property has been set");
+    exit(EXIT_FAILURE);
+  }
+  stMap[name] = t;
+}
+
+void PropertyList::setFTexture(const std::string& name, Texture<Float>* t) {
+  const auto& it = ftMap.find(name);
+  if (it != ftMap.end()) {
+    RERROR("Property has been set");
+    exit(EXIT_FAILURE);
+  }
+  ftMap[name] = t;
+}
+
+Texture<Spectrum>* PropertyList::getSTexture(const std::string& name) {
+  const auto& it = stMap.find(name);
+  if (it == stMap.end()) {
+    // no matching pointer of texture, try spectrum
+
+    const auto& sit = propertyMap.find(name);
+    if (sit == propertyMap.end()) {
+      // no matching spectrum, return white texture
+      RERROR(
+          "No texture of name {0} has been set, defualt const texture will be "
+          "returned",
+          name);
+      return new ConstTexture<Spectrum>(Spectrum(1.0));
+    } else {
+      // find matching spectrum, generate const texture
+      const auto& prop = sit->second;
+      Spectrum    s    = prop.value.spectra_value;
+      return new ConstTexture<Spectrum>(s);
+    }
+  }
+
+  // find matching texture pointer
+  Texture<Spectrum>* p = it->second;
+  stMap.erase(it);
+  return it->second;
+}
+
+Texture<Float>* PropertyList::getFTexture(const std::string& name) {
+  const auto& it = ftMap.find(name);
+  if (it == ftMap.end()) {
+    // no matching pointer of texture, try float
+
+    const auto& sit = propertyMap.find(name);
+    if (sit == propertyMap.end()) {
+      // no matching float, return white texture
+      RERROR(
+          "No texture of name {0} has been set, defualt const texture will be "
+          "returned",
+          name);
+      return new ConstTexture<Float>(1.0);
+    } else {
+      // find matching float, generate const texture
+      const auto& prop = sit->second;
+      Float       f    = prop.value.float_value;
+      return new ConstTexture<Float>(f);
+    }
+  }
+
+  // find matching texture pointer
+  Texture<Float>* p = it->second;
+  ftMap.erase(it);
+  return p;
 }
 
 DEFINE_PROPERTY_ACCESSOR(bool, Boolean, boolean)
