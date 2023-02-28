@@ -12,45 +12,31 @@
 namespace Raven {
 
 // 封装指针数据,only used inside the property list
-struct Pointer {
- public:
-  inline RavenObject* getRef() const { return my_pointer; }
-
-  inline bool matchType(const std::string& type) { return type == my_type; }
-  Pointer(const std::string& type, RavenObject* p, bool byRef = false)
-      : my_type(type), my_pointer(p), ref(byRef) {}
-
- private:
-  std::string  my_type;     // 指针指向的对象类型
-  RavenObject* my_pointer;  // 指针
-  bool         ref;         // 是否包含id
-};
 
 class PropertyList {
-  enum class RefType {
-    Ref,
-    RefById
+  enum class PointerType {
+    Internal,
+    External
   };
 
  public:
-  PropertyList() : refCount(0) {}
+  PropertyList() : pNum(0), index(0) {}
 
-  void setBoolean(const std::string&, const bool& value);
-  void setInteger(const std::string&, const int& value);
-  void setFloat(const std::string&, const double& value);
-  void setVector2f(const std::string&, const Vector2f& value);
-  void setPoint2f(const std::string&, const Point2f& value);
-  void setPoint3f(const std::string&, const Point3f& value);
-  void setVector3f(const std::string&, const Vector3f& value);
-  void setNormal3f(const std::string&, const Normal3f& value);
-  void setSpectra(const std::string&, const Spectrum& value);
-  void setString(const std::string&, const std::string& value);
-  void setPointer(const std::string& type, const Pointer& ref);
+  void        setBoolean(const std::string&, const bool& value);
+  void        setInteger(const std::string&, const int& value);
+  void        setFloat(const std::string&, const double& value);
+  void        setVector2f(const std::string&, const Vector2f& value);
+  void        setPoint2f(const std::string&, const Point2f& value);
+  void        setPoint3f(const std::string&, const Point3f& value);
+  void        setVector3f(const std::string&, const Vector3f& value);
+  void        setNormal3f(const std::string&, const Normal3f& value);
+  void        setSpectra(const std::string&, const Spectrum& value);
+  void        setString(const std::string&, const std::string& value);
 
-  static void setPointerById(const std::string& refid,
-                             const std::string& type,
-                             RavenObject*       ref,
-                             PropertyList&      currentPropertyList);
+  static void storeExternalPointer(const std::string& id, RavenObject* p);
+
+  void        setInternalPointer(RavenObject* p);
+  void        setExternalPointer(const std::string& id);
 
   bool        getBoolean(const std::string&, const bool&) const;
   int         getInteger(const std::string&, const int&) const;
@@ -63,7 +49,7 @@ class PropertyList {
   Spectrum    getSpectra(const std::string&, const Spectrum&) const;
   std::string getString(const std::string&, const std::string&) const;
 
-  Pointer getObjectRef(int) const;
+  RavenObject* getObject(int);
 
   static void clear() {
     auto& refMap = getRefMap();
@@ -71,8 +57,9 @@ class PropertyList {
   }
 
  private:
-  static std::map<std::string, Pointer>& getRefMap() {
-    static std::map<std::string, Pointer> refMap;  // 用于存放声明在外部的指针
+  static std::map<std::string, RavenObject*>& getRefMap() {
+    static std::map<std::string, RavenObject*>
+        refMap;  // 用于存放声明在外部的指针
     return refMap;
   }
 
@@ -108,12 +95,18 @@ class PropertyList {
       std::string string_value;
     } value;
   };
-  int refCount;
 
   std::map<std::string, Property> propertyMap;
-  std::vector<Pointer> refQueue;  // 用于存放直接声明在class内部的对象指针
-  std::vector<RefType>     refTypeList;
-  std::vector<std::string> refIds;
+
+  int pNum;  // 子对象的数目
+  int index;
+  std::vector<RavenObject*>
+      pointerList;  // 用于存放直接声明在class内部的对象指针
 };
 }  // namespace Raven
+
+// note:
+// whenever parser generate any objects with id, puts them in the static
+// map of PropertyList class, whenever an object is referenced by ref, get its
+// point from map and store in the current propertylist object.
 #endif

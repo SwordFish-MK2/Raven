@@ -1,4 +1,9 @@
 #include <Raven/utils/propertylist.h>
+
+#include <cstdlib>
+
+#include "Raven/utils/log.h"
+
 namespace Raven {
 #define DEFINE_PROPERTY_ACCESSOR(Type, TypeName, xmlTypeName)                  \
   void PropertyList::set##TypeName(const std::string& name,                    \
@@ -19,52 +24,41 @@ namespace Raven {
       return defaultVal;                                                       \
   }
 
-void PropertyList::setObjectRef(const std::string&      type,
-                                const Ref<RavenObject>& ref) {
-  refTypeList.push_back(RefType::Ref);
-  refCount++;
-  ObjectRef objref(type, ref);
-  refQueue.push_back(objref);
+void PropertyList::setInternalPointer(RavenObject* p) {
+  pointerList.push_back(p);
+}
+void PropertyList::setExternalPointer(const std::string& id) {
+  const auto& refMap = getRefMap();
+  const auto& pIt    = refMap.find(id);
+
+  // no pointer matches or id is empty
+  if (pIt == refMap.end()) {
+    RERROR("Parsing xml failed, unable to set ref with id {0}", id);
+    exit(EXIT_FAILURE);
+  }
+
+  // set pointer
+  pointerList.push_back(pIt->second);
 }
 
-void PropertyList::setPointerById(const std::string& refId,
-                                    const std::string& type,
-                                    RavenObject*       ref,
-                                    PropertyList&      list) {
-  list.refTypeList.push_back(RefType::RefById);
-  list.refCount++;
-  Pointer objref(type, ref);
-  auto&     refMap = getRefMap();
-  refMap[refId]    = objref;
+void PropertyList::storeExternalPointer(const std::string& id, RavenObject* p) {
+  auto&       refMap = getRefMap();
+  const auto& pIt    = refMap.find(id);
+
+  //test if there is a pointer with same id
+  if (pIt != refMap.end()) {
+    RERROR("Parsing xml failed, ref id {0} duplicated", id);
+    exit(EXIT_FAILURE);
+  }
+
+  //set pointer
+  refMap[id] = p;
 }
 
-ObjectRef PropertyList::getObjectRef(int n) const {
-  if (n > refCount) {
-    return ObjectRef("Failed to get Raven object ref, ref vector overflow.",
-                     nullptr);
-  }
-  int refC     = 0;
-  int refByIdC = 0;
-
-  for (int i = 0; i < n; i++) {
-    if (refTypeList[i] == RefType::Ref)
-      refC++;
-    else
-      refByIdC++;
-  }
-
-  if (refTypeList[n] == RefType::Ref) {
-    return refQueue[refC];
-  } else {
-    std::string refId  = refIds[refByIdC];
-    auto&       refMap = getRefMap();
-    const auto& it     = refMap.find(refId);
-    if (it == refMap.end()) {
-      std::string msg("Failed to parse ref id :");
-      return ObjectRef(msg + refId, nullptr);
-    }
-    return it->second;
-  }
+RavenObject* PropertyList::getObject(int n) {
+  if (index >= n)
+    return nullptr;
+  return pointerList[index++];
 }
 
 DEFINE_PROPERTY_ACCESSOR(bool, Boolean, boolean)

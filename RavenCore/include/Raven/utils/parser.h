@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include "Raven/core/integrator.h"
 
 
 namespace Raven {
@@ -81,7 +82,7 @@ class Parser {
 
   std::shared_ptr<Camera>     cam;
   std::shared_ptr<Integrator> renderer;
-  std::unique_ptr<Film> film;
+  std::unique_ptr<Integrator> integrator;
 
   std::pair<RavenCameraType, PropertyList>   cameraProperty;
   std::pair<RavenRendererType, PropertyList> integratorProperty;
