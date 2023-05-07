@@ -203,7 +203,7 @@ const T& Mipmap<T>::texel(int level, int s, int t) const {
   switch (wrapMode) {
     case ImRepeat:
       s = (s + l.uSize()) % l.uSize();
-      t = (s + l.vSize()) % l.vSize();
+      t = (t + l.vSize()) % l.vSize();
       break;
     case ImClamp:
       s = Clamp(s, 0, l.uSize() - 1);

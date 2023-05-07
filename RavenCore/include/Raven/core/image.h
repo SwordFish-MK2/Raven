@@ -6,13 +6,16 @@
 #include <Raven/core/spectrum.h>
 
 #include <cstring>
+
 namespace Raven {
-/// <summary>
-/// ����2Dͼ��
-/// ��ͨ��ͼ��(TΪRGBSpectrum)�����ڴ�����ɫ��ͼ����Ⱦ�����
-/// ��ͨ��ͼ��(TΪdouble�������ڴ���bump map��
-/// </summary>
-/// <typeparam name="T"></typeparam>
+
+enum class ImageFormat {
+  Float_3Channel = 0,
+  Float_1Channel,
+  RGB_3Channel,
+  RGB_1Channel
+};
+
 template <class T>
 class Image {
  public:
@@ -58,6 +61,7 @@ class Image {
   T&      operator[](int i) { return data[i]; }
   const T operator[](int i) const { return data[i]; }
 
+  static Image<T> Read(const std::string& path, ImageFormat format);
  private:
   int            xRes, yRes;
   std::vector<T> data;
@@ -70,6 +74,9 @@ Image<RGBSpectrum> ReadImage(const std::string& path);
 void WriteImage(const Image<RGBSpectrum>& image, const std::string& filename);
 
 void WriteImage(const Image<double>& image, const std::string& filename);
+
+using Image3 = Image<Spectrum>;
+using Image1 = Image<Float>;
 }  // namespace Raven
 
 #endif
