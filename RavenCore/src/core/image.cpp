@@ -76,8 +76,8 @@ void WriteImage(const Image<double>& image, const std::string& filename) {
 }
 
 Spectrum toSpectrum(const unsigned char* data) {
-  double value[3] = {double(data[0]) / 256.0, double(data[1]) / 256.0,
-                     double(data[2]) / 256.0};
+  double value[3] = {double(data[0]) / 255.0, double(data[1]) / 255.0,
+                     double(data[2]) / 255.0};
   return RGBSpectrum::fromRGB(&value[0]);
 }
 

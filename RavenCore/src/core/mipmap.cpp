@@ -19,7 +19,8 @@ Mipmap<T>::Mipmap(const Image<T>& imageData, bool trilinear, ImageWrap wrap)
     resampledImage.resize(resampledRes.x, resampledRes.y);
 
     // 在x方向拉伸图像
-    Image<T>                    xResampled(resampledRes.x, resolution.y);
+    Image<T> xResampled(resampledRes.x, resolution.y);
+
     std::vector<ResampleWeight> xWeights =
         resampleWeights(resolution.x, resampledRes.x);
 #pragma omp parallel for

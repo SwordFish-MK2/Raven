@@ -7,11 +7,7 @@
 
 #include <cstring>
 namespace Raven {
-/// <summary>
-/// ����2Dͼ��
-/// ��ͨ��ͼ��(TΪRGBSpectrum)�����ڴ�����ɫ��ͼ����Ⱦ�����
-/// ��ͨ��ͼ��(TΪdouble�������ڴ���bump map��
-/// </summary>
+
 /// <typeparam name="T"></typeparam>
 template <class T>
 class Image {
