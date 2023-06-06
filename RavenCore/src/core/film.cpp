@@ -6,7 +6,7 @@
 
 namespace Raven {
 
-FilmReg FilmReg::regHelper;
+// FilmReg FilmReg::regHelper;
 
 void Film::write() const { WriteImage(frameBuffer, "result.jpg"); }
 

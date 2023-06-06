@@ -38,13 +38,13 @@ Ref<CheckeredTexture<Spectrum>> makeCheckeredSpectrum(
     const PropertyList& param);
 }  // namespace TextureBuild
 
-_RAVEN_CLASS_REG_(checkeredfloat,
-                  CheckeredTextureFloat,
-                  TextureBuild::makeCheckeredFloat)
+// _RAVEN_CLASS_REG_(checkeredfloat,
+//                   CheckeredTextureFloat,
+//                   TextureBuild::makeCheckeredFloat)
 
-_RAVEN_CLASS_REG_(checkeredspectra,
-                  CheckeredTextureSpectra,
-                  TextureBuild::makeCheckeredSpectrum)
+// _RAVEN_CLASS_REG_(checkeredspectra,
+//                   CheckeredTextureSpectra,
+//                   TextureBuild::makeCheckeredSpectrum)
 }  // namespace Raven
 
 #endif

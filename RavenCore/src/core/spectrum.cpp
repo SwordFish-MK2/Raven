@@ -1274,28 +1274,27 @@ double RGBSpectrum::interpolateSpectrumSamples(const double* lambda,
 }
 
 // void getSpectrumSample(std::shared_ptr<double[]> lambda,
-//	std::shared_ptr<double[]> v,
-//	int* n,
-//	const std::string& str) {
-//	std::vector<std::string> tokens = tokenize(str);
-//
-//	*n = tokens.size();
-//	lambda = std::make_shared<double[]>(tokens.size());
-//	v = std::make_shared<double[]>(tokens.size());
-//	for (size_t i = 0; i < tokens.size(); i++) {
-//		std::vector<std::string> sampleToken = tokenize(tokens[i], ":");
-//		char* end_ptr;
-//		lambda[i]= (double)strtof(sampleToken[0].c_str(), &end_ptr);
-//		if (end_ptr != '\0') {
-//			std::cerr << "Failed to get spectrum sample" <<
-//std::endl;
-//		}
-//		v[i] = (int)strtof(sampleToken[i].c_str(), &end_ptr);
-//		if (end_ptr != '\0') {
-//			std::cerr << "Failed to get spectrum sample" <<
-//std::endl;
-//		}
-//	}
+//                        std::shared_ptr<double[]> v,
+//                        int*                      n,
+//                        const std::string&        str) {
+//   std::vector<std::string> tokens = tokenize(str);
+
+//   *n     = tokens.size();
+//   Float* f=new Float(tokens.size());
+//   lambda = std::make_shared<Float[]>(f);
+//   v      = std::make_shared<double[]>(tokens.size());
+//   for (size_t i = 0; i < tokens.size(); i++) {
+//     std::vector<std::string> sampleToken = tokenize(tokens[i], ":");
+//     char*                    end_ptr;
+//     lambda[i] = (double)strtof(sampleToken[0].c_str(), &end_ptr);
+//     if (end_ptr != '\0') {
+//       std::cerr << "Failed to get spectrum sample" << std::endl;
+//     }
+//     v[i] = (int)strtof(sampleToken[i].c_str(), &end_ptr);
+//     if (end_ptr != '\0') {
+//       std::cerr << "Failed to get spectrum sample" << std::endl;
+//     }
+//   }
 // }
 
 }  // namespace Raven

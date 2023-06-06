@@ -40,5 +40,5 @@ namespace Raven {
 		hitRecord.bsdf = bsdf;
 	}
 
-	PlasticReg PlasticReg::regHelper;
+	// PlasticReg PlasticReg::regHelper;
 }

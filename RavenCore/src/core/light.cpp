@@ -18,6 +18,8 @@ void LightSample::handleMedium(const Interaction &inter,
   Ray    shadowRay = inter.scatterRay(wi);
   double distance  = (inter.p - p).length();
   shadowRay.tMax   = distance - 0.01;
+
+  //pass through all transparant objects
   while (true) {
     auto si = scene.intersect(shadowRay);
     if (si.has_value() && si->mate_ptr != nullptr)

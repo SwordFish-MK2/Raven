@@ -1,4 +1,4 @@
-#include <Raven/core/interaction.h>
+﻿#include <Raven/core/interaction.h>
 #include <Raven/core/shape.h>
 
 namespace Raven {
@@ -33,6 +33,7 @@ double Shape::pdf(const Interaction& inter, const Vector3f& wi) const {
   if (!intersect(r, hitInfo))
     return 0;
   SurfaceInteraction lightInter = getGeoInfo(hitInfo.pHit);
+  
   // convert the pdf from integral of light surface to integral of the solid
   // angle of sample point
   double pdf = DistanceSquared(lightInter.p, inter.p) /

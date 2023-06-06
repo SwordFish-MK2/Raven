@@ -21,16 +21,16 @@ class Plastic : public Material {
   void computeScarttingFunctions(SurfaceInteraction& its,
                                  bool allowMultipleLobes) const override;
 
-  static Ref<Material> construct(const PropertyList& param) {
-    const auto& kd = std::dynamic_pointer_cast<Texture<Spectrum>>(
-        param.getObjectRef(0).getRef());
-    const auto& ks = std::dynamic_pointer_cast<Texture<Spectrum>>(
-        param.getObjectRef(1).getRef());
-    // const auto& roughness =
-    // std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(2).getRef());
+  // static Ref<Material> construct(const PropertyList& param) {
+  //   const auto& kd = std::dynamic_pointer_cast<Texture<Spectrum>>(
+  //       param.getObjectRef(0).getRef());
+  //   const auto& ks = std::dynamic_pointer_cast<Texture<Spectrum>>(
+  //       param.getObjectRef(1).getRef());
+  //   // const auto& roughness =
+  //   // std::dynamic_pointer_cast<Texture<Spectrum>>(param.getObjectRef(2).getRef());
 
-    return std::make_shared<Plastic>(kd, ks, nullptr);
-  }
+  //   return std::make_shared<Plastic>(kd, ks, nullptr);
+  // }
 
  private:
   std::shared_ptr<Texture<Spectrum>> kd;
@@ -39,7 +39,7 @@ class Plastic : public Material {
   std::shared_ptr<Texture<double>>   bump;
 };
 
-_RAVEN_CLASS_REG_(plastic, Plastic, Plastic::construct)
+// _RAVEN_CLASS_REG_(plastic, Plastic, Plastic::construct)
 }  // namespace Raven
 
 #endif

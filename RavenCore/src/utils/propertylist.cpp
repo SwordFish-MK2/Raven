@@ -1,4 +1,10 @@
 #include <Raven/utils/propertylist.h>
+
+#include <cstdlib>
+
+#include "Raven/core/texture.h"
+#include "Raven/utils/log.h"
+
 namespace Raven {
 #define DEFINE_PROPERTY_ACCESSOR(Type, TypeName, xmlTypeName)                  \
   void PropertyList::set##TypeName(const std::string& name,                    \
@@ -19,52 +25,114 @@ namespace Raven {
       return defaultVal;                                                       \
   }
 
-void PropertyList::setObjectRef(const std::string&      type,
-                                const Ref<RavenObject>& ref) {
-  refTypeList.push_back(RefType::Ref);
-  refCount++;
-  ObjectRef objref(type, ref);
-  refQueue.push_back(objref);
+void PropertyList::setInternalPointer(RavenObject* p) {
+  pointerList.push_back(p);
 }
 
-void PropertyList::setObjectRefById(const std::string&      refId,
-                                    const std::string&      type,
-                                    const Ref<RavenObject>& ref,
-                                    PropertyList&           list) {
-  list.refTypeList.push_back(RefType::RefById);
-  list.refCount++;
-  ObjectRef objref(type, ref);
-  auto&     refMap = getRefMap();
-  refMap[refId]    = objref;
+void PropertyList::setExternalPointer(const std::string& id) {
+  const auto& refMap = getRefMap();
+  const auto& pIt    = refMap.find(id);
+
+  // no pointer matches or id is empty
+  if (pIt == refMap.end()) {
+    RERROR("Parsing xml failed, unable to set ref with id {0}", id);
+    exit(EXIT_FAILURE);
+  }
+
+  // set pointer
+  pointerList.push_back(pIt->second);
 }
 
-ObjectRef PropertyList::getObjectRef(int n) const {
-  if (n > refCount) {
-    return ObjectRef("Failed to get Raven object ref, ref vector overflow.",
-                     nullptr);
-  }
-  int refC     = 0;
-  int refByIdC = 0;
+void PropertyList::storeExternalPointer(const std::string& id, RavenObject* p) {
+  auto&       refMap = getRefMap();
+  const auto& pIt    = refMap.find(id);
 
-  for (int i = 0; i < n; i++) {
-    if (refTypeList[i] == RefType::Ref)
-      refC++;
-    else
-      refByIdC++;
+  // test if there is a pointer with same id
+  if (pIt != refMap.end()) {
+    RERROR("Parsing xml failed, ref id {0} duplicated", id);
+    exit(EXIT_FAILURE);
   }
 
-  if (refTypeList[n] == RefType::Ref) {
-    return refQueue[refC];
-  } else {
-    std::string refId  = refIds[refByIdC];
-    auto&       refMap = getRefMap();
-    const auto& it     = refMap.find(refId);
-    if (it == refMap.end()) {
-      std::string msg("Failed to parse ref id :");
-      return ObjectRef(msg + refId, nullptr);
+  // set pointer
+  refMap[id] = p;
+}
+
+RavenObject* PropertyList::getObject(int n) {
+  if (index >= n)
+    return nullptr;
+  return pointerList[index++];
+}
+
+void PropertyList::setSTexture(const std::string& name, Texture<Spectrum>* t) {
+  const auto& it = stMap.find(name);
+  if (it != stMap.end()) {
+    RERROR("Property has been set");
+    exit(EXIT_FAILURE);
+  }
+  stMap[name] = t;
+}
+
+void PropertyList::setFTexture(const std::string& name, Texture<Float>* t) {
+  const auto& it = ftMap.find(name);
+  if (it != ftMap.end()) {
+    RERROR("Property has been set");
+    exit(EXIT_FAILURE);
+  }
+  ftMap[name] = t;
+}
+
+Texture<Spectrum>* PropertyList::getSTexture(const std::string& name) {
+  const auto& it = stMap.find(name);
+  if (it == stMap.end()) {
+    // no matching pointer of texture, try spectrum
+
+    const auto& sit = propertyMap.find(name);
+    if (sit == propertyMap.end()) {
+      // no matching spectrum, return white texture
+      RERROR(
+          "No texture of name {0} has been set, defualt const texture will be "
+          "returned",
+          name);
+      return new ConstTexture<Spectrum>(Spectrum(1.0));
+    } else {
+      // find matching spectrum, generate const texture
+      const auto& prop = sit->second;
+      Spectrum    s    = prop.value.spectra_value;
+      return new ConstTexture<Spectrum>(s);
     }
-    return it->second;
   }
+
+  // find matching texture pointer
+  Texture<Spectrum>* p = it->second;
+  stMap.erase(it);
+  return it->second;
+}
+
+Texture<Float>* PropertyList::getFTexture(const std::string& name) {
+  const auto& it = ftMap.find(name);
+  if (it == ftMap.end()) {
+    // no matching pointer of texture, try float
+
+    const auto& sit = propertyMap.find(name);
+    if (sit == propertyMap.end()) {
+      // no matching float, return white texture
+      RERROR(
+          "No texture of name {0} has been set, defualt const texture will be "
+          "returned",
+          name);
+      return new ConstTexture<Float>(1.0);
+    } else {
+      // find matching float, generate const texture
+      const auto& prop = sit->second;
+      Float       f    = prop.value.float_value;
+      return new ConstTexture<Float>(f);
+    }
+  }
+
+  // find matching texture pointer
+  Texture<Float>* p = it->second;
+  ftMap.erase(it);
+  return p;
 }
 
 DEFINE_PROPERTY_ACCESSOR(bool, Boolean, boolean)

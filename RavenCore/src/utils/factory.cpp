@@ -1,4 +1,8 @@
+#include <Raven/core/object.h>
 #include <Raven/utils/factory.h>
+
+#include <memory>
+
 
 namespace Raven {
 
@@ -15,10 +19,10 @@ bool Factory::registed(const std::string& className) const {
   return true;
 }
 
-Ref<RavenObject> Factory::generate(const std::string&  className,
-                                   const PropertyList& param) const {
-  auto             it   = classMap.find(className);
-  Ref<RavenObject> cons = it->second(param);
+RavenObject* Factory::generate(const std::string&  name,
+                               const PropertyList& property) const {
+  auto         it   = classMap.find(name);
+  RavenObject* cons = it->second(property);
   return cons;
 }
 

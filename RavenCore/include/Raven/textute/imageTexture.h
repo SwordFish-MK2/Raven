@@ -103,13 +103,13 @@ Ref<ImageTexture<RGBSpectrum, Spectrum>> makeImageTextureSpectrum(
     const PropertyList& param);
 }  // namespace TextureBuild
 
-_RAVEN_CLASS_REG_(imagefloat,
-                  ImageTextureFloat,
-                  TextureBuild::makeImageTextureFloat)
+// _RAVEN_CLASS_REG_(imagefloat,
+//                   ImageTextureFloat,
+//                   TextureBuild::makeImageTextureFloat)
 
-_RAVEN_CLASS_REG_(imagespectra,
-                  ImageTextureSpectra,
-                  TextureBuild::makeImageTextureSpectrum)
+// _RAVEN_CLASS_REG_(imagespectra,
+//                   ImageTextureSpectra,
+//                   TextureBuild::makeImageTextureSpectrum)
 }  // namespace Raven
 
 #endif

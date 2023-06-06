@@ -7,12 +7,13 @@
 namespace Raven {
 
 class Factory {
-  using Constructor = std::function<Ref<RavenObject>(const PropertyList&)>;
+  using Constructor = std::function<RavenObject*(const PropertyList&)>;
 
  public:
   void regClass(const std::string&, const Constructor&);
 
-  Ref<RavenObject> generate(const std::string&, const PropertyList&) const;
+  RavenObject* generate(const std::string&  name,
+                        const PropertyList& property) const;
 
   bool registed(const std::string&) const;
 
