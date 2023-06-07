@@ -9,9 +9,6 @@
 
 namespace Raven {
 
-<<<<<<< HEAD
-/// <typeparam name="T"></typeparam>
-=======
 enum class ImageFormat {
   Float_3Channel = 0,
   Float_1Channel,
@@ -19,7 +16,6 @@ enum class ImageFormat {
   RGB_1Channel
 };
 
->>>>>>> 67c929ce0cac35c5d777cfc214015438a96db879
 template <class T>
 class Image {
  public:
@@ -66,6 +62,7 @@ class Image {
   const T operator[](int i) const { return data[i]; }
 
   static Image<T> Read(const std::string& path, ImageFormat format);
+
  private:
   int            xRes, yRes;
   std::vector<T> data;
